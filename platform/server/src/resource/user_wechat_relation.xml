@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+     PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="user_wechat_relation">
+    <select id="query">
+        select * from user_wechat_relation 
+        where 
+        <if test="wechatOpenId != null">
+            wechat_openid = #{wechatOpenId} and
+        </if>
+        <if test="userId != null">
+            user_id = #{userId} and
+        </if>
+        status = 1
+        limit 10
+    </select>
+
+    <update id="update">
+        update user_wechat_relation 
+        set 
+        wechat_openid = #{wechatOpenId},
+        update_time = #{updateTime}
+        where user_id = #{userId}
+    </update>
+
+    <insert id="create">
+        insert into user_wechat_relation 
+        (
+            wechat_openid,
+            user_id,
+            create_time,
+            update_time,
+            status
+        )
+        values
+        (
+            #{wechatOpenId},
+            #{userId},
+            #{createTime},
+            #{updateTime},
+            1
+        )
+    </insert>
+</mapper>

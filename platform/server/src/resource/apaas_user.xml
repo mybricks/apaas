@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="apaas_user">
+    <select id="totalCountByParam" >
+        select count(*) as total from apaas_user
+        where status = 1
+        <if test="role">
+            and role = #{role}
+        </if>
+        <if test="email">
+            and email like '%${email}%'
+        </if>
+    </select>
+
+    <select id="queryByEmailWithPwd">
+        select * from apaas_user
+        where email = #{email}
+        and status = #{status}
+    </select>
+
+    <select id="queryByEmail">
+        select
+            id,
+            name,
+            email,
+            mobile_phone,
+            license_code,
+            role,
+            avatar,
+            create_time,
+            status,
+            update_time 
+        from apaas_user
+        where email = #{email}
+        and status = #{status}
+    </select>
+
+    <select id="queryByName">
+        select
+            id,
+            name,
+            email,
+            mobile_phone,
+            license_code,
+            role,
+            avatar,
+            create_time,
+            status,
+            update_time 
+        from apaas_user
+        where name = #{name}
+        and status = 1
+        limit 10
+    </select>
+
+    <select id="searchByKeyword">
+        select 
+            id,
+            name,
+            email,
+            mobile_phone,
+            license_code,
+            role,
+            avatar,
+            create_time,
+            status,
+            update_time 
+        from apaas_user
+        where status = 1 and email like '%${keyword}%' or name like '%${keyword}%' limit 10
+    </select>
+
+    <select id="queryById">
+        select
+            id,
+            name,
+            email,
+            mobile_phone,
+            license_code,
+            role,
+            avatar,
+            create_time,
+            status,
+            update_time 
+        from apaas_user
+        where id = #{id}
+        and status = #{status}
+    </select>
+
+    <select id="queryByRoleAndName">
+        select 
+            id,
+            name,
+            email,
+            mobile_phone,
+            license_code,
+            role,
+            avatar,
+            create_time,
+            status,
+            update_time 
+        from apaas_user where status = 1
+        <if test="role">
+            and role = #{role}
+        </if>
+        <if test="email">
+            and email like '%${email}%'
+        </if>
+        limit #{limit}
+        offset #{offset}
+    </select>
+
+    <select id="queryByEmails">
+        select id, name, email, avatar
+        from apaas_user
+        where status = #{status}
+        and email in 
+            <foreach collection="emails" open="(" close=")" separator="," item="email" index="i">
+                #{email}
+            </foreach>
+        order by field (email, 
+            <foreach collection="emails" open="" close="" separator="," item="email" index="i">
+                #{email}
+            </foreach>
+        )
+    </select>
+
+    <select id="queryByIds">
+        select id, name, email, avatar
+        from apaas_user
+        where status = #{status}
+        and id in
+            <foreach collection="ids" open="(" close=")" separator="," item="id" index="i">
+                #{id}
+            </foreach>
+        order by field (id,
+            <foreach collection="ids" open="" close="" separator="," item="id" index="i">
+                #{id}
+            </foreach>
+        )
+    </select>
+
+    <insert id="insert">
+        insert into apaas_user
+        (
+        id,
+        email,
+        <if test="password">
+            password,
+        </if>
+        <if test="name">
+            name,
+        </if>
+        <if test="avatar">
+            avatar,
+        </if>
+        <if test="mobilePhone">
+            mobile_phone,
+        </if>
+        create_time,
+        update_time,
+        role
+        )
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            #{id},
+            #{email},
+            <if test="password">
+                #{password},
+            </if>
+            <if test="name">
+                #{name},
+            </if>
+            <if test="avatar">
+                #{avatar},
+            </if>
+            <if test="mobilePhone">
+                #{mobilePhone},
+            </if>
+            #{createTime},
+            #{updateTime},
+            #{role}
+        </trim>
+    </insert>
+
+    <select id="queryAll">
+        select
+            id,
+            name,
+            email,
+            mobile_phone,
+            license_code,
+            role,
+            avatar,
+            create_time,
+            status,
+            update_time 
+        from apaas_user
+        where
+        status = 1
+    </select>
+
+    <update id="updateLisenceCode">
+        update apaas_user
+        set
+        <if test="licenseCode">
+            license_code = #{licenseCode},
+        </if>
+        update_time = #{updateTime}
+        where email = #{email}
+    </update>
+
+    <update id="update">
+        update apaas_user
+        set
+        <if test="status != null">
+            status = #{status},
+        </if>
+        <if test="password != null">
+            password = #{password},
+        </if>
+        <if test="licenseCode">
+            license_code = #{licenseCode},
+        </if>
+        update_time = #{update_time}
+        where email = #{email}
+    </update>
+
+    <update id="setUserRole">
+        update apaas_user
+        set
+            role = #{role},
+            update_time = #{updateTime}
+        where
+            id = #{userId} and
+            status = 1
+    </update>
+
+    <update id="setUserInfo">
+        update apaas_user
+        set
+        <if test="name != null">
+            name = #{name},
+        </if>
+        update_time = #{updateTime}
+        where
+            id = #{userId} and
+            status = 1
+    </update>
+
+    <select id="getGroupOwnerInfo">
+        select 
+            id,
+            name,
+            email,
+            mobile_phone,
+            license_code,
+            role,
+            avatar,
+            create_time,
+            status,
+            update_time 
+        from apaas_user where id in (select creator_id from apaas_user_group where id = #{groupId})
+    </select>
+
+    <update id="deleteById">
+        update apaas_user
+        set
+        status = -1,
+        update_time = #{updateTime}
+        where id = #{id}
+    </update>
+</mapper>

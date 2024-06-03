@@ -1,0 +1,82 @@
+.appCard {
+  min-height: 100px;
+  border-bottom: 1px solid #E4E4E4;
+  height: 100%;
+
+  .header {
+    height: 60px;
+    display: flex;
+
+    .infoContainer {
+      flex: 1;
+      display: flex;
+    }
+
+    .icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 5px;
+      background-repeat: no-repeat;
+      background-position: center center;
+      background-size: 100%;
+    }
+
+    .info {
+      margin-left: 16px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .title {
+      margin-bottom: 2px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .version {
+      font-size: 12px;
+      color: #7F7F7F;
+    }
+
+    .operate {
+      width: 70px;
+      margin-right: 10px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: flex-end;
+
+      .button {
+        color: #fa6400;
+        padding: 0 10px;
+        border-radius: 20px;
+        background-color: #EEEEF4;
+
+        &:hover {
+          opacity: 0.7;
+        }
+
+        &[disabled] {
+          opacity: .4;
+          cursor: not-allowed;
+        }
+      }
+    }
+  }
+
+  .moreIcon {
+    padding: 0 4px;
+    color: #5c6066;
+
+    & > svg {
+      fill: currentColor;
+      cursor: pointer;
+    }
+  }
+
+  .description {
+    margin-top: 16px;
+    padding: 0 8px;
+  }
+}

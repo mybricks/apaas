@@ -1,0 +1,237 @@
+﻿@import '../../theme.less';
+
+.page {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  height: 100vh;
+  overflow: hidden;
+
+  .head {
+    padding: 20px;
+    display: flex;
+  }
+
+  .body {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .foot {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 20px 20px 40px;
+  }
+}
+
+.entry {
+  width: 960px;
+  height: 640px;
+  padding: 32px 48px;
+  background: #ffffff;
+  border: 1px solid #ebedf0;
+  border-radius: 13px;
+  box-shadow: 0 3px 5px 0 rgb(31 35 41 / 4%);
+  display: flex;
+  padding: 40px 0;
+
+  .aside {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 480px;
+  }
+  .content {
+    width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+    // background: yellow;
+  }
+}
+
+.aside {
+  .banner {
+    display: block;
+    width: 336px;
+    height: 448px;
+    border-radius: 4px;
+  }
+}
+
+.content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  .form {
+    width: 360px;
+
+    .title {
+      color: #1f2329;
+      font-size: 20px;
+      line-height: 32px;
+      font-weight: 500;
+      margin-bottom: 60px;
+      text-align: center;
+    }
+
+    input[type="text"],
+    input[type="password"] {
+      border: 1px solid #e6e8eb;
+      border-radius: 5px;
+      height: 40px;
+      width: 100%;
+      display: block;
+      margin-bottom: 20px;
+      padding-left: 20px;
+      padding-right: 20px;
+      box-sizing: border-box;
+    }
+
+    input[type="text"].err,
+    input[type="password"].err {
+      border-color: #fc3232;
+    }
+
+    .submit {
+      cursor: pointer;
+      border-radius: 4px;
+      height: 40px;
+      width: 100%;
+      font-size: 14px;
+      color: #ffffff;
+      background: #80aeff;
+      &.visible {
+        background: #0c63fa;
+      }
+    }
+
+    .toolbar {
+      margin-top: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      .errMsg {
+        color: #fc3232;
+      }
+      .toggleButton {
+        cursor: pointer;
+        color: #0c63fa;
+      }
+    }
+  }
+}
+
+.dialogLogin {
+  display: none !important;
+  // margin-top: 10%;
+  background: #f8fafb;
+  padding: 45px 20px 30px 20px;
+  border-radius: 8px;
+  width: 420px;
+
+  margin-left: auto;
+  margin-right: auto;
+
+  .close {
+    position: absolute;
+    top: 11px;
+    right: -18px;
+    font-size: 22px;
+    width: 50px;
+    color: #000;
+    cursor: pointer;
+  }
+
+  .content {
+    display: flex;
+    flex-direction: column;
+
+    input[type="text"],
+    input[type="password"] {
+      border: 3px solid #000;
+      border-radius: 5px;
+      height: 30px;
+      padding: 5px 5px 5px 10px;
+      line-height: normal;
+      margin: 5px;
+    }
+
+    button {
+      background-color: #000;
+      border-color: #000;
+      color: #fff;
+      cursor: pointer;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      padding: 15px;
+      border-radius: 5px;
+      margin: 5px;
+      font-weight: 800;
+    }
+
+    .err {
+      border-color: red !important;
+    }
+
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 5px 0 8px;
+
+      .errMsg {
+        color: red;
+      }
+
+      a {
+        cursor: pointer;
+      }
+    }
+  }
+}
+
+.links {
+  display: flex;
+  align-items: center;
+  a {
+    margin-left: 20px;
+    color: #95999e;
+    display: flex;
+    align-items: center;
+    font-size: 12px;
+    line-height: 16px;
+    svg {
+      max-height: 16px;
+      max-width: 16px;
+      margin-right: 4px;
+
+      path {
+        fill: #95999e;
+      }
+    }
+  }
+
+  .github:hover {
+    color: #222222;
+    svg {
+      path {
+        fill: #222222;
+      }
+    }
+  }
+  .vscode:hover {
+    color: #2596e7;
+    svg {
+      path {
+        fill: #2596e7;
+      }
+    }
+  }
+
+  .copyright {
+    color: @color-primary;
+  }
+}

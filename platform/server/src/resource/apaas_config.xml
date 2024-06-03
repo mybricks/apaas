@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="apaas_config">
+    <select id="getConfigByNamespace">
+        select * from apaas_config 
+        <if test="namespace">
+            where app_namespace in
+            <foreach collection="namespace" open="(" close=")" separator="," item="ns" index="i">
+                #{ns}
+            </foreach>
+        </if>
+    </select>
+
+    <insert id="insert">
+        insert into apaas_config
+        (
+        id,
+        config,
+        creator_id,
+        creator_name,
+        create_time,
+        update_time,
+        updator_id,
+        updator_name,
+        app_namespace
+        )
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            #{id},
+            #{config},
+            #{creatorId},
+            #{creatorName},
+            #{createTime},
+            #{updateTime},
+            #{updatorId},
+            #{updatorName},
+            #{appNamespace}
+        </trim>
+    </insert>
+
+    <update id="update">
+        update apaas_config
+        set
+        config = #{config},
+        updator_name = #{updatorName},
+        updator_id = #{updatorId},
+        update_time = #{updateTime}
+        <if test="namespace">
+            where app_namespace = #{namespace}
+        </if>
+    </update>
+</mapper>

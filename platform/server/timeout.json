@@ -1,0 +1,46 @@
+{
+  "whiteList": {
+    "/api/mppage/compile:POST": {
+      "ignore": true
+    },
+    "/api/mpcloudcom/compile:POST": {
+      "ignore": true
+    },
+    "/api/compile/wx/preview:POST": {
+      "ignore": true
+    },
+    "/api/compile/wx/publish:POST": {
+      "ignore": true
+    },
+    "/paas/api/system/refactorUser:GET": {
+      "ignore": true
+    },
+    "/paas/api/system/channel:POST": {
+      "ignore": true
+    },
+    "/paas/api/apps/update:POST": {
+      "ignore": true
+    },
+    "/paas/api/oss/uploadFile:POST": {
+      "ignore": true
+    },
+    "/paas/api/oss/uploadFiles:POST": {
+      "ignore": true
+    },
+    "/api/pcpage/publish:POST": {
+      "ignore": true
+    },
+    "/mybricks-app-pcspa/api/pcpage/publish:POST": {
+      "ignore": true
+    },
+    "/mybricks-app-pcspa/api/pcpage/toCode:POST": {
+      "ignore": true
+    },
+    "(/.*)?/api/system/domain/run:GET": {
+      "ignore": true
+    },
+    "(/.*)?/api/system/domain/run:POST": {
+      "ignore": true
+    }
+  }
+}

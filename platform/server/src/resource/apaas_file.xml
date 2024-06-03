@@ -1,0 +1,754 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="apaas_file">
+    <select id="query">
+        select id,parent_id,group_id,name,namespace,version,ext_name,uri,creator_id,creator_name,create_time,update_time,updator_id,updator_name,description,type,share_type,status from apaas_file where
+        status = 1
+        <if test="folderId">
+            and parent_id = #{folderId} 
+        </if>
+        <if test="id">
+            and id = #{id}
+        </if>
+        <if test="ids">
+            and id in
+            <foreach collection="ids" open="(" close=")" separator="," item="id" index="i">
+                #{id}
+            </foreach>
+        </if>
+        <if test="namespaces">
+            and namespace in
+            <foreach collection="namespaces" open="(" close=")" separator="," item="namespace" index="i">
+                #{namespace}
+            </foreach>
+        </if>
+        <if test="extName">
+            and ext_name = #{extName}
+        </if>
+        <if test="type">
+            and type = #{type}
+        </if>
+        order by update_time desc
+    </select>
+    
+    <select id="queryAll">
+        select
+        id,parent_id,group_id,name,namespace,version,ext_name,uri,creator_id,creator_name,create_time,update_time,updator_id,updator_name,description,type,share_type,status,icon
+        from apaas_file
+        where 
+        <if test="folderId != null">
+            parent_id = #{folderId} and
+        </if>
+        <if test="creatorId != null">
+            creator_id = #{creatorId} and
+        </if>
+        <if test="groupId != null">
+            group_id = #{groupId} and
+        </if>
+        <if test="groupId == null">
+            group_id is null and
+        </if>
+        <if test="parentId == null">
+            parent_id is null and
+            <if test="groupIds != null">
+                group_id in
+                <foreach collection="groupIds" open="(" close=")" separator="," item="groupId" index="i">
+                    #{groupId}
+                </foreach>
+                and
+            </if>
+        </if>
+        <if test="parentId">
+            parent_id = #{parentId} and
+        </if>
+        <if test="groupIds == null">
+            <if test="isAdministrator === 0">
+                creator_id = #{creatorId} and
+            </if>
+        </if>
+        <if test="extName">
+            (
+            (ext_name = #{folderExtName} and type = 1) or
+            (
+            <if test="isPrivate">
+                is_private = #{isPrivate} and
+            </if>
+            ext_name like #{extName}
+            )
+            ) and
+        </if>
+        <if test="extNames">
+            ext_name in
+            <foreach collection="extNames" open="(" close=")" separator="," item="extName" index="i">
+                #{extName}
+            </foreach> and 
+        </if>
+        <if test="name">
+            name like #{name} and
+        </if>
+        <if test="shareType != null">
+            share_type = #{shareType} and
+        </if>
+        status = 1
+        order by update_time desc
+        limit #{limit} offset #{offset}
+    </select>
+
+    <select id="queryAllShareFiles">
+        select
+        id,parent_id,group_id,name,namespace,version,ext_name,uri,creator_id,creator_name,create_time,update_time,updator_id,updator_name,description,type,share_type,status, icon
+        from apaas_file
+        where
+        share_type in
+        <foreach collection="shareTypes" open="(" close=")" separator="," item="shareType" index="i">
+            #{shareType}
+        </foreach> and
+        <if test="extName">
+            ext_name = #{extName} and
+        </if>
+        status = 1
+        order by update_time desc
+        limit #{limit} offset #{offset}
+    </select>
+
+    <select id="countShareFiles">
+        select
+            count(*) as total
+        from apaas_file
+        where
+        share_type = #{shareType} and
+        <if test="extName">
+            ext_name = #{extName} and
+        </if>
+        status = 1
+    </select>
+
+    <select id="queryAllFilesByParentId">
+        select
+        id,parent_id,group_id,name,namespace,version,ext_name,uri,creator_id,creator_name,create_time,update_time,updator_id,updator_name,description,type,share_type,status, icon
+        from apaas_file
+        where 
+        <if test="parentId">
+            parent_id = #{parentId} and
+        </if>
+        status = 1
+        order by update_time desc
+    </select>
+
+    <select id="getFlattenFileTreeByParentId">
+        SELECT 
+            T2.find_level, 
+            T3.id,T3.parent_id,T3.group_id,T3.name,T3.namespace,T3.version,T3.ext_name,T3.uri,T3.creator_id,T3.creator_name,T3.create_time,T3.update_time,T3.updator_id,T3.updator_name,T3.description,T3.type,T3.share_type,T3.status
+        FROM (
+            SELECT @ids AS _ids
+                , (
+                    SELECT @ids := GROUP_CONCAT(id)
+                    FROM apaas_file
+                    WHERE FIND_IN_SET(apaas_file.parent_id, @ids)
+                ) AS T1, @l := @l + 1 AS find_level
+            FROM apaas_file, (
+                    SELECT @ids := #{id}, @l := -1
+                ) T4
+        ) T2, apaas_file T3
+        WHERE FIND_IN_SET(T3.id, T2._ids)
+            AND id != #{id}
+            AND status = 1
+            <if test="extNames">
+            AND ext_name in
+                <foreach collection="extNames" item="extName" open="(" close=")" separator="," index="index">
+                    #{extName}
+                </foreach>
+            </if>
+        ORDER BY find_level, id
+    </select>
+
+    <select id="queryById">
+        select *
+        from apaas_file where
+        id = #{id}
+        and status in
+        <foreach collection="status" open="(" close=")" separator="," item="item" index="i">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="queryIconById">
+        select icon
+        from apaas_file where
+        id = #{id}
+        and status in
+        <foreach collection="status" open="(" close=")" separator="," item="item" index="i">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="queryByRef">
+        select id,parent_id,group_id,name,namespace,version,ext_name,uri,creator_id,creator_name,create_time,update_time,updator_id,updator_name,description,type,share_type,status
+        from apaas_file where
+        ref = #{ref} and
+        status = 1
+    </select>
+
+    <select id="queryByNamespace">
+        select id,parent_id,group_id,name,namespace,version,ext_name,uri,creator_id,creator_name,create_time,update_time,updator_id,updator_name,description,type,share_type,status
+        from apaas_file where
+        namespace = #{namespace} and
+        status = 1
+    </select>
+
+    <insert id="create">
+        insert into apaas_file
+        (
+        id,
+        group_id,
+        parent_id,
+        name,
+        creator_id,
+        <if test="creatorName != null">
+            creator_name,
+        </if>
+        ext_name,
+        status,
+        namespace,
+        icon,
+        type,
+        create_time,
+        update_time,
+        description,
+        version
+        )
+        values
+        (
+        #{id},
+        #{groupId},
+        #{parentId},
+        #{name},
+        #{creatorId},
+        <if test="creatorName != null">
+            #{creatorName},
+        </if>
+        #{extName},
+        1,
+        #{namespace},
+        #{icon},
+        #{type},
+        #{create_time},
+        #{update_time},
+        #{description},
+        #{version}
+        )
+    </insert>
+
+    <insert id="batchCreate">
+        insert into apaas_file
+        (
+        id,
+        group_id,
+        parent_id,
+        name,
+        creator_id,
+        creator_name,
+        ext_name,
+        status,
+        namespace,
+        icon,
+        type,
+        create_time,
+        update_time,
+        description,
+        version
+        )
+        <foreach collection="files" item="item" open="values " separator="," close="" index="index">
+            <trim prefix="(" suffix=")" suffixOverrides=",">
+                #{id},
+                #{groupId},
+                #{parentId},
+                #{name},
+                #{creatorId},
+                #{creatorName},
+                #{extName},
+                1,
+                #{namespace},
+                #{icon},
+                #{type},
+                #{create_time},
+                #{update_time},
+                #{description},
+                #{version}
+            </trim>
+        </foreach>
+    </insert>
+
+    <update id="delete">
+        update apaas_file
+        set
+        status = -1,
+        update_time = #{update_time},
+        <if test="updatorName != null">
+            updator_name = #{updatorName},
+        </if>
+        updator_id = #{updatorId}
+        <if test="id">
+            where id = #{id}
+        </if>
+        <if test="parentId">
+            where parent_id = #{parentId}
+        </if>
+        <if test="groupId">
+            where group_id = #{groupId}
+        </if>
+    </update>
+
+    <update id="rename">
+        update apaas_file
+        set
+        name = #{name},
+        <if test="description != null">
+            description = #{description},
+        </if>
+        update_time = #{update_time},
+        updator_id = #{updatorId},
+        updator_name = #{updatorName} 
+        where id = #{id}
+    </update>
+
+    <update id="modifyFileType">
+        update apaas_file
+        set
+        type = #{type},
+        update_time = #{update_time}
+        where id = #{id}
+    </update>
+
+    <update id="modifyFileDeliveryChannel">
+        update apaas_file
+        set
+        delivery_channel = #{deliveryChannel},
+        update_time = #{updateTime}
+        where id = #{id}
+    </update>
+
+    <select id="getAllFiles">
+        select id,parent_id,group_id,name,namespace,version,ext_name,uri,creator_id,creator_name,create_time,update_time,updator_id,updator_name,description,type,share_type,status
+        from apaas_file
+        where
+        status = 1
+        order by update_time desc
+    </select>
+
+    <select id="getCountOfUserAndExt">
+        select count(*)  as total
+        from apaas_file
+        where
+        status = 1
+        and ext_name = #{extName}
+        and creator_name = #{userId}
+    </select>
+
+    <update id="moveFile">
+        update apaas_file
+        <trim prefix="set" suffixOverrides=",">
+            parent_id = 
+            <foreach collection="items" item="item" open="case " close=" end," index="index">
+                when id = #{item.id} then #{item.parentId}
+            </foreach>
+            group_id = 
+            <foreach collection="items" item="item" open="case " close=" end," index="index">
+                when id = #{item.id} then #{item.groupId}
+            </foreach>
+            update_time = 
+            <foreach collection="items" item="item" open="case " close=" end," index="index">
+                when id = #{item.id} then #{item.updateTime}
+            </foreach>
+        </trim>
+        WHERE
+        <foreach collection="items" item="item" open="( " separator=") or (" close=" )" index="index">
+            id = #{item.id}
+        </foreach>
+    </update>
+
+    <update id="update">
+        update apaas_file
+        set
+        <if test="name">
+            name = #{name},
+        </if>
+        <if test="uri">
+            uri = #{uri},
+        </if>
+        <if test="shareType != null">
+            share_type = #{shareType},
+        </if>
+        <if test="description">
+            description = #{description},
+        </if>
+        <if test="version">
+            version = #{version},
+        </if>
+        <if test="icon != null">
+            icon = #{icon},
+        </if>
+        <if test="namespace">
+            namespace = #{namespace},
+        </if>
+        <if test="type">
+            type = #{type},
+        </if>
+        updator_id = #{updatorId},
+        updator_name = #{updatorName},
+        update_time = #{updateTime} 
+        where id = #{id}
+    </update>
+
+    <update id="updateShare">
+        update apaas_file
+        set
+        share_type = #{shareType},
+        updator_id = #{updatorId},
+        <if test="updatorName != null">
+            updator_name = #{updatorName},
+        </if>
+        update_time = #{updateTime} 
+        where id = #{id}
+    </update>
+
+    <select id="getFiles">
+        select id,parent_id,group_id,name,namespace,version,ext_name,uri,creator_id,creator_name,create_time,update_time,updator_id,updator_name,description,type,share_type,status from apaas_file
+        where id 
+        <if test="id">
+            and id = #{id}
+        </if>
+        <if test="type">
+            and type = #{type}
+        </if>
+        <if test="extName">
+            and ext_name = #{extName}
+        </if>
+        <if test="status != null">
+            and status = #{status}
+        </if>
+
+
+        <choose>
+            <when test="groupIds">
+                and group_id in
+                <foreach collection="groupIds" open="(" close=")" separator="," item="groupId" index="i">
+                    #{groupId}
+                </foreach>
+            </when>
+            <otherwise>
+                <if test="groupId">
+                    and group_id = #{groupId}
+                </if>
+                <if test="owner == 'my'">
+                    and group_id is null
+                </if>
+            </otherwise>
+        </choose>
+        <if test="name">
+            and 
+            <if test="useLike != null">
+                name like #{name}
+            </if>
+            <if test="useLike = null">
+                name = #{name}
+            </if>
+        </if>
+        <if test="creatorId">
+            and creator_id = #{creatorId}
+        </if>
+        <if test="ref">
+            and ref = #{ref}
+        </if>
+        order by update_time desc
+        
+    </select>
+
+    <select id="getFolderTreeAry">
+        SELECT
+            t2.*
+        FROM
+            (
+            SELECT
+                @r AS _id,
+                ( SELECT @r := parent_id FROM ws_fileWHERE id = _id ) AS parent_id,
+                @s := @s + 1 AS sort 
+            FROM
+                ( SELECT @r := #{id}, @s := 0 ) temp,
+                apaas_file
+            WHERE
+                @r > 0 
+            ) t1
+            JOIN ws_filet2 ON t1._id = t2.id
+        ORDER BY
+            t1.sort DESC
+    </select>
+    <select id="getFileCountByExtNames">
+        select
+            file.ext_name as "extName",
+            count(file.id) as "count"
+        from
+            file
+        where
+            file.status = 1
+        and file.ext_name <> ''
+        and file.ext_name <> 'folder'
+        and file.ext_name <> 'tk'
+        <if test="startTime">
+            and DATE_FORMAT(FROM_UNIXTIME(file.create_time / 1000), "%Y-%m-%d") >= #{startTime}
+        </if>
+        <if test="endTime">
+            and DATE_FORMAT(FROM_UNIXTIME(file.create_time / 1000), "%Y-%m-%d") <= #{endTime}
+        </if>
+        <if test="extNames != null">
+            and file.ext_name in
+            <foreach collection="extNames" item="extName" open="(" close=")" separator="," index="index">
+                #{extName}
+            </foreach>
+        </if>
+        group by file.ext_name
+    </select>
+
+    <update id="updateByIds">
+        update apaas_file
+        set
+        update_time = #{updateTime},
+        <if test="name != null">
+            name = #{name}, 
+        </if>
+        <if test="icon != null">
+            icon = #{icon}, 
+        </if>
+        <if test="fileProperty != null">
+            file_property = #{fileProperty}, 
+        </if>
+        updator_id = #{updatorId}, 
+        updator_name = #{updatorName}  
+        where status = 1 and 
+        id in
+            <foreach collection="ids" open="(" close=")" separator="," item="id" index="i">
+                #{id}
+            </foreach>
+       
+    </update>
+
+    <select id="getRecycleBinFiles">
+        select * from apaas_file
+        where (updator_id = #{userId} or creator_id = #{userId}) 
+        and status = -1 
+        order by update_time desc
+    </select>
+    <!-- and #{currentTime} - update_time < #{timeInterval}  -->
+
+    <update id="recoverFile">
+        update apaas_file
+        set 
+        update_time = #{updateTime}, 
+        updator_id = #{updatorId}, 
+        <if test="updatorName != null">
+            updator_name = #{updatorName},
+        </if>
+        status = 1 
+        where id = ${id}
+    </update>
+
+    <select id="getFileListByExtName">
+        select id,parent_id,group_id,name,namespace,version,ext_name,uri,creator_id,creator_name,create_time,update_time,updator_id,updator_name,description,type,share_type,status from apaas_file
+        where DATE_FORMAT(FROM_UNIXTIME(file.create_time / 1000), "%Y-%m-%d") >= #{startTime}
+        and DATE_FORMAT(FROM_UNIXTIME(file.create_time / 1000), "%Y-%m-%d") <= #{endTime}
+        and ext_name != 'folder'
+        <if test="extName">
+            and ext_name = #{extName}
+        </if>
+        and status = 1
+        limit ${(pageIndex - 1)*pageSize}, #{pageSize}
+    </select>
+    <select id="getFileListTotalByExtName">
+        select count(*) as "total" from apaas_file
+        where DATE_FORMAT(FROM_UNIXTIME(file.create_time / 1000), "%Y-%m-%d") >= #{startTime}
+        and DATE_FORMAT(FROM_UNIXTIME(file.create_time / 1000), "%Y-%m-%d") <= #{endTime}
+        and ext_name != 'folder'
+        <if test="extName">
+            and ext_name = #{extName}
+        </if>
+        and status = 1
+    </select>
+
+    <select id="getLatestFilePubsByProjectId">
+        select apaas_file_pub.* from apaas_file_pub, apaas_file where
+        apaas_file.status = 1
+        and apaas_file.id = apaas_file_pub.file_id
+        and apaas_file.id = #{projectId}
+        and apaas_file_pub.id in (
+            select max(id) from apaas_file_pub where module_id is not null group by module_id
+        )
+        order by apaas_file_pub.id desc;
+    </select>
+
+    <select id="getMyFiles">
+        select 
+            apaas_file.id,
+            apaas_file.creator_id,
+            apaas_user.name as creator_name,
+            apaas_file.group_id,
+            apaas_file.parent_id,
+            apaas_file.name,
+            apaas_file.ext_name,
+            apaas_file.create_time,
+            apaas_file.update_time,
+            apaas_file.description,
+            apaas_file.status,
+            apaas_file.icon,
+            apaas_file.share_type  
+        from apaas_file 
+        left JOIN apaas_user ON apaas_file.creator_id = apaas_user.id
+        where apaas_file.creator_id = #{userId}
+        and apaas_file.status = #{status} 
+        and apaas_file.group_id is null 
+         <choose>
+            <when test="parentId">
+                and apaas_file.parent_id = #{parentId}
+            </when>
+            <otherwise>
+                and apaas_file.parent_id is null
+            </otherwise>
+        </choose>
+        <if test="extNames != null">
+            and apaas_file.ext_name in
+            <foreach collection="extNames" item="extName" open="(" close=")" separator="," index="index">
+                #{extName}
+            </foreach>
+        </if>
+        order by apaas_file.id desc
+    </select>
+
+    <select id="getGroupFiles">
+        select 
+            apaas_file.id,
+            apaas_file.creator_id, 
+            apaas_user.name as creator_name,
+            apaas_file.group_id,
+            apaas_file.parent_id,
+            apaas_file.name,
+            apaas_file.ext_name,
+            apaas_file.create_time,
+            apaas_file.update_time,
+            apaas_file.description,
+            apaas_file.status,
+            apaas_file.icon,
+            apaas_file.share_type  
+        from apaas_file 
+        left JOIN apaas_user ON apaas_file.creator_id = apaas_user.id
+        where apaas_file.status = #{status}
+        <choose>
+            <when test="groupId">
+                and apaas_file.group_id = #{groupId}
+            </when>
+            <otherwise>
+                and 1
+            </otherwise>
+        </choose>
+        <choose>
+            <when test="parentId">
+                and apaas_file.parent_id = #{parentId}
+            </when>
+            <otherwise>
+                and apaas_file.parent_id is null
+            </otherwise>
+        </choose>
+        <if test="extNames != null">
+            and apaas_file.ext_name in
+            <foreach collection="extNames" item="extName" open="(" close=")" separator="," index="index">
+                #{extName}
+            </foreach>
+        </if>
+        order by apaas_file.id desc
+    </select>
+
+    <select id="exactQuery">
+        select id from apaas_file 
+        where name = #{name}
+        and ext_name = #{extName}
+        <choose>
+            <when test="parentId">
+                and parent_id = #{parentId}
+            </when>
+            <otherwise>
+                and parent_id is null
+            </otherwise>
+        </choose>
+        <choose>
+            <when test="groupId">
+                and group_id = #{groupId}
+            </when>
+            <otherwise>
+                and group_id is null
+            </otherwise>
+        </choose>
+        <if test="status">
+            and status = #{status}
+        </if>
+        <if test="creatorId">
+            and creator_id = #{creatorId}
+        </if>
+        limit 1
+    </select>
+
+    <select id="getFilesByParentId">
+        select id,creator_id,creator_name,group_id,parent_id,name,ext_name,create_time,update_time,description,status,icon from apaas_file
+        where parent_id = #{id} and status = 1
+        <if test="extNames">
+            and ext_name in
+            <foreach collection="extNames" open="(" close=")" separator="," item="extName" index="i">
+                #{extName}
+            </foreach>
+        </if>
+    </select>
+
+    <select id="globalSearch">
+        SELECT * FROM (
+        SELECT A.id,A.name,A.creator_id,A.creator_name,A.update_time,A.ext_name,A.group_id,A.parent_id,A.share_type,null FROM apaas_file AS A
+        JOIN apaas_user_group_relation AS B ON A.status = 1 AND (IF(
+            A.group_id is NULL,
+            A.creator_id = #{userId},
+            A.group_id = B.user_group_id AND B.user_id = #{userId} AND B.status = 1
+        ) OR A.share_type = 1)
+        
+        UNION
+
+        SELECT C.id,C.name,C.creator_id,C.creator_name,C.update_time,'group',null,null,null,C.icon FROM apaas_user_group AS C
+            JOIN apaas_user_group_relation AS D ON C.id = D.user_group_id AND D.user_id = #{userId} AND D.status = 1
+        ) A WHERE name LIKE #{name} ORDER BY update_time DESC
+        <if test="limit">
+            LIMIT #{limit}
+        </if>
+        <if test="offset">
+            OFFSET #{offset}
+        </if>
+    </select>
+
+    <select id="getFolderFiles">
+         select id,creator_id,creator_name,group_id,parent_id,name,ext_name,create_time,update_time,description,status,icon from apaas_file
+         where parent_id = ${id}
+         and status = 1
+        <if test="extNames">
+            and ext_name in
+            <foreach collection="extNames" item="extName" open="(" close=")" separator="," index="index">
+                #{extName}
+            </foreach>
+        </if>
+         order by create_time desc
+    </select>
+    
+    <select id="getRoleDescription">
+        SELECT CASE
+        WHEN apaas_file.creator_id = #{userId} THEN 1
+        WHEN apaas_file.group_id IS NOT NULL THEN COALESCE((SELECT role_description FROM apaas_user_group_relation WHERE user_group_id = apaas_file.group_id AND user_id = #{userId} AND status = 1 LIMIT 1), -1)
+        ELSE -1
+        END AS role_description
+        FROM apaas_file
+        WHERE apaas_file.id = #{fileId};
+    </select>
+</mapper>

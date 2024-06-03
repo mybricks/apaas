@@ -1,0 +1,100 @@
+.container {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  height: auto;
+  min-height: 0px;
+  margin-right: 0;
+  margin-bottom: 0;
+  background-color: #ffffff;
+  .content {
+    display: block;
+    margin-left: 24px;
+  }
+  .tree {
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+    background-color: #ffffff;
+    border-radius: 4px;
+    li {
+      padding: 0;
+      position: relative;
+      white-space: nowrap;
+      list-style: none;
+      outline: 0;
+    }
+    .switcher {
+      height: 40px;
+      line-height: 40px;
+      width: 16px;
+      text-align: right;
+      position: relative;
+      z-index: 1;
+      display: flex;
+      float: left;
+      align-items: center;
+      font-size: 14px;
+      color: rgb(174, 175, 178);
+      margin-left: 4px;
+      .open {
+        transform: rotate(45deg);
+      }
+    }
+    .wrapper {
+      position: relative;
+      height: 40px;
+      line-height: 40px;
+      width: 100% !important;
+      transform: translateX(-8px);
+      display: inline-block;
+      margin: 0;
+      padding: 0 5px;
+      color: #333333;
+      text-decoration: none;
+      vertical-align: top;
+      border-radius: 2px;
+      cursor: pointer;
+      transition: all .3s;
+      .title {
+        position: relative;
+        display: flex;
+        align-items: center;
+        width: 100%;
+        height: 40px;
+        line-height: 40px;
+        .anticon {
+          display: flex;
+          margin: 0 8px 0 4px;
+        }
+        .unselect {
+          width: 100%;
+          height: 40px;
+          overflow: hidden;
+          display: flex;
+          .name {
+            width: 100%;
+            &:first-child {
+              padding-right: 35px;
+            }
+            display: inline-block;
+            user-select: none;
+            align-items: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
+        }
+      }
+    }
+  
+    &:hover {
+      border-radius: 4px;
+      background-color: #f7f7f7;
+    }
+  }
+  .active {
+    background-color: #3d5c8014 !important;
+    font-family: PingFangSC-Medium,sans-serif,'微软雅黑';
+  }
+}

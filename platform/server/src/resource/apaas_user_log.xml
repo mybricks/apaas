@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="apaas_user_log">
+    <select id="queryByType">
+        select *
+        from apaas_user_log
+        where type = #{type}
+    </select>
+
+    <select id="queryDetailOfAll">
+        SELECT *
+        FROM apaas_user_log
+            LEFT JOIN (SELECT id AS userId, name AS userName, email AS userEmail from apaas_user)apaasUser ON apaasUser.userId = apaas_user_log.user_id
+        <if test="type">
+            where type in
+            <foreach collection="type" open="(" close=")" separator="," item="ty" index="i">
+                #{ty}
+            </foreach>
+        </if> 
+        order by apaas_user_log.id desc
+        LIMIT #{offset},#{limit}
+    </select>
+
+    <select id="queryTotalOfAll">
+        SELECT COUNT(*) as total
+        FROM apaas_user_log
+            LEFT JOIN (SELECT id AS userId, name AS userName, email AS userEmail from apaas_user)apaasUser ON apaasUser.userId = apaas_user_log.user_id
+         <if test="type">
+            where type in
+            <foreach collection="type" open="(" close=")" separator="," item="ty" index="i">
+                #{ty}
+            </foreach>
+        </if> 
+    </select>
+
+    <select id="queryPageSaveLogsByRelateId">
+        select *
+        from apaas_user_log where
+        type = #{type}
+        and relation_token in
+        <foreach collection="fileIds" open="(" close=")" separator="," item="item" index="i">
+            #{item}
+        </foreach>
+    </select>
+
+
+    <select id="queryChatCount">
+        SELECT COUNT(*) as total
+        FROM apaas_user_log
+        <if test="type">
+            where type in
+            <foreach collection="type" open="(" close=")" separator="," item="ty" index="i">
+                #{ty}
+            </foreach>
+        </if>
+        <if test="startTime">
+            and create_time between #{startTime} and #{endTime} 
+        </if>
+    </select>
+
+    <select id="queryDetailByTime">
+        SELECT *
+        FROM apaas_user_log
+            LEFT JOIN (SELECT id AS userId, name AS userName, email AS userEmail from apaas_user)apaasUser ON apaasUser.userId = apaas_user_log.user_id
+        where type in
+        <foreach collection="type" open="(" close=")" separator="," item="ty" index="i">
+            #{ty}
+        </foreach>
+        <if test="startTime">
+            and create_time between #{startTime} and #{endTime} 
+        </if>
+        order by apaas_user_log.id desc
+        LIMIT #{offset},#{limit}
+    </select>
+
+    <insert id="insert">
+        insert into apaas_user_log
+        (
+        id,
+        type,
+        user_id,
+        user_email,
+        log_content,
+        create_time,
+        relation_token
+        )
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            #{id},
+            #{type},
+            #{userId},
+            #{userEmail},
+            #{logContent},
+            #{createTime},
+            #{relationToken}
+        </trim>
+    </insert>
+</mapper>

@@ -1,0 +1,255 @@
+@import url('../../../theme.less');
+
+.projects {
+  flex: 1;
+  margin-bottom: 0;
+  overflow-y: auto;
+
+  .scrollbar();
+}
+
+.files {
+  max-height: 100%;
+  display: flex;
+  flex-flow: wrap;
+  min-width: 500px;
+  // margin-left: -5px;
+
+  .error {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-style: italic;
+    color: #FF0000;
+    font-size: 12px;
+    width: 100%;
+    height: 100%;
+  }
+
+  .loading {
+    display: flex;
+    justify-content: center;
+    font-style: italic;
+    color: #AAA;
+    font-size: 12px;
+    width: 100%;
+    height: 100%;
+  }
+
+  .file {
+    position: relative;
+    cursor: pointer;
+    width: 250px;
+    max-height: 192px;
+    display: inline-flex;
+    flex-direction: column;
+    white-space: nowrap;
+    border: 1px solid #EEE;
+    border-radius: 5px;
+    margin: 5px;
+    overflow: hidden;
+
+    &:hover {
+      outline: 1px solid #DDD !important;
+
+      .btns {
+        visibility: visible !important;
+      }
+    }
+
+    .share {
+      top: 6px;
+      right: 6px;
+      z-index: 10;
+      display: flex;
+      position: absolute;
+      align-items: center;
+    }
+
+    .snap {
+      height: 140px;
+      background-color: #FAFAFA;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+
+      > img {
+        max-width: 240px;
+        max-height: 130px;
+        object-fit: contain;
+      }
+
+      .shared {
+        position: absolute;
+        right: 11px;
+        top: 5px;
+
+        svg {
+          max-width: 14px;
+
+          path {
+            fill: #777;
+          }
+        }
+      }
+    }
+
+    .tt {
+      height: 50px;
+      display: flex;
+      padding: 5px 6px 0px 6px;
+      background-color: #fff;
+
+      .typeIcon {
+        padding: 0 7px 0 6px;
+
+        svg {
+          max-width: 18px;
+        }
+      }
+
+      .detail {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+
+        .name {
+          font-size: 12px;
+          font-weight: 800;
+        }
+
+        .path {
+          font-size: 12px;
+          color: #AAA;
+          overflow: hidden;
+          white-space: nowrap;
+          display: flex;
+          position: relative;
+          height: 22px;
+        }
+      }
+
+      .menu {
+        position: relative;
+
+        svg {
+          max-height: 14px;
+        }
+      }
+    }
+  }
+
+  .empty {
+    font-style: italic;
+    color: #aaa;
+  }
+}
+
+.tableName {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+
+  .tableNameIcon {
+    display: flex;
+    margin-right: 4px;
+  }
+}
+
+.clickableIconContainer {
+  height: 100%;
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: 5px;
+  position: relative;
+  &:hover {
+    background-color: #3d5c800d;
+  }
+}
+
+.overlayClassName {
+  .operateItem {
+    display: flex;
+    align-items: center;
+    margin: 2px;
+    padding: 4px 8px;
+    cursor: pointer;
+    border-radius: 5px;
+  
+    &:hover {
+      background-color: #3d5c801f;
+    }
+  
+    .label {
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 22px;
+      padding: 0 8px;
+    }
+  }
+}
+
+.btns {
+  width: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+
+  svg {
+    max-width: 18px;
+
+    path {
+      fill: #777;
+    }
+  }
+
+  .operateContainer {
+    display: none;
+    position: absolute;
+    z-index: 1000;
+    background: #FFF;
+    right: 0px;
+    top: 100%;
+    border-radius: 5px;
+    padding: 5px;
+    box-shadow: 0px 3px 7px 1px #ddd;
+  }
+
+  .divider {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    color: rgba(0, 0, 0, 0.85);
+    font-size: 14px;
+    font-variant: tabular-nums;
+    line-height: 1.5715;
+    list-style: none;
+    font-feature-settings: "tnum";
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+    display: flex;
+    clear: both;
+    width: 100%;
+    min-width: 100%;
+  }
+
+  &:hover {
+    .operateContainer {
+      display: block;
+    }
+  }
+}
+
+.modalBody {
+  :global {
+    .ant-modal-body {
+      overflow: auto;
+      .scrollbar();
+    }
+  }
+}

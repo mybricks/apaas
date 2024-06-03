@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="apaas_user_validate">
+    <select id="queryByUserId">
+        select *
+        from apaas_user_validate
+        where user_id = #{userId}
+        and type = #{type}
+        and status = 1
+        and #{currentTime} - create_time < #{timeInterval}
+        ORDER BY create_time DESC
+        LIMIT 1
+    </select>
+
+    <insert id="insert">
+        insert into apaas_user_validate
+        (
+            id,
+            user_id,
+            type,
+            captcha,
+            create_time,
+            status
+        )
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            #{id},
+            #{userId},
+            #{type},
+            #{captcha},
+            #{createTime},
+            #{status}
+        </trim>
+    </insert>
+</mapper>

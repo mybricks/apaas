@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="apaas_user_session">
+
+    <select id="queryByUserId">
+        select *
+        from apaas_user_session
+        where user_id = #{userId}
+        and status = 1
+    </select>
+
+    <insert id="insert">
+        insert into apaas_user_session
+        (
+            id,
+            user_id,
+            fingerprint,
+            create_time,
+            update_time,
+            status
+        )
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            #{id},
+            #{userId},
+            #{fingerprint},
+            #{createTime},
+            #{updateTime},
+            #{status}
+        </trim>
+    </insert>
+
+    <update id="updateFingerprintByUserId">
+        update apaas_user_session
+        set
+        fingerprint = #{fingerprint},
+        update_time = #{updateTime}
+        where user_id = #{userId} and status = 1
+    </update>
+
+    
+
+</mapper>

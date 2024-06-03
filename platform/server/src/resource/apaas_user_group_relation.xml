@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="apaas_user_group_relation">
+    <insert id="insert">
+        insert into apaas_user_group_relation
+        (
+            id,
+            status,
+            creator_name,
+            create_time,
+            creator_id,
+            updator_name,
+            update_time,
+            updator_id,
+            role_description,
+            user_group_id,
+            user_id
+        )
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            #{id},
+            #{status},
+            #{creatorName},
+            #{createTime},
+            #{creatorId},
+            #{updatorName},
+            #{updateTime},
+            #{updatorId},
+            #{roleDescription},
+            #{userGroupId},
+            #{userId}
+        </trim>
+    </insert>
+
+    <update id="update">
+        update apaas_user_group_relation
+        set
+        <if test="roleDescription">
+        role_description = #{roleDescription},
+        </if>
+        status = #{status},
+        update_time = #{updateTime},
+        updator_id = #{updatorId}
+        where user_id = #{userId} 
+        and user_group_id = #{userGroupId}
+    </update>
+
+    <select id="queryByUserId">
+        select user_group_id, role_description from apaas_user_group_relation
+        where
+        user_id = #{userId}
+        and 
+        status = 1
+        and role_description <> -1
+    </select>
+
+    <select id="adminQueryRemainPart">
+        select user_group_id, role_description from apaas_user_group_relation
+        where
+        user_group_id not in (
+            select user_group_id from apaas_user_group_relation
+            where
+            user_id = #{userId}
+            and 
+            status = 1
+            and role_description <> -1
+        )
+        and
+        status = 1
+        and role_description <> -1
+    </select>
+
+    <select id="queryByUserGroupId">
+        select 
+            apaas_user_group_relation.role_description,
+            apaas_user.name,
+            apaas_user.email,
+            apaas_user.id,
+            apaas_user.avatar
+        from 
+            apaas_user_group_relation
+        inner join
+            apaas_user
+        on
+            apaas_user_group_relation.status = 1
+            and apaas_user_group_relation.user_id = apaas_user.id
+            and apaas_user_group_relation.user_group_id = #{userGroupId}
+        order by apaas_user_group_relation.id
+        limit #{limit} offset #{offset}
+    </select>
+
+    <select id="queryByUserIdAndUserGroupId">
+        select * from apaas_user_group_relation 
+        where user_id = #{userId} and user_group_id = #{userGroupId}
+        <if test="status">
+            and status = #{status}
+        </if>
+    </select>
+
+    <select id="queryUserTotalByUserGroupId">
+        select count(*) from apaas_user_group_relation
+        where
+        user_group_id = #{userGroupId}
+        and status = 1
+    </select>
+
+    <select id="queryUsersByGroupId">
+        select apaas_user_group_relation.id,
+            apaas_user_group_relation.user_group_id,
+            apaas_user_group_relation.user_id,
+            apaas_user_group_relation.creator_id,
+            apaas_user_group_relation.creator_name,
+            apaas_user_group_relation.status,
+            apaas_user_group_relation.create_time,
+            apaas_user_group_relation.update_time,
+            apaas_user_group_relation.role_description, 
+            apaas_user.name, 
+            apaas_user.avatar, 
+            apaas_user.email 
+        from apaas_user_group_relation 
+        inner join apaas_user on 
+        user_group_id = #{userGroupId}
+        and apaas_user_group_relation.user_id = apaas_user.id
+        <if test="status">
+            and apaas_user_group_relation.status = #{status} 
+        </if>
+        <if test="roleDescription">
+            and apaas_user_group_relation.role_description = #{roleDescription} 
+        </if>
+        order by apaas_user_group_relation.role_description, apaas_user_group_relation.create_time
+        <if test="limit">
+            limit #{limit} 
+        </if>
+        <if test="offset">
+            offset #{offset}
+        </if>
+    </select>
+</mapper>

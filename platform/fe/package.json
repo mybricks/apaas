@@ -1,0 +1,62 @@
+{
+  "name": "@mybricks/open-cloud-fe",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "webpack-dev-server --config ./scripts/webpack.dev.js",
+    "build": "webpack --config ./scripts/webpack.prod.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:mybricks/@mybricks/open-cloud.git"
+  },
+  "author": "MyBricks Team",
+  "license": "ISC",
+  "dependencies": {
+    "@codemirror/lang-json": "^6.0.1",
+    "@mybricks-cloud/create-application": "^1.0.5",
+    "@mybricks/rxui": "^1.0.86",
+    "@uiw/codemirror-extensions-hyper-link": "^4.21.13",
+    "@uiw/codemirror-theme-solarized": "^4.21.13",
+    "@uiw/react-codemirror": "^4.21.13",
+    "antd": "^4.24.16",
+    "axios": "1.1.3",
+    "compare-version": "^0.1.2",
+    "echarts": "^5.4.3",
+    "lodash-es": "^4.17.21"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.18.9",
+    "@babel/plugin-proposal-class-properties": "^7.18.6",
+    "@babel/preset-env": "^7.18.9",
+    "@babel/preset-react": "^7.18.6",
+    "@types/lodash-es": "^4.17.6",
+    "@types/node": "^18.0.6",
+    "@types/react": "^18.0.15",
+    "@types/react-dom": "^18.0.15",
+    "babel-loader": "^8.2.5",
+    "core-js": "^3.23.5",
+    "css-loader": "^6.7.1",
+    "file-loader": "^6.2.0",
+    "fs-extra": "^11.2.0",
+    "html-webpack-plugin": "^5.5.0",
+    "jszip": "^3.10.1",
+    "less": "^4.1.3",
+    "less-loader": "^11.0.0",
+    "postcss-loader": "^7.0.1",
+    "postcss-preset-env": "^9.5.12",
+    "raw-loader": "^4.0.1",
+    "remove-files-webpack-plugin": "^1.5.0",
+    "style-loader": "^3.3.1",
+    "ts-loader": "^9.3.1",
+    "typescript": "^4.2.3",
+    "url-loader": "^4.1.1",
+    "webpack": "^5.73.0",
+    "webpack-bundle-analyzer": "^4.5.0",
+    "webpack-cli": "^4.10.0",
+    "webpack-dev-server": "^4.9.3",
+    "webpack-merge": "^5.8.0",
+    "webpackbar": "^5.0.2"
+  }
+}

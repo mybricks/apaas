@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="apaas_file_content">
+  <select id="queryLatestByFileId">
+    select id, file_id,version,creator_id, create_time, update_time
+    from apaas_file_content
+    where
+    file_id = #{fileId}
+    order by update_time desc
+    limit 1;
+  </select>
+  <select id="queryByFilters">
+    select *
+    from apaas_file_content
+    where
+    1 = 1
+    <if test="fileId">
+      and file_id = #{fileId}
+    </if>
+    <if test="ids">
+      and id in
+      <foreach collection="ids" open="(" close=")" separator="," item="id" index="i">
+        #{id}
+      </foreach>
+    </if>
+    <if test="orderBy">
+      order by update_time
+      <if test="sortType === 'desc'">
+        desc
+      </if>
+      <if test="sortType === 'asc'">
+        asc
+      </if>
+    </if>
+    <if test="limit">
+      limit #{limit}
+    </if>
+  </select>
+
+  <select id="queryById">
+    select *
+    from apaas_file_content
+    where
+    id = #{id}
+  </select>
+
+  
+  <select id="getLatestContentId">
+    select id,file_id
+    from apaas_file_content
+    where
+    file_id = #{fileId} 
+    ORDER BY id DESC LIMIT 1
+  </select>
+
+  <select id="queryLatestSave">
+    select *
+    from apaas_file_content
+    where
+    file_id = #{fileId} 
+    ORDER BY id DESC LIMIT 1
+  </select>
+
+  <select id="getContentByVersionAndFileId">
+    select *
+    from apaas_file_content
+    where
+    file_id = #{fileId} and version = #{version}
+    ORDER BY id DESC LIMIT 1
+  </select>
+
+  <select id="queryLatestSaves">
+    select * from
+    apaas_file_content
+    inner join (
+      select
+        max(id) as id
+      from
+        apaas_file_content
+      where
+      <if test="ids">
+        file_id in
+        <foreach collection="ids" open="(" close=")" separator="," item="id" index="i">
+          #{id}
+        </foreach>
+      </if>
+      group by
+        file_id
+    ) file_lastest_content on file_lastest_content.id = apaas_file_content.id
+  </select>
+
+  <select id="queryByIds">
+    select id, file_id, creator_id, creator_name, create_time, update_time, status, content, content_type
+    from apaas_file_content
+    where
+    status = 1 and
+    <if test="ids">
+      id in
+      <foreach collection="ids" open="(" close=")" separator="," item="id" index="i">
+        #{id}
+      </foreach>
+    </if>
+  </select>
+
+  <insert id="insert">
+    insert into apaas_file_content
+    (
+    id,
+    file_id,
+    version,
+    creator_id,
+    create_time,
+    update_time,
+    content
+    )
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      #{id},
+      #{fileId},
+      #{version},
+      #{creatorId},
+      #{createTime},
+      #{updateTime},
+      #{content}
+    </trim>
+  </insert>
+
+  <update id="update">
+    update apaas_file_content
+    set
+    <if test="fileId">
+      file_id = #{fileId},
+    </if>
+    <if test="creatorId">
+      creator_id = #{creatorId},
+    </if>
+    <if test="creatorName">
+      creator_name = #{creatorName},
+    </if>
+    <if test="status">
+      status = #{status},
+    </if>
+    <if test="content">
+      content = #{content},
+    </if>
+    <if test="contentType">
+      content_type = #{contentType},
+    </if>
+    <if test="version">
+      version = #{version},
+    </if>
+    <if test="filePubId">
+      file_pub_id = #{filePubId},
+    </if>
+
+    update_time = #{updateTime}
+    where id = #{id}
+  </update>
+
+  <update id="updateContent">
+    update apaas_file_content
+    set
+    content = #{content},
+    update_time = #{updateTime}
+    where id = #{id}
+  </update>
+
+  <select id="getContentVersions">
+      select
+        apaas_file_content.id,
+        apaas_file_content.file_id,
+        apaas_file_content.creator_id,
+        apaas_file_content.create_time,
+        apaas_file_content.update_time,
+        apaas_user.name as creator_name,
+        apaas_user.email as creator_email,
+        apaas_file_content.version
+      from apaas_file_content, apaas_user
+      where
+      file_id = #{fileId}
+      and creator_id = apaas_user.id
+      order by update_time desc
+      limit #{limit} offset #{offset};
+  </select>
+
+  <select id="getContentVersionsCount">
+      select
+      count(*) as total
+      from apaas_file_content
+      where
+      file_id = #{fileId}
+  </select>
+    
+</mapper>

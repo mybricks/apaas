@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="apaas_user_group">
+
+    <insert id="insert">
+        insert into apaas_user_group 
+        (
+            id,
+            name,
+            <if test="icon">
+                icon,
+            </if>
+            status,
+            <if test="creatorName">
+                creator_name,
+            </if>
+            create_time,
+            creator_id,
+            <if test="updatorName">
+                updator_name,
+            </if>
+            update_time,
+            updator_id
+        )
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            #{id},
+            #{name},
+            <if test="icon">
+                #{icon},
+            </if>
+            #{status},
+            <if test="creatorName">
+                #{creatorName},
+            </if>
+            #{createTime},
+            #{creatorId},
+            <if test="updatorName">
+                #{updatorName},
+            </if>
+            #{updateTime},
+            #{updatorId},
+        </trim>
+    </insert>
+
+     <update id="update">
+        update apaas_user_group
+        set
+        <if test="name">
+            name = #{name},
+        </if>
+        <if test="icon">
+            icon = #{icon},
+        </if>
+        updator_name = #{updatorName},
+        updator_id = #{updatorId},
+        update_time = #{updateTime}
+        where id = #{id}
+    </update>
+
+    <select id="queryByIds">
+        select * from apaas_user_group
+        where 
+        id in 
+            <foreach collection="ids" open="(" close=")" separator="," item="id" index="i">
+                #{id}
+            </foreach>
+        and 
+        status = 1
+        order by create_time desc
+    </select>
+
+    <select id="queryById">
+        select * from apaas_user_group
+        where 
+        id = #{id}
+        and status = 1
+    </select>
+
+    <delete id="delete">
+        update apaas_user_group
+        set
+        status = -1,
+        update_time = #{updateTime},
+        updator_id = #{updatorId},
+        updator_name = #{updatorName}
+        where id = #{id} and
+        creator_id = #{updatorId}
+    </delete>
+</mapper>

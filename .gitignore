@@ -1,0 +1,29 @@
+
+# 运行时App目录
+/_apps
+# 运行时日志文件目录
+logs
+# 运行时静态资源目录
+_localstorage/*
+# 静态资源目录
+!_localstorage/editor_assets
+
+# 查询SQL目录
+/_mybatis
+
+#临时文件夹
+_tempapp_
+
+.idea/
+.vscode
+
+node_modules
+package-lock.json
+yarn.lock
+
+*.zip
+_temp_
+.DS_Store
+
+config.development.json
+

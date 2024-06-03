@@ -1,0 +1,21 @@
+{
+  "name": "opensource-mybricks-apaas",
+  "private": true,
+  "engines": {
+    "node": ">=14.21.1"
+  },
+  "scripts": {
+    "postinstall": "node ./scripts/preinstall",
+    "dev:fe": "node ./scripts/dev-fe",
+    "dev:server": "NODE_ENV=development node ./scripts/dev-server",
+    "build": "node ./scripts/build",
+    "prepare:start": "NODE_ENV=production node ./scripts/prepare-start",
+    "start": "node ./scripts/start",
+    "stop": "node ./scripts/stop",
+    "reload": "node ./scripts/reload"
+  },
+  "dependencies": {
+    "fs-extra": "^10.1.0",
+    "mysql2": "^2.3.3"
+  }
+}

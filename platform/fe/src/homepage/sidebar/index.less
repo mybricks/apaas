@@ -1,0 +1,147 @@
+@import url('../../theme.less');
+
+.sidebar {
+  min-width: 280px;
+  max-width: 280px;
+  background-color: #f8fafb;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  .customLogo {
+    cursor: pointer;
+    margin: 20px 0 0 20px;
+    height: 36px;
+    width: fit-content;
+    display: block;
+  }
+
+  .logo {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    margin: 20px 0 0 20px;
+
+    div {
+      min-width: 36px;
+      min-height: 36px;
+    }
+
+    img {
+      max-width: 36px;
+    }
+
+    span {
+      font-size: 14px;
+      font-weight: bold;
+
+      i {
+        color: #ef5555;
+        font-style: italic;
+        font-weight: bold;
+      }
+    }
+  }
+
+  .menuContainer {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    padding: 10px 0 10px 0;
+
+    .catelog {
+      .scrollbar();
+
+      &:not(:first-child) {
+        border-top: 1px solid #EEE;
+      }
+
+      .menuPanel {
+        padding: 10px;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+  
+        .menuItem {
+          // overflow: hidden;
+          border-radius: 4px;
+          cursor: pointer;
+          color: #5c6066;
+          font-size: 14px;
+          height: 40px;
+          line-height: 40px;
+          padding: 0 5px;
+          display: flex;
+          margin-bottom: 1px;
+          justify-content: space-between;
+    
+          .menuIcon {
+            margin-right: 8px;
+            display: flex;
+            align-items: center;
+          }
+    
+          .menuLabel {
+            width: 100%;
+            overflow: hidden;
+            display: inline-block;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            
+            // span {
+            //   width: 100%;
+            //   display: inline-block;
+            //   user-select: none;
+            //   align-items: center;
+            //   text-overflow: ellipsis;
+            //   white-space: nowrap;
+            // }
+          }
+    
+          // &:hover {
+          //   background-color: #3d5c800a;
+          // }
+    
+          .left {
+            width: 100%;
+            display: flex;
+            overflow: hidden;
+          }
+    
+          .right {
+            display: flex;
+            align-items: center;
+          }
+        }
+
+        .focusable {
+          &:hover {
+            background-color: #3d5c800a;
+          }
+        }
+    
+        .menuItemActive {
+          font-weight: bolder;
+          background-color: #3d5c8014 !important;
+        }
+      }
+    }
+  }
+
+  .user {
+    color: #777;
+    font-size: 14px;
+    padding: 10px 5px 10px 30px;
+  }  
+}
+
+.userInfoSettingForm {
+  :global {
+    .ant-modal-body {
+      padding: 10px;
+    }
+    .ant-form-item-with-help {
+      margin-bottom: 24px;
+    }
+  }
+}

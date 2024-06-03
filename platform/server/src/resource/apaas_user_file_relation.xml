@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+     PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="apaas_user_file_relation">
+    <select id="query">
+        select * from apaas_user_file_relation 
+        where file_id = #{fileId} 
+        and user_id = #{userId}
+    </select>
+
+    <update id="update">
+        update apaas_user_file_relation 
+        set 
+        updator_id = #{updatorId},
+        role_description = #{roleDescription},
+        update_time = #{updateTime}
+        where file_id = #{fileId} and user_id = #{userId}
+    </update>
+
+    <insert id="create">
+        insert into apaas_user_file_relation 
+        (
+            file_id,
+            user_id,
+            creator_id,
+            create_time,
+            updator_id,
+            update_time,
+            role_description,
+            status
+        )
+        values
+        (
+            #{fileId},
+            #{userId},
+            #{creatorId},
+            #{createTime},
+            #{creatorId},
+            #{updateTime},
+            #{roleDescription},
+            1
+        )
+    </insert>
+</mapper>

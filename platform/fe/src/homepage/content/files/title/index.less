@@ -1,0 +1,222 @@
+@import url(../../../../theme.less);
+
+.title {
+  .titleMiddle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    .search {
+      margin-left: 8px;
+      box-shadow: 0 2px 4px 0 rgb(54 58 80 / 32%);
+
+      &:hover {
+        box-shadow: 0 2px 10px 0 rgb(0 0 0 / 20%);
+      }
+      cursor: pointer;
+      .searchInput {
+        display: flex;
+        align-items: center;
+        line-height: 20px;
+      }
+      .icon {
+        color: rgb(141, 158, 166);
+        margin-right: 12px;
+        font-size: 13px;
+      }
+      .placeholder {
+        font-size: 14px;
+        font-weight: 500;
+        color: rgb(158, 169, 188);
+      }
+      position: relative;
+      display: flex;
+      -webkit-box-align: center;
+      align-items: center;
+      height: 28px;
+      padding: 0px 28px 0px 14px;
+      background: #f2f3f587;
+      border-radius: 8px;
+      width: 160px;
+    }
+  
+    .breadcrumb {
+      font-weight: bold;
+      height: 32px;
+      line-height: 32px;
+      font-size: 16px;
+    }
+  
+    .breadcrumbContent {
+      display: inline-flex;
+      align-items: center;
+      vertical-align: middle;
+  
+      span {
+        margin-left: 4px;
+      }
+    }
+  
+    .btns {
+      position: relative;
+      display: flex;
+      align-items: center;
+      // padding-right: 20px;
+  
+      button {
+        padding: 8px 15px;
+        font-size: 12px;
+        line-height: 12px;
+        font-weight: 800;
+        border: 0 solid #DDD;
+        color: #FFF;
+        border-radius: 3px;
+        background-color: @color-primary;
+        display: flex;
+        align-items: center;
+        margin-left: 8px;
+        cursor: pointer;
+  
+        span {
+          font-size: 16px;
+          font-weight: normal;
+          margin-right: 3px;
+          margin-top: -3px;
+        }
+      }
+    }
+
+    .toggleIcon {
+      cursor: pointer;
+      width: 24;
+      height: 24;
+      color: rgb(82, 94, 113);
+
+      &:hover {
+        color: rgb(53, 68, 93);
+      }
+    }
+  }
+
+  :global {
+    .ant-modal-header {
+      padding: 8px 24px;
+    }
+    .ant-modal-close-x {
+      height: 56px;
+      line-height: 56px;
+    }
+  }
+
+  .modalTitle {
+    display: flex;
+    align-items: center;
+    height: 40px;
+
+    .modalTitleLeft {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      font-size: 14px;
+      width: 160px;
+
+      .modalTitleContent {
+        margin: 0px 4px;
+      }
+    }
+
+    .modalTitleInput {
+      color: #999999;
+      // width: calc(100% - 180px);
+      border-radius: 20px;
+      border: 0px;
+    }
+
+    :global {
+      .ant-input {
+        border: none !important;
+        &:focus-within {
+          border: none !important;
+          box-shadow: none !important;
+        }
+      }
+      .ant-input-affix-wrapper:hover {
+        border-color: #ffffff00 !important;
+      }
+      .ant-input-affix-wrapper:not(.ant-input-affix-wrapper-disabled):hover {
+        border-color: #ffffff00 !important;
+      }
+      .ant-input-affix-wrapper:focus,
+      .ant-input-affix-wrapper-focused {
+        border-color: #ffffff00 !important;
+        box-shadow: none !important;
+      }
+    }
+  }
+
+  .modalList {
+    height: 100%;
+    overflow: auto;
+    .scrollbar();
+    .modalListItem {
+      border-radius: 4px;
+      padding: 12px 8px;
+      cursor: pointer;
+      :global {
+        .ant-spin-nested-loading {
+          height: 100%;
+        }
+        .ant-list-item-meta {
+          display: flex;
+          align-items: center;
+        }
+      }
+      &:hover {
+        background-color: #f3f3f3;
+      }
+      .modalListIcon {
+        font-size: 32px;
+      }
+      .folderOpenOutlined {
+        width: 32px;
+        height: 32px;
+        background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAQKADAAQAAAABAAAAQAAAAABGUUKwAAADxklEQVR4Ae2bz2sTQRTH324Sm0RsVUJCEHts/QmC4M0axEP14EXbP0JF8CpSgt70VNB/wiIIYkUPQkE8W0Xrr4NQSn+EIDZJm5+7vheyNtTszpC8THfaHQi72Xnz5vs+82Z3dtkFCEpAICCwlwkYEsEb+Xz+SK1We4i2Gdu20xJt2EwMwyihsw+4fZBKpd7gvs3mHB2JADSDr1ar87H4/sMD0SiYpsnZv9BXo9GAYmEdLNwi/Gw6nb6PjdggeEXThIPBP6LgY/G48uCJTigUggODQxQ8GKaZXVpayuJh0cBRU6niBYAcUP1FGvmdLE7W2ZYFoXB4ihOCDICkI2AnITh9c0PwAkBp5lXvaFK+5YQgCpBtrnFT4oIgAsCtm9UfBwStARDNXiFoD6BXCNoAsPAS6FW6zQRtADQa3gC6zQRtANiGARauBkXFyYTl5eUptBVexbQBkEgkoFAoQqVaBZnpgDdP2cXFxXERhLCIqF/qw+EwHB0ehlwuB+vFEtTrdVdptHI9ODRI9xH30Oh1y7Bj+mgDgIIgCHg32IrHfUNwVtdWIRqJnEUryvKGm7U2U8AtgE7HCVQqmQKcBgNY7xmjZ2Un57ocIwitQjG6ngx3LQAnetE2ACAitNvr93wG/DtT9DrS1x6b8PJjr17k2l89A/D0hnhpLOONLQNefZLpjseGEzQbgMwxnuBkvIyNyFjJ2bBNgdk7FmxU5Trt1Sq+r1cPW+3ZAJBLTmFbEvu7xzYF+iuzf94DAP1jq4fnPZ8BbCfBtwsA73+63nR1lQ7nR2y4MNpVU+lGbACuPzHZL4ODMQPWpnlWfG5E2KYAPrPUsrBlwLNbFrz7zkthbLTjYzxW0GwAMjhXMwoEs0aPztimALcwVf4CAKpI+7WfIAP8OjKqdLFdBSZwITSr6KnQldMAMzd5FkhsAF7MqxozAM6+2M4B46fUAbiMGcBV2DLg+W2elOQKTNYPWwbIdug3uwCA30ZEtZ4gA1QT91t/QQb4bURU6xFmAL2SJnotTbVomf5kdQsB1PCNq0q5LNOnr2xIM2kXFdFK0N7cLK9FIsUkOdqJj6ZEAWyvp5Gn4EulIpB2rPd8sOgFgBpa5UplzvpjT+BncxDBN6/89PnM9uDpPwGgkS9tbAJ+8DVHh/DnCsELQNPfj29f7x4/cfJSoVg6RAe0Kbb9m7SjXs+bFNE5wJqcnPy18OXzOXz7cgadrWgAYIW0kmbSLgIgepDv1BMo5+cc8yuL5tRtBe6MvusUkAmm3aZ9368ASFd7wO37/2n+C4K3N0s+0z4WAAAAAElFTkSuQmCC);
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+      }
+      .hignlightTitle {
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+      }
+      .descText {
+        display: flex;
+        align-items: center;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+        font-size: 12px;
+        font-weight: 400;
+        color: #95999e;
+        line-height: 17px;
+        .path {
+          display: flex;
+          align-items: center;
+          .pathicon {
+            display: flex;
+            margin-right: 2px;
+          }
+          .pathname {
+            &:hover {
+              color: #0c63fa;
+            }
+          }
+          .delimiter {
+            margin: 0 4px;
+          }
+        }
+      }
+    }
+  }
+}
