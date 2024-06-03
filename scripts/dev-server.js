@@ -11,7 +11,7 @@ const envLog = Log('MyBricks: 启动环境检测')
   await validateEnv({ console: envLog });
   envLog.log('环境检测完毕，准备启动调试服务')
 
-  childProcess.execSync(`npm run start:watch`, {
+  childProcess.execSync(`npm run start:dev`, {
     stdio: 'inherit',
     cwd: PLATFORM_SERVER_PATH
   })
