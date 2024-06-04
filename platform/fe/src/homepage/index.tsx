@@ -37,9 +37,7 @@ export default function App() {
         const userRes = (await axios({
           method: "post",
           url: '/paas/api/user/signed',
-          data: {
-            HAINIU_UserInfo: localStorage.getItem('HAINIU_UserInfo')
-          }
+          data: {}
         }))?.data
         const user = userRes?.data
         if (userRes.code !== 1) {

@@ -215,7 +215,7 @@ export default class LoginController {
   @Post('/signed')
   async signed(@Body() body, @Headers('username') us: string, @Request() request) {
     try {
-      const { fileId, HAINIU_UserInfo } = body;
+      const { fileId } = body;
       let userEmail;
       let userId;
  
@@ -234,15 +234,6 @@ export default class LoginController {
                 msg: '当前账号已在其他设备登录，请重新登录'
               }
             }
-          }
-        } else if(HAINIU_UserInfo) {
-          const userCookie = JSON.parse(HAINIU_UserInfo)
-          userEmail = userCookie?.email
-          try {
-            userEmail = JSON.parse(HAINIU_UserInfo)?.userInfo?.nick
-          } catch(e) {
-            Logger.info(e.message)
-            Logger.info(e?.stack?.toString())
           }
         } else {
           // 都没带的情况下，才是游客，直接判断
