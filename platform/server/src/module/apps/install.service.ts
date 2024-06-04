@@ -55,6 +55,7 @@ export default class InstallService {
 
 
 function isYarnExist() {
+  return false
   let result;
   try{
     childProcess.execSync('which yarn').toString()

@@ -9,11 +9,7 @@ import { getNextVersion } from "./utils";
 import ConfigDao from "./dao/config.dao";
 import UserDao from "./dao/UserDao";
 import * as axios from "axios";
-// import FileService from '../module/file/file.controller'
-// import { getRealDomain } from "../utils";
-// import UploadService from '../module/upload/upload.service';
 import UserService from './module/user/user.service';
-// import { getAdminInfoByProjectId } from '../utils/index'
 import { Logger } from '@mybricks/rocker-commons';
 import LogService from "./module/log/log.service";
 
@@ -211,25 +207,6 @@ export default class WorkspaceService {
             creatorId: userId
           });
         }
-        // else if(['folder-project'].includes(extName)) {
-        //   // 初始化系统超级管理员
-        //   await this.uploadService.saveFile({
-        //     str: JSON.stringify(getAdminInfoByProjectId({ projectId: rtn.id })),
-        //     filename: 'SYS_ADMIN_CONFIG.json',
-        //     folderPath: `/project/${rtn.id}`,
-        //   })
-        //   // 发送超管登录页面
-        //   await this.uploadService.saveFile({
-        //     str: fs.readFileSync(path.join(__dirname, './SYS_ADMIN_LOGIN.html'), "utf-8"),
-        //     filename: 'admin_login.html',
-        //     folderPath: `/project/${rtn.id}`,
-        //   })
-        //   await this.uploadService.saveFile({
-        //     str: fs.readFileSync(path.join(__dirname, './SYS_ADMIN_LOGIN.html'), "utf-8"),
-        //     filename: 'admin_login.html',
-        //     folderPath: `/staging/project/${rtn.id}`,
-        //   })
-        // }
 			}
 
       return {
@@ -600,38 +577,6 @@ export default class WorkspaceService {
     });
     const total = await this.filePubDao.getContentVersionsCount({fileId, type})
 
-    // const fileContentIds = filePubs
-    //   .filter((t) => t.fileContentId)
-    //   .map((t) => t.fileContentId);
-
-    // if (Array.isArray(fileContentIds) && fileContentIds.length) {
-    //   let fileContents = await this.fileContentDao.queryBy({
-    //     ids: fileContentIds,
-    //   });
-
-    //   // 兼容单个查询不为数组的情况
-    //   // @ts-ignore
-    //   if (fileContents?.id) {
-    //     fileContents = [fileContents];
-    //   }
-
-    //   if (Array.isArray(fileContents) && fileContents.length) {
-    //     const fileContentMap = new Map();
-    //     fileContents.forEach((content) => {
-    //       fileContentMap.set(content.id, content);
-    //     });
-
-    //     filePubs.forEach((filePub) => {
-    //       if (
-    //         filePub?.fileContentId &&
-    //         fileContentMap.has(filePub.fileContentId)
-    //       ) {
-    //         // @ts-ignore
-    //         filePub.fileContentInfo = fileContentMap.get(filePub.fileContentId);
-    //       }
-    //     });
-    //   }
-    // }
 
     return { code: 1, data: filePubs.map(item => ({ ...item, creatorName: item.creatorName || item.creatorEmail })), total};
   }
@@ -780,30 +725,6 @@ export default class WorkspaceService {
     }
   }
 
-  // @Get("/workspace/checkNamespaceUsedByCdm")
-  // async checkNamespaceUsedByCdm(@Query() query) {
-  //   const { namespace } = query;
-  //   if (!namespace) {
-  //     return {
-  //       code: -1,
-  //       message: "error",
-  //     };
-  //   }
-
-  //   try {
-  //     const rtn = await this.fileDao.queryByNamespace(namespace);
-
-  //     return {
-  //       code: rtn ? -1 : 1,
-  //       data: null,
-  //     };
-  //   } catch (ex) {
-  //     return {
-  //       code: -1,
-  //       message: ex.message,
-  //     };
-  //   }
-  // }
 
   @Get("/workspace/getPubVersionByFileId")
   async getPubVersionByFileId(@Query() query) {
@@ -844,8 +765,6 @@ export default class WorkspaceService {
 
     const folderExtnames = ['folder', 'folder-project', 'folder-module']
 
-    // let file = await this.fileDao.queryById(fileId);
-    // let [file] = await this.fileDao.getFiles({ id: fileId, creatorId: userId });
     let [file] = await this.fileDao.getFiles({ id: fileId });
 
     if (file) {

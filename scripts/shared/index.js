@@ -8,6 +8,7 @@ const loadApps = require('./load-apps');
 const MySqlExecutor = require('./mysql-executor');
 
 function isYarnExist() {
+  return false
   let result;
   try{
     cp.execSync('which yarn').toString()

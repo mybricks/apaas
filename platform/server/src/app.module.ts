@@ -8,11 +8,8 @@ import HttpProxyService from './services/proxy';
 import HomeService from './services/home'
 
 import FlowModule from './module/flow/flow.module'
-// import ModuleModule from './module/module/module.module'
 import SystemModule from './module/system/system.module'
 import FileModule from './module/file/file.module'
-// import DomainModule from "./module/domain/domain.module";
-// import AssetModule from "./module/asset/asset.module";
 import ShareModule from "./module/share/share.module";
 import UserModule from "./module/user/user.module";
 import UserFileModule from "./module/userFile/userFile.module";
