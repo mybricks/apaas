@@ -152,7 +152,7 @@ export function loadInstalledAppModules() {
         if(!global.MYBRICKS_PLATFORM_START_ERROR) {
           global.MYBRICKS_PLATFORM_START_ERROR = ''
         }
-        global.MYBRICKS_PLATFORM_START_ERROR += `\n 模块 ${appName} 加载失败 \n 错误是：${e.message} \n 详情是: ${e?.stack?.toString()}`;
+        global.MYBRICKS_PLATFORM_START_ERROR += `\n 模块 ${appName} 加载失败 \n ${e.message.indexOf('Cannot find module') > -1 ? '可能是node_modules安装失败，建议重新/手动安装node_modules' : ''} \n 错误是：${e.message} \n 详情是: ${e?.stack?.toString()}`;
         Logger.info(`模块加载失败, 准备跳过：${e.message}`)
         Logger.info(`错误详情是: ${e?.stack?.toString()}`)
       }

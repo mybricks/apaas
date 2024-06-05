@@ -19,7 +19,7 @@ const getWebpackInfo = (apps) => {
 
   apps.forEach(appMeta => {
     app_static.push({
-      directory: appMeta.assetsDirectory,
+      directory: appMeta.publicDirectory || appMeta.assetsDirectory,
       publicPath: `/${appMeta.appName}`
     });
 
@@ -54,7 +54,22 @@ module.exports = function () {
   let redirectUrl = null;
 
   apps.forEach(app => {
-    if (app.hasFe && app.assetsDirectory) {
+    if (app.hasFe && app.publicDirectory) {
+      const proxyConfig = {
+        context: [`/${app.appName}`],
+        target: 'http://localhost:3100',
+        secure: false,
+        bypass: function (req, res, proxyOptions) {
+          const filePath = path.join(app.publicDirectory, req.url.replace(`/${app.appName}`, ''));
+          if (fse.existsSync(filePath)) {
+            console.log('[资源文件] 转发到应用public文件夹 ' + req.url)
+            return req.url
+          }
+          console.log('[代理] 转发到服务端 ' + req.url)
+        },
+      }
+      proxies.push(proxyConfig)
+    } else if (app.assetsDirectory) {
       const proxyConfig = {
         context: [`/${app.appName}`],
         target: 'http://localhost:3100',
@@ -62,14 +77,15 @@ module.exports = function () {
         bypass: function (req, res, proxyOptions) {
           const filePath = path.join(app.assetsDirectory, req.url.replace(`/${app.appName}`, ''));
           if (fse.existsSync(filePath)) {
-            // console.log('[资源文件] 转发到应用public文件夹 ' + req.url)
+            console.log('[资源文件] 转发到应用assets文件夹 ' + req.url)
             return req.url
           }
-          // console.log('[代理] 转发到服务端 ' + req.url)
+          console.log('[代理] 转发到服务端 ' + req.url)
         },
       }
       proxies.push(proxyConfig)
     }
+
     const loginPage = app?.exports?.find(p => p.name === 'login') // mybricks声明里提供了 login serviceProvider 的为登录页面 
     if (loginPage) {
       redirectUrl = loginPage.path;

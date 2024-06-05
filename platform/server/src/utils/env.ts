@@ -44,9 +44,6 @@ export default {
   getAppInstallFolder() {
     return APPS_BASE_FOLDER
   },
-
-  NPM_REGISTRY: 'https://registry.npmmirror.com',
-
   LOGS_BASE_FOLDER,
 
   FILE_ANALYSIS_PERFORMANCE_FOLDER,

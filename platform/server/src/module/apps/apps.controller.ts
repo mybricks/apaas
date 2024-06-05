@@ -12,10 +12,9 @@ import UserLogDao from '../../dao/UserLogDao';
 import { lockUpgrade, unLockUpgrade } from '../../utils/lock';
 import ConfigService from '../config/config.service';
 import AppService from './apps.service';
-import InstallService from './install.service';
 import { USER_LOG_TYPE } from '../../constants'
 const { getAppThreadName } = require('../../../env.js')
-import { installAppFromFolder } from './../../utils/install-apps'
+import { installAppFromFolder, installAppDeps } from './../../utils/install-apps'
 
 const BLACK_APP_LIST = ['mybricks-app-login', 'mybricks-app-pcspa-for-bugu', 'mybricks-pc-page', 'mybricks-domain', 'mybricks-common-login', 'mybricks-app-pcspa-for-manatee']
 
@@ -36,7 +35,6 @@ export default class AppsController {
   configService: ConfigService;
 
   appService: AppService;
-  installService: InstallService;
 
   constructor() {
     // this.appDao = new AppDao();
@@ -46,8 +44,6 @@ export default class AppsController {
     this.shouldReload = false;
     this.configService = new ConfigService();
     this.appService = new AppService();
-
-    this.installService = new InstallService();
   }
 
   @Get("/getInstalledList")
@@ -146,6 +142,8 @@ export default class AppsController {
     } catch(e) {
       Logger.info(logPrefix + e.message)
       Logger.info(logPrefix + e?.stack?.toString())
+      await unLockUpgrade({ force: true })
+      Logger.info(`${logPrefix} 解锁成功，可继续升级应用`);
       return {
         code: -1,
         msg: '当前已有升级任务，请稍后重试'
@@ -173,6 +171,8 @@ export default class AppsController {
     }
 
     if (!remoteApps.length) {
+      await unLockUpgrade({ force: true })
+      Logger.info(`${logPrefix} 解锁成功，可继续升级应用`);
       return { code: 0, message: "升级失败，查询最新应用失败" };
     }
     /** 应用中心是否存在此应用 */
@@ -236,7 +236,8 @@ export default class AppsController {
       Logger.info(logPrefix + '更新版本', installedApp)
     }
 
-    Logger.info(logPrefix + "准备应用成功, 开始安装应用");
+    Logger.info(logPrefix + "开始下载应用");
+    const downloadStartTime = Date.now();
 
     const serverModulePath = path.join(
       env.getAppInstallFolder(),
@@ -265,23 +266,27 @@ export default class AppsController {
         Logger.error(`${logPrefix} 应用 ${namespace} 安装失败，跳过...`)
         Logger.error(`${logPrefix} 错误是 ${res.msg}`)
         await fse.remove(tempFolder)
+        await unLockUpgrade({ force: true })
+        Logger.info(`${logPrefix} 解锁成功，可继续升级应用`);
         return { code: 0, message: '下载应用失败，请重试' };
       }
 
-      Logger.info(`${logPrefix} 资源包下载成功 ${zipFilePath}}，开始持久化`)
+      Logger.info(`${logPrefix} 资源包下载成功 ${zipFilePath}}，耗时${Date.now() - downloadStartTime}ms，开始持久化`)
 
       await fse.writeFile(zipFilePath, Buffer.from(res.data.data));
 
       Logger.info(`${logPrefix} 开始解压文件`)
+      const zipStartTime = Date.now();
       childProcess.execSync(`unzip -o ${zipFilePath} -d ${tempFolder}`, {
         stdio: 'inherit' // 不inherit输出会导致 error: [Circular *1]
       })
+      Logger.info(`${logPrefix} 解压文件结束，耗时${Date.now() - zipStartTime}ms`)
       
       const subFolders = fs.readdirSync(tempFolder)
       let unzipFolderSubpath = ''
       Logger.info(`${logPrefix} subFolders: ${JSON.stringify(subFolders)}}`)
       for(let name of subFolders) {
-        if(name.indexOf('.') === -1) {
+        if(name.indexOf('.') === -1 && name !== '__MACOSX') {
           unzipFolderSubpath = name
           break
         }
@@ -290,11 +295,12 @@ export default class AppsController {
 
       const destAppDir = path.join(env.getAppInstallFolder(), installPkgName)
 
-      Logger.info(`${logPrefix} 准备安装APP ${installPkgName}`)
-      await installAppFromFolder(unzipFolderPath, destAppDir, { namespace: installPkgName || '未知namespace' })
+      Logger.info(`${logPrefix} 开始安装APP`)
+      await installAppFromFolder(unzipFolderPath, destAppDir, { namespace: installPkgName || '未知namespace' }, { logPrefix })
 
       Logger.info(`${logPrefix} 安装node_modules中`)
-      await this.installService.installAppDeps(destAppDir, needServiceUpdate);
+      await installAppDeps(unzipFolderPath, destAppDir, needServiceUpdate);
+      Logger.info(`${logPrefix} 安装node_modules成功`)
 
       Logger.info(`${logPrefix} 平台更新成功，准备写入操作日志`)
       if (logInfo) {
@@ -311,7 +317,7 @@ export default class AppsController {
       fse.removeSync(tempFolder)
 
       await unLockUpgrade({ force: true })
-      Logger.info("[offlineUpdate]: 解锁成功，可继续升级应用");
+      Logger.info(`${logPrefix} 解锁成功，可继续升级应用`);
 
       return { code: -1, message: e.message };
     }
@@ -388,7 +394,7 @@ export default class AppsController {
       let unzipFolderSubpath = ''
       Logger.info(`${logPrefix} subFolders: ${JSON.stringify(subFolders)}}`)
       for(let name of subFolders) {
-        if(name.indexOf('.') === -1) {
+        if(name.indexOf('.') === -1 && name !== '__MACOSX') {
           unzipFolderSubpath = name
           break
         }
@@ -400,11 +406,11 @@ export default class AppsController {
       const destAppDir = path.join(env.getAppInstallFolder(), pkg.name)
       
       Logger.info(`${logPrefix} 准备安装APP ${pkg.name}`)
-      await installAppFromFolder(unzipFolderPath, destAppDir, { namespace: pkg.name || '未知namespace' })
+      await installAppFromFolder(unzipFolderPath, destAppDir, { namespace: pkg.name || '未知namespace' }, { logPrefix })
 
       Logger.info(`${logPrefix} 安装node_modules中`)
-      // 离线更新目前强制安装依赖
-      await this.installService.installAppDeps(destAppDir, true);
+      await installAppDeps(unzipFolderPath, destAppDir, true);
+      Logger.info(`${logPrefix} 安装node_modules成功`)
 
       Logger.info(`${logPrefix} 平台更新成功，准备写入操作日志`)
       await this.userLogDao.insertLog({ type: USER_LOG_TYPE.APPS_INSTALL_LOG, userId: req?.query?.userId,
