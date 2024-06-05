@@ -94,7 +94,7 @@ function mergePlatformConfigByUserConfig (platformConfig, userConfig) {
   
         closeOfflineUpdate: "",
   
-        createBasedOnTemplate: userConfig?.platformConfig?.createBasedOnTemplate ?? ["mybricks-app-th5", "mybricks-app-pcspa", "mybricks-app-mpsite"],
+        createBasedOnTemplate: userConfig?.platformConfig?.createBasedOnTemplate,
   
         appBlackList: "pc-cgn,pc-page-vue2,pc-website,cloud-com,domain,th5-page,pc-comgen,mybricks-cloud-com",
   

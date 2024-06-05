@@ -27,7 +27,9 @@ export function runtimeLogger(option: Option = {}) {
     }
 
     res.on('close', () => {
-      Logger.info(`[application: ${application}] [timestamp: ${new Date().toLocaleString()}] [code: ${res.statusCode}] [method: ${req.method}] [refer: ${req.headers.referer}] [userAgent: ${req.headers['user-agent']}] [params: ${JSON.stringify(formattedParams || null)}] [path: ${req.path}] [ip: ${req.ip}]`);
+      if (!['/paas/api/file/getCooperationUsers'].includes(req.path)) {
+        Logger.info(`[application: ${application}] [timestamp: ${new Date().toLocaleString()}] [code: ${res.statusCode}] [method: ${req.method}] [refer: ${req.headers.referer}] [userAgent: ${req.headers['user-agent']}] [params: ${JSON.stringify(formattedParams || null)}] [path: ${req.path}] [ip: ${req.ip}]`);
+      }
     });
     next();
   };

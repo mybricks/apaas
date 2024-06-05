@@ -2,22 +2,23 @@ const fse = require('fs-extra')
 const path = require('path')
 const childProcess = require('child_process')
 
-const { isYarnExist, loadApps } = require('./shared')
+const { loadApps } = require('./shared')
+
+const Log = require('./utils/log')
+
+const envLog = Log('MyBricks: 启动脚本')
 
 const { PLATFORM_FE_PATH, PLATFORM_SERVER_PATH } = require('./env')
 
+const installCommand = 'npm i --registry=https://registry.npmmirror.com';
+
+envLog.log(`准备安装所有项目的依赖，安装命令使用 ${installCommand}`)
+
 function installDepsInDir (dir) {
-  if(isYarnExist()) {
-    childProcess.execSync(`yarn`, {
-      stdio: 'inherit',
-      cwd: dir
-    })
-  } else {
-    childProcess.execSync(`npm install`, {
-      stdio: 'inherit',
-      cwd: dir
-    })
-  }
+  childProcess.execSync(installCommand, {
+    stdio: 'inherit',
+    cwd: dir
+  })
 }
 
 // 平台前端安装依赖
@@ -35,5 +36,3 @@ for (let index = 0; index < apps.length; index++) {
     installDepsInDir(app.directory);
   }
 }
-
-

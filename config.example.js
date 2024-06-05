@@ -14,6 +14,14 @@ module.exports = {
   /** 平台配置 */
   platformConfig: {
     /** 
+     * @description 必填 pm2 进程名字
+     */
+    appName: 'mybricks-apaas',
+    /**
+     * @description 必填 服务端口号
+     */
+    port: 6666,
+    /** 
      * @description [可选项] 网站前端各个位置的标题文案
      */
     title: 'MyBricks开放应用平台',
@@ -25,6 +33,10 @@ module.exports = {
      * @description [可选项] 网站页面内的平台图标，支持http链接以及base64
      */
     icon: '',
+    /**
+     * @description [可选项] 指定平台运行时动态安装应用时如何安装应用的node_modules依赖，默认值为 npm i --registry=https://registry.npmmirror.com --production
+     */
+    installCommand: 'npm i --registry=https://registry.npmmirror.com --production'
   },
   /**
    * @description [可选项] 管理员账号与密码，初始化数据库时会使用此账号密码

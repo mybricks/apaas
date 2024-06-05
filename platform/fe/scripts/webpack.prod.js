@@ -32,8 +32,10 @@ class MoveOutputAssetsPlugin {
     compiler.hooks.done.tap('MoveOutputAssetsPlugin', () => {
       // 移动 应用的产物到 应用的assets目录
       Object.keys(app_meta_map).forEach(appName => {
+        const appMeta = app_meta_map[appName];
+
         const webpackDistAppPath = path.join(WEBPACK_DIST_PATH, appName);
-        const appPublicPath = path.join(app_meta_map[appName].directory, 'public');
+        const appPublicPath = appMeta.publicDirectory;
         const appAssetsPath = path.join(app_meta_map[appName].directory, 'assets');
 
         fse.ensureDirSync(appAssetsPath);
@@ -42,7 +44,9 @@ class MoveOutputAssetsPlugin {
           fse.copySync(appPublicPath, appAssetsPath, { overwrite: true });
         }
 
-        fse.copySync(webpackDistAppPath, appAssetsPath, { overwrite: true }); // 将产物移动到应用的assets目录
+        if (fse.pathExistsSync(webpackDistAppPath)) {
+          fse.copySync(webpackDistAppPath, appAssetsPath, { overwrite: true }); // 将产物移动到应用的assets目录
+        }
 
         try {
           fse.removeSync(webpackDistAppPath);
@@ -82,9 +86,6 @@ module.exports = merge(common, {
   mode: 'production', //设置mode
   plugins: [
     new WebpackBar(),
-    // new webpack.DefinePlugin({
-    //   ENV: NODE_ENV === "production" ? JSON.stringify("") : JSON.stringify("DEV")
-    // }),
     new HtmlWebpackPlugin({
       template: path.resolve(__dirname, `../public/workspace.html`),
       filename: "workspace.html",

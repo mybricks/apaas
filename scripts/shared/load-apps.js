@@ -28,7 +28,8 @@ const findPageFiles = (folderDir) => {
 /** 扫描app文件夹 */
 const scanAppDir = (dirFullPath, appName, callback) => {
   let directory = dirFullPath;
-  let assetsDirectory = path.join(dirFullPath, 'public'); // 约定
+  let publicFolderPath = path.join(dirFullPath, 'public'); // 约定
+  let assetsFolderPath = path.join(dirFullPath, 'assets'); // 约定
   let pageRecord = {};
 
   const packageJsonPath = path.join(dirFullPath, 'package.json'); // 约定
@@ -47,10 +48,10 @@ const scanAppDir = (dirFullPath, appName, callback) => {
     if (pages) {
       pages.forEach(page => {
         // pages下每一个文件夹需要有一个index.tsx文件作为入口
-        if (fse.statSync(path.join(pagesFolderPath, page)).isDirectory && fse.existsSync(path.join(pagesFolderPath, page, 'index.tsx')) && fse.existsSync(path.join(assetsDirectory, `${page}.html`))) { // 约定
+        if (fse.statSync(path.join(pagesFolderPath, page)).isDirectory && fse.existsSync(path.join(pagesFolderPath, page, 'index.tsx')) && fse.existsSync(path.join(publicFolderPath, `${page}.html`))) { // 约定
           pageRecord[page] = {
             entry: path.join(pagesFolderPath, page, 'index.tsx'),
-            template: path.join(assetsDirectory, `${page}.html`),
+            template: path.join(publicFolderPath, `${page}.html`),
           }
         }
       })
@@ -61,7 +62,7 @@ const scanAppDir = (dirFullPath, appName, callback) => {
   const feFolderPath = path.join(dirFullPath, 'fe'); // 约定
   if (fse.existsSync(feFolderPath)) {
 
-    assetsDirectory = path.join(feFolderPath, 'public'); // 约定
+    publicFolderPath = path.join(feFolderPath, 'public'); // 约定
     const sourceCodeDirectory = path.join(feFolderPath, 'src'); // 约定
   
     const pages = findPageFiles(sourceCodeDirectory);
@@ -69,7 +70,7 @@ const scanAppDir = (dirFullPath, appName, callback) => {
     pages.forEach(page => {
       pageRecord[page.name] = {
         entry: page.directory,
-        template: path.join(assetsDirectory, `${page.name}.html`),
+        template: path.join(publicFolderPath, `${page.name}.html`),
       }
     })
   }
@@ -96,7 +97,11 @@ const scanAppDir = (dirFullPath, appName, callback) => {
   const mapperFolderDirectory = path.join(serverDirectory, 'mapper') // 约定
 
   const preInstallPath = path.join(dirFullPath, 'preinstall.js')
-  const preInstallJsPath = fse.existsSync(preInstallPath) ? preInstallPath : null
+  const preInstallJsPath = fse.existsSync(preInstallPath) ? preInstallPath : null;
+
+  const publicDirectory = fse.existsSync(publicFolderPath) ? publicFolderPath : null;
+  const assetsDirectory = fse.existsSync(assetsFolderPath) ? assetsFolderPath : null;
+
 
   const extraParams = callback && callback({
     serverDirectory,
@@ -114,6 +119,7 @@ const scanAppDir = (dirFullPath, appName, callback) => {
     namespace: packageJson.name,
     appName,
     directory,
+    publicDirectory,
     assetsDirectory,
     pages: pageRecord,
     serverDirectory,
