@@ -12,6 +12,7 @@ interface AppCardProps {
 	disabled: boolean;
 	userId?: number;
 	style: any,
+	type: 'installed' | 'all'
 }
 
 const { Paragraph } = Typography
@@ -64,7 +65,7 @@ const AppCard: FC<AppCardProps> = props => {
 					
 					message.open({
 						type: 'success',
-						content: '升级成功，刷新页面可立即体验新功能，5 秒后将自动刷新页面~',
+						content: '操作成功，刷新页面可立即体验新功能，5 秒后将自动刷新页面~',
 						key: LOADING_KEY,
 						duration: 5,
 					})
@@ -77,10 +78,10 @@ const AppCard: FC<AppCardProps> = props => {
 						duration: 3,
 					})
 				} else {
-					checkUpgradeStatus(appInfo, false)
+					checkUpgradeStatus(appInfo, false, action)
 				}
 			}).catch(() => {
-				checkUpgradeStatus(appInfo, false)
+				checkUpgradeStatus(appInfo, false, action)
 			});
 		}, immediate ? 0 : 5000)
 	}, [app, setCurrentUpgrade])
@@ -254,24 +255,26 @@ const AppCard: FC<AppCardProps> = props => {
 							</Popover>
 						) : null
 					} */}
-				  <div className={styles.moreIcon}>
-					  {/* <Dropdown
-						  placement="bottomCenter"
-						  overlay={(
-							  <Menu>
-								  <Menu.Item>
-									  <Button danger size="small" type="text" ghost style={{ width: '100%' }} onClick={uninstall}>卸载</Button>
-								  </Menu.Item>
-							  </Menu>
-						  )}
-					  >
-						  <svg viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" width="24" height="24">
-							  <path d="M243.2 512m-83.2 0a1.3 1.3 0 1 0 166.4 0 1.3 1.3 0 1 0-166.4 0Z"></path>
-							  <path d="M512 512m-83.2 0a1.3 1.3 0 1 0 166.4 0 1.3 1.3 0 1 0-166.4 0Z"></path>
-							  <path d="M780.8 512m-83.2 0a1.3 1.3 0 1 0 166.4 0 1.3 1.3 0 1 0-166.4 0Z"></path>
-						  </svg>
-					  </Dropdown> */}
-				  </div>
+					{
+						props?.type === 'installed' && <div className={styles.moreIcon}>
+							<Dropdown
+								placement="bottomCenter"
+								overlay={(
+									<Menu>
+										<Menu.Item>
+											<Button danger size="small" type="text" ghost style={{ width: '100%' }} onClick={uninstall}>卸载</Button>
+										</Menu.Item>
+									</Menu>
+								)}
+							>
+								<svg viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" width="24" height="24">
+									<path d="M243.2 512m-83.2 0a1.3 1.3 0 1 0 166.4 0 1.3 1.3 0 1 0-166.4 0Z"></path>
+									<path d="M512 512m-83.2 0a1.3 1.3 0 1 0 166.4 0 1.3 1.3 0 1 0-166.4 0Z"></path>
+									<path d="M780.8 512m-83.2 0a1.3 1.3 0 1 0 166.4 0 1.3 1.3 0 1 0-166.4 0Z"></path>
+								</svg>
+							</Dropdown>
+						</div>
+					}
 			  </div>
 		  </div>
 		  <div className={styles.description}>

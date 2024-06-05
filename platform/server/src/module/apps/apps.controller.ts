@@ -1,9 +1,10 @@
-import { Body, Controller, Get, Post, Query, Req, Headers, UseInterceptors, UploadedFile, UseFilters } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, Req, Res, UseInterceptors, UploadedFile, UseFilters } from '@nestjs/common';
 import * as fs from 'fs';
 import * as fse from 'fs-extra'
 import * as path from 'path';
 import * as childProcess from 'child_process';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { Response } from 'express';
 import { Logger } from '@mybricks/rocker-commons'
 import * as axios from 'axios';
 import { ErrorExceptionFilter } from "./../../filter/exception.filter";
@@ -15,8 +16,6 @@ import AppService from './apps.service';
 import { USER_LOG_TYPE } from '../../constants'
 const { getAppThreadName } = require('../../../env.js')
 import { installAppFromFolder, installAppDeps } from './../../utils/install-apps'
-
-const BLACK_APP_LIST = ['mybricks-app-login', 'mybricks-app-pcspa-for-bugu', 'mybricks-pc-page', 'mybricks-domain', 'mybricks-common-login', 'mybricks-app-pcspa-for-manatee']
 
 @Controller("/paas/api/apps")
 @UseFilters(ErrorExceptionFilter)
@@ -56,85 +55,55 @@ export default class AppsController {
     };
   }
 
-
-  @Get("/getLatestAllFromSource")
-  async getLatestAllFromSource() {
-    const systemConfig = await this.configService.getConfigByScope(['system'])
-    if(systemConfig?.system?.config?.isPureIntranet) {
-      return {
-        code: 1,
-        data:[],
-        msg: '纯内网部署，暂不支持此功能'
-      }
-    }
+  @Get("/getLatestInstalledAppFromSource")
+  async getLatestInstalledAppFromSource() {
     try {
-      let remoteAppList = []
-      let mergedList = []
-      try {
-        const currentInstallList = (await this.appService.getAllInstalledList({ filterSystemApp: true }))?.map(i => {
-          return {
-            namespace: i.namespace,
-            version: i.version,
-            extName: i.extName,
-            title: i.title,
-          }
-        })
-        
-        if(false) {
-        } else {
-          const temp = (await (axios as any).post(
-            "https://my.mybricks.world/central/api/channel/gateway", 
-            {
-              action: 'app_getAllLatestList',
-              payload: JSON.stringify(currentInstallList)
-            }
-          )).data;
-          if(temp.code === 1) {
-            remoteAppList = temp.data
-          }
-          // 远端app地址增加标记位
-          remoteAppList?.forEach(i => {
-            i.isFromCentral = true
-            // 回滚版本也加上标记位
-            if(i.previousList) {
-              i.previousList?.forEach(j => {
-                j.isFromCentral = true
-              })
-            }
-          })
-        }
-        // let tempList = localAppList.concat(remoteAppList)
-        let tempList = [].concat(remoteAppList)
-        // 去重: 本地优先级更高
-        let nsMap = {}
-        tempList?.forEach(i => {
-          if(!nsMap[i.namespace]) {
-            mergedList.push(i)
-            nsMap[i.namespace] = true
-          }
-        }) 
-      } catch(e) {
-        Logger.info(e.message)
-        Logger.info(e?.stack?.toString())
-      }
-
+      const appList = await this.appService.getInstalledAppsFromRemote();
       return {
         code: 1,
-        data: mergedList.filter(t => !BLACK_APP_LIST.includes(t.namespace))
+        data: appList
       }
     } catch (e) {
+      Logger.error(e.message)
+      Logger.error(e?.stack?.toString())
       return {
         code: -1,
         data: [],
-        msg: e.toString()
+        msg: e.message
+      }
+    }
+  }
+
+  @Get("/getLatestAllAppFromSource")
+  async getLatestAllAppFromSource() {
+    try {
+      const WHITE_LIST = ['mybricks-app-pcspa', 'mybricks-material', 'mybricks-app-pc-cdm', 'mybricks-app-mpsite', 'mybricks-app-theme'];
+      const appList = await this.appService.getAllAppsFromRemote();
+      return {
+        code: 1,
+        data: appList.filter(t => WHITE_LIST.includes(t.namespace))
+      }
+    } catch (e) {
+      Logger.error(e.message)
+      Logger.error(e?.stack?.toString())
+      return {
+        code: -1,
+        data: [],
+        msg: e.message
       }
     }
   }
 
   @Post("/update")
-  async appUpdate(@Body() body, @Req() req) {
+  async appUpdate(@Body() body, @Req() req, @Res() res: Response) {
     const { namespace, version, isFromCentral, userId } = body;
     const logPrefix = `[安装应用]：${namespace}@${version} `;
+
+    const response200 = async (content) => {
+      await unLockUpgrade({ force: true })
+      Logger.info(`${logPrefix} 解锁成功，可继续升级应用`);
+      res.status(200).send(content);
+    }
 
     try {
       Logger.info(logPrefix + '开启了冲突检测')
@@ -142,12 +111,11 @@ export default class AppsController {
     } catch(e) {
       Logger.info(logPrefix + e.message)
       Logger.info(logPrefix + e?.stack?.toString())
-      await unLockUpgrade({ force: true })
-      Logger.info(`${logPrefix} 解锁成功，可继续升级应用`);
-      return {
+      res.status(200).send({
         code: -1,
         msg: '当前已有升级任务，请稍后重试'
-      }
+      });
+      return
     }
 
     let remoteApps = [];
@@ -171,16 +139,16 @@ export default class AppsController {
     }
 
     if (!remoteApps.length) {
-      await unLockUpgrade({ force: true })
-      Logger.info(`${logPrefix} 解锁成功，可继续升级应用`);
-      return { code: 0, message: "升级失败，查询最新应用失败" };
+      await response200({ code: 0, message: "升级失败，查询最新应用失败" })
+      return
     }
     /** 应用中心是否存在此应用 */
     const remoteApp = remoteApps.find((a) => a.namespace === namespace);
 
     /** 不存在返回错误 */
     if (!remoteApp) {
-      return { code: 0, message: "升级失败，不存在此应用" };
+      await response200({ code: 0, message: "升级失败，不存在此应用" })
+      return
     }
     Logger.info(`${logPrefix} 安装应用的最新版本：${remoteApp.version}`);
     const remoteAppInstallInfo = JSON.parse(remoteApp.installInfo || "{}");
@@ -266,9 +234,8 @@ export default class AppsController {
         Logger.error(`${logPrefix} 应用 ${namespace} 安装失败，跳过...`)
         Logger.error(`${logPrefix} 错误是 ${res.msg}`)
         await fse.remove(tempFolder)
-        await unLockUpgrade({ force: true })
-        Logger.info(`${logPrefix} 解锁成功，可继续升级应用`);
-        return { code: 0, message: '下载应用失败，请重试' };
+        await response200({ code: 0, message: '下载应用失败，请重试' })
+        return
       }
 
       Logger.info(`${logPrefix} 资源包下载成功 ${zipFilePath}}，耗时${Date.now() - downloadStartTime}ms，开始持久化`)
@@ -316,13 +283,13 @@ export default class AppsController {
 
       fse.removeSync(tempFolder)
 
-      await unLockUpgrade({ force: true })
-      Logger.info(`${logPrefix} 解锁成功，可继续升级应用`);
-
-      return { code: -1, message: e.message };
+      await response200({ code: -1, message: e.message })
+      return
     }
 
     await fse.remove(tempFolder)
+
+    await response200({ code: 1, data: null, message: "安装成功" })
 
     if (fs.existsSync(serverModulePath)) {
       if(!needServiceUpdate) {
@@ -334,11 +301,70 @@ export default class AppsController {
     } else {
       Logger.info(logPrefix + "无service，无需重启");
     }
+  }
 
-    Logger.info(logPrefix + "解锁成功，可继续升级应用");
-    // 解锁
-    await unLockUpgrade({ force: true })
-    return { code: 1, data: null, message: "安装成功" };
+  @Post("/uninstall")
+  async uninstallApp(@Body() body, @Req() req, @Res() res: Response) {
+    const { namespace, userId, name } = body;
+    const logPrefix = `[卸载应用 ${namespace}]：`;
+
+    const response200 = async (content) => {
+      await unLockUpgrade({ force: true })
+      Logger.info(`${logPrefix} 解锁成功，可继续操作应用`);
+      res.status(200).send(content);
+    }
+
+    try {
+      Logger.info(logPrefix + '开启了冲突检测')
+      await lockUpgrade()
+    } catch(e) {
+      Logger.info(logPrefix + e.message)
+      Logger.info(logPrefix + e?.stack?.toString())
+      res.status(200).send({
+        code: -1,
+        msg: '当前已有系统任务，请稍后重试'
+      });
+      return
+    }
+
+    const uninstallApp = this.appService.getInstalledApp({ namespace })
+
+    /** 不存在返回错误 */
+    if (!uninstallApp) {
+      await response200({ code: 0, message: "卸载失败，不存在此应用" })
+      return;
+    }
+
+    Logger.info(`${logPrefix} 版本号：${uninstallApp.version}`);
+    const logInfo = {
+      action: 'uninstall',
+      type: 'application',
+      installType: uninstallApp.installType,
+      preVersion: uninstallApp.version,
+      version: uninstallApp.version,
+      namespace,
+      name: name || namespace,
+      content: `卸载应用：${name || namespace}，版本号：${uninstallApp.version}`,
+    };
+
+    try {
+      await fse.remove(path.join(env.getAppInstallFolder(), namespace));
+      await this.userLogDao.insertLog({ type: USER_LOG_TYPE.APPS_UNINSTALL_LOG, userId, logContent: JSON.stringify({ ...logInfo, status: 'success' }) });
+    } catch (e) {
+      await this.userLogDao.insertLog({ type: USER_LOG_TYPE.APPS_UNINSTALL_LOG, userId, logContent: JSON.stringify({ ...logInfo, status: 'error' }) });
+
+      Logger.info(logPrefix + e.message);
+      Logger.info(logPrefix + e?.stack?.toString())
+
+      await response200({ code: -1, message: e.message })
+      return
+    }
+
+    Logger.info(logPrefix + "卸载应用成功，即将重启服务");
+    await response200({ code: 1, data: null, message: '卸载成功' })
+
+    // 重启服务器
+    await this.restartServer();
   }
 
   @Get("/update/status")
@@ -349,7 +375,7 @@ export default class AppsController {
   ) {
     // 重启服务
     try {
-      const app = await this.appService.getAppFromInstalled({ namespace });
+      const app = await this.appService.getInstalledApp({ namespace });
       if (app || (action === 'uninstall' && !app)) {
         return { code: 1, message: '重启成功' };
       }
@@ -363,20 +389,28 @@ export default class AppsController {
 
   @Post("/offlineUpdate")
   @UseInterceptors(FileInterceptor('file'))
-  async appOfflineUpdate(@Req() req, @Body() body, @UploadedFile() file) {
+  async appOfflineUpdate(@Req() req, @Body() body, @Res() res: Response, @UploadedFile() file) {
     const logPrefix = `[离线安装应用]：${file.originalname} `;
 
+    const response200 = async (content) => {
+      await unLockUpgrade({ force: true })
+      Logger.info(`${logPrefix} 解锁成功，可继续升级应用`);
+      res.status(200).send(content);
+    }
+
     try {
-      Logger.info(`${logPrefix} 开启了冲突检测`)
+      Logger.info(logPrefix + '开启了冲突检测')
       await lockUpgrade()
     } catch(e) {
-      Logger.info(e)
-      Logger.info(e?.stack?.toString())
-      return {
+      Logger.info(logPrefix + e.message)
+      Logger.info(logPrefix + e?.stack?.toString())
+      res.status(200).send({
         code: -1,
         msg: '当前已有升级任务，请稍后重试'
-      }
+      });
+      return
     }
+
     const tempFolder = path.join(__dirname, '../../../../../_tempapp_');
     await fse.ensureDir(tempFolder);
     await fse.emptydir(tempFolder);
@@ -432,27 +466,20 @@ export default class AppsController {
       Logger.info(`${logPrefix} ${e?.stack?.toString()}`)
       fse.removeSync(tempFolder)
 
-      await unLockUpgrade({ force: true })
-      Logger.info(`${logPrefix} 解锁成功，可继续升级应用`);
-
-      return { code: -1, message: e.message };
+      await response200({ code: -1, message: e.message })
+      return
     }
     
-    Logger.info(`${logPrefix} 解锁成功，可继续升级应用`);
-    // 解锁
-    await unLockUpgrade({ force: true })
+    await response200({ code: 1, message: "安装成功" })
 
     // 重启服务器
     await this.restartServer();
-
-    return { code: 1, message: "安装成功" };
   }
 
   /**
    * @description 重启服务器
    */
   private async restartServer () {
-    // 注意：日志是异步的，关闭太快可能会丢
     if (env.isProd()) {
       Logger.info('开始重启服务')
       setTimeout(() => {
@@ -475,8 +502,8 @@ export default class AppsController {
     } else {
       setTimeout(() => {
         process.exit();
-      }, 5000)
-      console.log(' 安装应用成功，开发环境，请自行重启服务')
+      }, 800)
+      console.log('安装 / 卸载应用成功，开发环境，请自行重启服务')
     }
   }
 }

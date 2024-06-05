@@ -2,8 +2,10 @@ import React, {
 	FC,
 	useMemo,
 	useState,
+	useEffect,
 	useCallback
 } from 'react'
+import axios from 'axios'
 
 import {
 	Col,
@@ -28,17 +30,45 @@ import styles from './index.less'
 const { Dragger } = Upload;
 
 interface AppListProps {
-	loading: boolean;
 	userId?: number;
 	installedApps: T_App[];
-	allApps: T_App[];
 	systemConfig: any;
 }
 
 const AppList: FC<AppListProps> = props => {
-	const { loading, installedApps, allApps, userId, systemConfig } = props
+	const { installedApps, userId, systemConfig } = props
 	const [type, setType] = useState<'installed' | 'all'>('installed')
 	const [currentUpgrade, setCurrentUpgrade] = useState('')
+
+	const [allApps, setAllApps] = useState<T_App[]>([])
+	const [loading, setLoading] = useState(true)
+
+	useEffect(() => {
+		setLoading(true);
+
+		if (type === 'all') {
+			axios('/paas/api/apps/getLatestAllAppFromSource').then((res) => {
+				if (res.data.code === 1) {
+					setAllApps(res.data.data);
+				} else {
+					message.error(`获取数据发生错误：${res.data.message}`);
+				}
+			}).finally(() => {
+				setLoading(false);
+			});
+		} else {
+			axios('/paas/api/apps/getLatestInstalledAppFromSource').then((res) => {
+				if (res.data.code === 1) {
+					setAllApps(res.data.data);
+				} else {
+					message.error(`获取数据发生错误：${res.data.message}`);
+				}
+			}).finally(() => {
+				setLoading(false);
+			});
+		}
+	}, [type]);
+
 	const appList = useMemo(() => {
 		let apps =  [
 			...allApps.map(app => {
@@ -154,6 +184,7 @@ const AppList: FC<AppListProps> = props => {
 												setCurrentUpgrade={setCurrentUpgrade}
 												style={index === chunk(appList, 2).length -1 ? { borderBottomWidth: 0 } : {}}
 												app={app1}
+												type={type}
 											/>
 										</Col>
 										<Col span={12}>
@@ -164,6 +195,7 @@ const AppList: FC<AppListProps> = props => {
 													setCurrentUpgrade={setCurrentUpgrade}
 													style={index === chunk(appList, 2).length -1 ? { borderBottomWidth: 0 } : {}}
 													app={app2}
+													type={type}
 												/>
 											) : null}
 										</Col>
