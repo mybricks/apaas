@@ -11,8 +11,21 @@ _localstorage/*
 # 查询SQL目录
 /_mybatis
 
-#临时文件夹
+# 临时文件夹
 _tempapp_
+
+# 配置文件
+config.json
+config.js
+config.development.json
+confis.development.js
+config.production.json
+confis.production.js
+
+# app目录
+/apps
+!apps/mybricks-open-login/
+!apps/custom-app/
 
 .idea/
 .vscode
@@ -26,6 +39,3 @@ yarn-error.log
 *.zip
 _temp_
 .DS_Store
-
-config.development.json
-
