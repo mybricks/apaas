@@ -18,6 +18,6 @@
   "ts-node": {
     "swc": true,
   },
-  "exclude": ["node_modules", "page"],
+  "exclude": ["node_modules"],
   "include": ["./"],
 }

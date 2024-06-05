@@ -23,9 +23,13 @@ config.production.json
 confis.production.js
 
 # app目录
-/apps
-!apps/mybricks-open-login/
-!apps/custom-app/
+/apps/*
+!apps/mybricks-open-login
+!apps/custom-app
+
+# 前端资源
+platform/fe/assets/
+/apps/mybricks-open-login/assets/
 
 .idea/
 .vscode

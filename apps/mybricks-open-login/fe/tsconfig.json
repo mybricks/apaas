@@ -24,11 +24,10 @@
     "allowSyntheticDefaultImports": true
   },
   "include": [
-    "./pages",
-    "./fe"
+    "./src",
+    "./pages"
   ],
   "exclude": [
-    "node_modules",
-    "dist"
+    "node_modules"
   ]
 }
