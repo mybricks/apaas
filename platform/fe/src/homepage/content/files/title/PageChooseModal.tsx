@@ -35,6 +35,7 @@ const PageChooseModal = props => {
         title="模板页面选择"
         destroyOnClose
         width={942}
+        onCancel={onCancel}
         footer={[
           <Button key="cancel" onClick={onCancel}>
             取消

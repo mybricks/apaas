@@ -420,8 +420,8 @@ function CreateFileModal({ app, onOk, onCancel }) {
           <Form.Item label='类型' name="type" initialValue="UI">
             <Select
               options={[
-                { value: 'UI', label: 'UI' },
-                { value: 'JS', label: 'JS' }
+                { value: 'UI', label: 'UI组件' },
+                { value: 'JS', label: 'JS组件' }
               ]}
             />
           </Form.Item>
