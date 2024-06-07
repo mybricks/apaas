@@ -2,39 +2,33 @@ import * as path from "path";
 import { NextFunction, Request, Response } from "express";
 import { Logger } from "@mybricks/rocker-commons";
 
-import env from "./utils/env";
-
 const loadApps = require('./../../../scripts/shared/load-apps.js')
 
 /** 将APP内静态资源挂载上来 */
-export function installedAppMount(app: any, namespaces: string[]) {
-  namespaces?.forEach(ns => {
-    const baseFolder = env.getAppInstallFolder()
+export function installedAppMount(app: any, installedAppsMeta: any[]) {
+  installedAppsMeta?.forEach(appMeta => {
+    const ns = appMeta.namespace;
     // ns切割
-    app.useStaticAssets(path.join(baseFolder, ns?.indexOf('/') > -1 ? `/${encodeURIComponent(ns)}/assets/` : `/${ns}/assets/`), {
+    app.useStaticAssets(appMeta.assetsDirectory, {
       prefix: `/${ns}`,
       index: false,
       setHeaders: (res, path, stat) => {
-        if (path?.indexOf('.html') === -1) {
-          res.set('Cache-Control', 'no-cache') // 1d
-        }
         res.set('Access-Control-Allow-Origin', '*');
+        res.set('X-Cached-By', 'MyBricks-App');
       },
-      etag: true,
+      etag: false,
       lastModified: true,
     });
  
     // 静态资源hash规范，也支持直接访问
-    app.useStaticAssets(path.join(baseFolder, `/${ns}/assets/`), {
+    app.useStaticAssets(appMeta.assetsDirectory, {
       prefix: `/`,
       index: false,
       setHeaders: (res, path, stat) => {
         res.set('Access-Control-Allow-Origin', '*');
-        if (path?.indexOf('.html') === -1) {
-          res.set('Cache-Control', 'no-cache') // 1d
-        }
+        res.set('X-Cached-By', 'MyBricks-App');
       },
-      etag: true,
+      etag: false,
       lastModified: true,
     });
   })
