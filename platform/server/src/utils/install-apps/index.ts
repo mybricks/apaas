@@ -14,7 +14,7 @@ import { injectAjaxScript, travelDom, injectAppConfigScript } from './util'
 
 
 /** 从文件夹安装 */
-export async function installAppFromFolder(installAppFolderDir, destAppDir, { namespace }, { logPrefix }) {
+export async function installAppFromFolder(installAppFolderDir, destAppDir, { namespace, needInstallDeps }, { logPrefix }) {
   if (!await fse.pathExists(installAppFolderDir)) {
     throw new Error(`应用包路径 ${installAppFolderDir} 不存在`)
   }
@@ -64,8 +64,22 @@ export async function installAppFromFolder(installAppFolderDir, destAppDir, { na
     await mysqlExecutor.closeConnection()
   }
 
-  Logger.info(`${logPrefix} 资源复制中 `)
+  Logger.info(`${logPrefix} 资源复制中`)
   await copyFiles(['assets', 'nodejs', 'package.json', 'preinstall.js', 'tsconfig.json', '.gitignore', 'README.md'], installAppFolderDir, destAppDir)
+
+  Logger.info(`${logPrefix} 开始处理 node_modules`)
+  if (await fse.pathExists(path.join(installAppFolderDir, 'node_modules'))) {
+    Logger.info(`${logPrefix} 检测到安装包包含 node_modules，开始复制 node_modules`)
+    await copyFiles(['node_modules'], installAppFolderDir, destAppDir);
+    Logger.info(`${logPrefix} 复制 node_modules 成功`)
+    return
+  }
+
+  await installAppDeps(installAppFolderDir, needInstallDeps);
+
+  Logger.info(`${logPrefix} 开始复制 node_modules`);
+  await copyFiles(['node_modules'], installAppFolderDir, destAppDir);
+  Logger.info(`${logPrefix} 复制 node_modules 成功`);
 }
 
 
@@ -76,21 +90,12 @@ async function execJs({ jsPath, execSqlAsync }) {
   })
 }
 
-
-export const installAppDeps = async (sourceDir: string, appDir: string, forceInstall = false) => {
-  if (await fse.pathExists(path.join(sourceDir, 'node_modules'))) {
-    Logger.info(`[install node_modules]: 检测到安装包包含 node_modules，开始复制 node_modules`)
-    await copyFiles(['node_modules'], sourceDir, appDir);
-    Logger.info(`[install node_modules]: 复制 node_modules 成功`)
-    return
-  }
-
+async function installAppDeps (appDir: string, forceInstall = false) {
   if (!await fse.pathExists(appDir)) {
     throw new Error(`App ${appDir} not exist.`)
   }
 
   Logger.info(`[install node_modules]: 正在检测 ${appDir} 的node_modules，请稍后`)
-
 
   let packageJson: any = {};
   let depDir = null;
@@ -123,6 +128,7 @@ export const installAppDeps = async (sourceDir: string, appDir: string, forceIns
       Logger.error(`[install node_modules]: ${packageJson.name} 依赖安装失败，错误详情 ${error.stack}`)
       Logger.error(`[install node_modules]: ${packageJson.name} 依赖安装失败，已跳过，可以后续重新安装并重启服务器`)
     }
+    Logger.info(`[install node_modules]: 安装 ${packageJson.name} 应用依赖成功`)
   } else {
     Logger.info(`[install node_modules]: 检测到 ${packageJson.name} 依赖已安装，跳过依赖安装`)
   }

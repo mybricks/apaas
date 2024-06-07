@@ -3,7 +3,7 @@ const path = require('path')
 
 const startInitDatabase = require('./database/init')
 
-function validateDevEnv () {
+function validateDepEnv () {
   
 }
 
