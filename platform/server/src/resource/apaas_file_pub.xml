@@ -129,13 +129,11 @@
         from
             apaas_file_pub t1,
             (
-                select max(id) as id from apaas_file_pub where type = #{envType}
-                <if test="ids">
-                    and file_id in
+                select max(id) as id from apaas_file_pub where
+                    file_id in
                     <foreach collection="ids" open="(" close=")" separator="," item="id" index="i">
                         #{id}
                     </foreach>
-                </if>
                 GROUP BY file_id
             ) as t2
         where t1.id = t2.id

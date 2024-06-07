@@ -12,20 +12,22 @@ export default class FileService {
     this.fileContentDao = new FileContentDao();
   }
 
-  async getAllShareFiles(params?: { pageSize?: number, page?: number, extName?: string }): Promise<any> {
-    const { pageSize, page, extName } = params || {};
+  async getAllShareFiles(params?: { pageSize?: number, page?: number, extName?: string, onlyPublished?: 1 }): Promise<any> {
+    const { pageSize, page, extName, onlyPublished } = params || {};
     return await this.fileDao.getAllShareFiles({
       pageSize,
       page,
       shareTypes: [1, 11],
-      extName
+      extName,
+      onlyPublished
     })
   }
 
-  async getCountOfShareFiles(extName?: string): Promise<any> {
+  async getCountOfShareFiles(extName?: string, onlyPublished?: 1): Promise<any> {
     return await this.fileDao.getCountOfShareFiles({
       shareType: 1,
-      extName
+      extName,
+      onlyPublished
     })
   }
 

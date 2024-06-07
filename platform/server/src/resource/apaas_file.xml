@@ -98,18 +98,39 @@
 
     <select id="queryAllShareFiles">
         select
-        id,parent_id,group_id,name,namespace,version,ext_name,uri,creator_id,creator_name,create_time,update_time,updator_id,updator_name,description,type,share_type,status, icon
+        apaas_file.id,
+        apaas_file.parent_id,
+        apaas_file.group_id,
+        apaas_file.name,
+        apaas_file.namespace,
+        apaas_file.version,
+        apaas_file.ext_name,
+        apaas_file.uri,
+        apaas_file.creator_id,
+        apaas_file.creator_name,
+        apaas_file.create_time,
+        apaas_file.update_time,
+        apaas_file.updator_id,
+        apaas_file.updator_name,
+        apaas_file.description,
+        apaas_file.type,
+        apaas_file.share_type,
+        apaas_file.status,
+        apaas_file.icon
         from apaas_file
         where
-        share_type in
+        apaas_file.share_type in
         <foreach collection="shareTypes" open="(" close=")" separator="," item="shareType" index="i">
             #{shareType}
         </foreach> and
         <if test="extName">
-            ext_name = #{extName} and
+            apaas_file.ext_name = #{extName} and
         </if>
-        status = 1
-        order by update_time desc
+        apaas_file.status = 1
+        <if test="onlyPublished == 1">
+            and exists (select * from apaas_file_pub where apaas_file.id = apaas_file_pub.file_id limit 1)
+        </if>
+        order by apaas_file.update_time desc
         limit #{limit} offset #{offset}
     </select>
 
@@ -118,11 +139,14 @@
             count(*) as total
         from apaas_file
         where
-        share_type = #{shareType} and
+        apaas_file.share_type = #{shareType} and
         <if test="extName">
-            ext_name = #{extName} and
+            apaas_file.ext_name = #{extName} and
         </if>
-        status = 1
+        apaas_file.status = 1
+         <if test="onlyPublished == 1">
+            and exists (select * from apaas_file_pub where apaas_file.id = apaas_file_pub.file_id limit 1)
+        </if>
     </select>
 
     <select id="queryAllFilesByParentId">

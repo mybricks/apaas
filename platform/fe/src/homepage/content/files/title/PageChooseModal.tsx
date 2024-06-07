@@ -18,7 +18,8 @@ const PageChooseModal = props => {
     axios.post('/paas/api/share/getAll', {
       extName: extName,
       page: 0,
-      pageSize: 1000
+      pageSize: 1000,
+      onlyPublished: 1,
     })
       .then(({ data }) => {
         if (data.code === 1) {

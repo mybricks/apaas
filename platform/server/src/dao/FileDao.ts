@@ -181,6 +181,7 @@ export default class FileDao extends DOBase {
     pageSize: number;
     shareTypes: number[];
     extName?: string;
+    onlyPublished?: 1
   }): Promise<any> {
     query = Object.assign({}, query)
 
@@ -197,6 +198,7 @@ export default class FileDao extends DOBase {
   public async getCountOfShareFiles(query?: {
     shareType: number;
     extName?: string;
+    onlyPublished?: 1
   }): Promise<any> {
     const count = await this.exe<any>("apaas_file:countShareFiles", {
       ...query
