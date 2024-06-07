@@ -1,3 +1,6 @@
+/**
+ * @description 注意！！！ 本文件仅做参考使用，服务实际上并不会加载本文件，仅会加载config、config.development 以及 config.production 名称文件
+ */
 
 module.exports = {
   /**
