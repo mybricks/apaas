@@ -15,25 +15,15 @@ import {
   getUrlQuery,
 } from './utils'
 import { COOKIE_LOGIN_USER } from './constants'
-import FingerprintJS from '@fingerprintjs/fingerprintjs'
 import axios from 'axios'
 
 import { Message, Logo } from './components'
 
-import BannerPng from './mybricks.png'
-
 import css from './app.less'
 
-let FINGERPRINT_HASH = ''
-
-const generateFp = async () => {
-  const fp = await FingerprintJS.load()
-  const res = await fp.get()
-  FINGERPRINT_HASH = res.visitorId
-}
+const emailReg = /^[a-zA-Z\d.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z\d](?:[a-zA-Z\d-]{0,61}[a-zA-Z\d])?(?:\.[a-zA-Z\d](?:[a-zA-Z\d-]{0,61}[a-zA-Z\d])?)*$/
 
 const checkCurrentIsLogin = async () => {
-  await generateFp()
   return new Promise((resolve) => {
     let user: any = getCookie(COOKIE_LOGIN_USER)
     user = JSON.parse(user || '{}')
@@ -44,21 +34,17 @@ const checkCurrentIsLogin = async () => {
         })
         .then(({ data }) => {
           if (data.code === 1) {
-            if (data?.data?.fingerprint === FINGERPRINT_HASH) {
-              // 当前账户
-              const { redirectUrl } = getUrlQuery()
-              if (typeof redirectUrl === 'string') {
-                location.href = decodeURIComponent(redirectUrl)
-              } else {
-                location.href = '/workspace.html'
-              }
-              resolve(true)
-              return
+            const { redirectUrl } = getUrlQuery()
+            if (typeof redirectUrl === 'string') {
+              location.href = decodeURIComponent(redirectUrl)
             } else {
-              console.warn('当前登录已失效，请重新登陆', 5)
-              // 当前账户在其他设备登录
-              resolve(false)
+              location.href = '/workspace.html'
             }
+            resolve(true)
+          } else {
+            Message.success('当前登录已失效，请重新登录', 5)
+            // 当前账户在其他设备登录
+            resolve(false)
           }
         })
     } else {
@@ -90,24 +76,18 @@ export default function App() {
 
   useEffect(async () => {
     try {
-      const isLogin = await checkCurrentIsLogin()
-      if (isLogin === false) {
-        setLoading(false)
-      }
-    } catch (e) {
-      setLoading(false)
+      await checkCurrentIsLogin()
+    } catch (error) {
+      
     }
+    setLoading(false)
   }, [])
-
 
   const onSubmit = useCallback(
     (e) => {
       e.preventDefault()
       e.stopPropagation()
 
-      const emailReg =
-        /^[a-zA-Z\d.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z\d](?:[a-zA-Z\d-]{0,61}[a-zA-Z\d])?(?:\.[a-zA-Z\d](?:[a-zA-Z\d-]{0,61}[a-zA-Z\d])?)*$/
-      // const emailReg = /^\w{3,}(\.\w+)*@[A-z0-9]+(\.[A-z]{2,5}){1,2}$/
       if (!formData.email || !formData.email.match(emailReg)) {
         setErrInfo({
           type: 'email',
@@ -141,7 +121,6 @@ export default function App() {
           data: {
             email: formData.email,
             psd: window.btoa(formData.password),
-            fingerprint: FINGERPRINT_HASH,
           },
         })
           .then(({ data }) => {
@@ -154,11 +133,7 @@ export default function App() {
               let user = data.data
               setCookie(
                 COOKIE_LOGIN_USER,
-                JSON.stringify({
-                  id: user.id,
-                  email: user.email,
-                  fingerprint: FINGERPRINT_HASH,
-                }),
+                JSON.stringify(user),
                 30
               )
               Message.success('登录成功')
@@ -184,7 +159,6 @@ export default function App() {
             email: formData.email,
             captcha: formData.captcha,
             psd: window.btoa(formData.password),
-            fingerprint: FINGERPRINT_HASH,
           },
         })
           .then(({ data }) => {
@@ -198,11 +172,7 @@ export default function App() {
 
               setCookie(
                 COOKIE_LOGIN_USER,
-                JSON.stringify({
-                  id: rData.userId,
-                  email: formData.email,
-                  fingerprint: FINGERPRINT_HASH,
-                }),
+                JSON.stringify(rData),
                 30
               )
               Message.success('注册成功')
@@ -246,7 +216,8 @@ export default function App() {
   const visibleSubmit = useMemo(() => {
     return (
       !!formData.email &&
-      !!formData.password
+      !!formData.password &&
+      (action.type === 'signup' ? formData.captcha?.length === 6 : true)
     )
   }, [formData, action])
 
@@ -256,68 +227,66 @@ export default function App() {
 
   return (
     <div className={css.page}>
+      <div className={css.stickyBar}></div>
       <div className={css.head}>
         <Logo />
+        <p className={css.headTitle}>MyBricks</p>
       </div>
       <div className={css.body}>
-        <div className={css.entry}>
-          <div className={css.aside}>
-            <img className={css.banner} src={BannerPng} alt="" />
-            <div className={css.title}>欢迎来到 MyBricks</div>
-          </div>
+        <div className={css.content}>
+          {(action.type === 'signin' || action.type === 'signup') && (
+            <form onSubmit={onSubmit} className={css.form} method="post">
+              <div className={css.title}>
+                {action.type === 'signin' ? '使用 MyBricks' : '注册新用户'}
+              </div>
 
-          <div className={css.content}>
-            {(action.type === 'signin' || action.type === 'signup') && (
-              <form onSubmit={onSubmit} className={css.form} method="post">
-                <div className={css.title}>
-                  {action.type === 'signin' ? '账号登录' : '注册新用户'}
-                </div>
-
-                <input
-                  type="text"
-                  className={errInfo.type === 'email' ? css.err : ''}
-                  value={formData.email}
-                  onChange={(e) => {
-                    onChangeFormData(e, 'email')
-                  }}
-                  placeholder={'邮箱地址'}
-                />
-                <input
-                  type="password"
-                  className={errInfo.type === 'password' ? css.err : ''}
-                  value={formData.password}
-                  onChange={(e) => {
-                    onChangeFormData(e, 'password')
-                  }}
-                  placeholder={'登录密码'}
-                />
-
-                <button
-                  className={`${css.submit} ${
-                    visibleSubmit && !actionLoading && css.visible
-                  }`}
-                  disabled={!visibleSubmit || actionLoading}
-                  onClick={onSubmit}
+              <input
+                type="text"
+                className={errInfo.type === 'email' ? css.err : ''}
+                value={formData.email}
+                onChange={(e) => {
+                  onChangeFormData(e, 'email')
+                }}
+                placeholder={'邮箱地址'}
+              />
+              <input
+                type="password"
+                className={errInfo.type === 'password' ? css.err : ''}
+                value={formData.password}
+                onChange={(e) => {
+                  onChangeFormData(e, 'password')
+                }}
+                placeholder={'登录密码'}
+              />
+              <button
+                className={`${css.submit} ${
+                  visibleSubmit && !actionLoading && css.visible
+                }`}
+                disabled={!visibleSubmit || actionLoading}
+                onClick={onSubmit}
+              >
+                {action.buttonText}
+              </button>
+              {errInfo.message ? (
+                <div className={css.errMsg}>{errInfo.message}</div>
+              ) : null}
+              <div className={css.toolbar}>
+                <div
+                  className={css.toggleButton}
                 >
-                  {action.buttonText}
-                </button>
-                {errInfo.message ? (
-                  <div className={css.errMsg}>{errInfo.message}</div>
-                ) : null}
-                <div className={css.toolbar}>
-                  <div
-                    className={css.toggleButton}
-                    onClick={() => alert('暂不支持此功能')}
-                  >
-                    找回密码
-                  </div>
-                  <div className={css.toggleButton} onClick={onToggleAction}>
-                    {action.toggleText}
-                  </div>
                 </div>
-              </form>
-            )}
-          </div>
+                <div className={css.toggleButton} onClick={onToggleAction}>
+                  {/* {action.toggleText} */}
+                  {
+                    action.type === 'signin' && <MutiText text={'没有账号？'} subText={'去创建'} onClick={onToggleAction} />
+                  }
+                  {
+                    action.type === 'signup' && <MutiText text={'已有账号？'} subText={'去登录'} onClick={onToggleAction} />
+                  }
+                </div>
+              </div>
+            </form>
+          )}
         </div>
       </div>
 
@@ -340,7 +309,7 @@ export default function App() {
           </a>
           <a
             className={css.docs}
-            href="https://mp.weixin.qq.com/mp/appmsgalbum?__biz=Mzg5OTg1OTYwOA==&action=getalbum&album_id=2664963833182224385"
+            href="https://docs.mybricks.world/"
             target="_blank"
           >
             文档教程
@@ -361,6 +330,20 @@ export default function App() {
           </a>
         </div>
       </div>
+    </div>
+  )
+}
+
+function MutiText ({
+  text = '',
+  subText,
+  subColor = '',
+  onClick,
+}) {
+  return (
+    <div className={css.mutiText}>
+      { text && <span className={css.text}>{text}</span> }
+      <span className={css.subText} style={{ color: subColor }} onClick={onClick}>{subText}</span>
     </div>
   )
 }
