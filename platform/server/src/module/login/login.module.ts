@@ -1,10 +1,9 @@
 import { Module } from '@nestjs/common';
-import SSOService from './sso.service.ts';
 import LoginController from './login.controller';
 
 @Module({
   controllers: [LoginController],
-  providers: [SSOService],
-  exports: [SSOService],
+  providers: [],
+  exports: [],
 })
 export default class LoginModule {}

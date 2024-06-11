@@ -7,12 +7,14 @@ import {
   Headers,
   Query,
   Request,
+  Res,
 } from '@nestjs/common';
+import { Response } from 'express'
 import FileDao from '../../dao/FileDao';
 import UserDao from '../../dao/UserDao';
 import { Logs } from '../../utils';
 import UserService from './../user/user.service';
-import SSOService from './sso.service.ts';
+import JwtService from './jwt.service';
 import { Logger } from '@mybricks/rocker-commons';
 import { getAxiosInstance } from '@mybricks/sdk-for-app/api/util';
 import { USER_ROLE } from '../../constants'
@@ -23,14 +25,13 @@ export default class LoginController {
   fileDao: FileDao;
   userDao: UserDao;
   userService: UserService;
-  ssoService: SSOService
+  jwtService = new JwtService();
   userSessionDao: UserSessionDao;
 
   constructor() {
     this.fileDao = new FileDao();
     this.userDao = new UserDao();
     this.userService = new UserService();
-    this.ssoService = new SSOService();
     this.userSessionDao = new UserSessionDao();
   }
   
@@ -60,7 +61,7 @@ export default class LoginController {
 
   @Post('/register')
   async register(@Body() body) {
-    const { email, psd, fingerprint, captcha } = body;
+    const { email, psd, captcha } = body;
 
     if (
       !email ||
@@ -98,17 +99,17 @@ export default class LoginController {
         password: psd,
       });
 
-      if(fingerprint) {
-        // 刷新登录态
-        await this.ssoService.createOrUpdateFingerprint({ userId: id, fingerprint })
-      }
+      // 刷新登录信息
+      const fingerprint = await this.jwtService.updateFingerprint(id)
 
       Logs.info(`新用户${email}注册完成.`);
 
       return {
         code: 1,
         data: {
-          userId: id,
+          id,
+          email,
+          fingerprint,
         },
       };
     }
@@ -117,12 +118,9 @@ export default class LoginController {
   /** [TODO] 为了给登录应用调用的路由，不合理 */
   @Post('/loginByWechat')
   async loginByWechat(@Body() body) {
-    const { userId, wechatOpenId, fingerprint } = body;
+    const { userId, wechatOpenId } = body;
 
-    if(fingerprint) {
-      // 刷新登录态
-      await this.ssoService.createOrUpdateFingerprint({ userId, fingerprint })
-    }
+    const fingerprint = await this.jwtService.updateFingerprint(userId)
 
     Logs.info(`用户${wechatOpenId}登录完成.`);
 
@@ -132,6 +130,7 @@ export default class LoginController {
         id: userId,
         email: '',
         wechatOpenId,
+        fingerprint,
       },
     };
   }
@@ -139,16 +138,13 @@ export default class LoginController {
   /** [TODO] 为了给登录应用调用的路由，不合理 */
   @Post('/registerByWechat')
   async registerByWechat(@Body() body) {
-    const { name, wechatOpenId, fingerprint } = body;
+    const { name, wechatOpenId } = body;
     const { id, email } = await this.userDao.create({
       email: '',
       name,
     });
 
-    if(fingerprint) {
-      // 刷新登录态
-      await this.ssoService.createOrUpdateFingerprint({ userId: id, fingerprint })
-    }
+    const fingerprint = await this.jwtService.updateFingerprint(id)
 
     Logs.info(`新用户${wechatOpenId}注册完成.`);
 
@@ -158,13 +154,14 @@ export default class LoginController {
         id,
         email,
         wechatOpenId,
+        fingerprint,
       },
     };
   }
 
   @Post('/login')
   async login(@Body() body) {
-    const { email, psd, fingerprint } = body;
+    const { email, psd } = body;
 
     Logs.info(`用户${email} 申请登录.`);
 
@@ -172,16 +169,14 @@ export default class LoginController {
     if (user) {
       if (user.verifyPassword(psd)) {
         Logs.info(`用户${email} 登录成功.`);
-        if(fingerprint) {
-          // 刷新登录态
-          await this.ssoService.createOrUpdateFingerprint({ userId: user.id, fingerprint })
-        }
+        const fingerprint = await this.jwtService.updateFingerprint(user.id)
 
         return {
           code: 1,
           data: Object.assign({}, {
             id: user.id,
-            email: user.email
+            email: user.email,
+            fingerprint
           }),
         };
       } else {
@@ -216,49 +211,29 @@ export default class LoginController {
   async signed(@Body() body, @Headers('username') us: string, @Request() request) {
     try {
       const { fileId } = body;
-      let userEmail;
-      let userId;
- 
-      if(us) {
-        userEmail = `${us}@kuaishou.com`;
-      } else {
-        if(request?.cookies?.['mybricks-login-user']) {
-          const userCookie = JSON.parse(request?.cookies?.['mybricks-login-user'])
-          userId = userCookie?.id;
-          // 单点
-          if(userCookie?.fingerprint) {
-            const sess = await this.userSessionDao.queryByUserId({ userId: userCookie.id })
-            if(sess?.fingerprint !== userCookie.fingerprint) {
+
+      const { userEmail, userId } = await this.jwtService.verifyUserIsLogin({ request, headerUsername: us })
+
+      if (!userEmail && !userId) {
+        // 都没带的情况下，才是游客，直接判断
+        if(request?.headers?.referer?.indexOf('.html') > -1 && request?.headers?.referer?.indexOf('id=') > -1) {
+          const temp = require('url').parse(request?.headers?.referer, true)
+          const fileId = temp.query?.id
+          if(fileId) {
+            const fileInfo = await this.fileDao.queryById(fileId)
+            if([10, 11].includes(+fileInfo?.shareType)) {
+              Logger.info(`[signed] 命中访客模式，直接返回`);
               return {
-                code: -1,
-                msg: '当前账号已在其他设备登录，请重新登录'
-              }
-            }
-          }
-        } else {
-          // 都没带的情况下，才是游客，直接判断
-          if(request?.headers?.referer?.indexOf('.html') > -1 && request?.headers?.referer?.indexOf('id=') > -1) {
-            const temp = require('url').parse(request?.headers?.referer, true)
-            const fileId = temp.query?.id
-            if(fileId) {
-              const fileInfo = await this.fileDao.queryById(fileId)
-              if([10, 11].includes(+fileInfo?.shareType)) {
-                Logger.info(`[signed] 命中访客模式，直接返回`);
-                return {
-                  code: 1,
-                  data: {
-                    name: '游客',
-                    email: 'guest@mybricks.world'
-                  },
-                }
+                code: 1,
+                data: {
+                  name: '游客',
+                  email: 'guest@mybricks.world'
+                },
               }
             }
           }
         }
       }
-
-      // 测试
-      // userEmail = 'admin@admin.com';
 
       if (!userEmail && !userId) {
         return {
@@ -309,17 +284,16 @@ export default class LoginController {
   }
 
   @Post('/queryCurrentSession')
-  async queryCurrentSession(@Body('userId') userId: number) {
-    if(!userId) {
+  async queryCurrentSession(@Headers('username') us: string, @Request() request) {
+    const { userEmail, userId } = await this.jwtService.verifyUserIsLogin({ request, headerUsername: us })
+    if (userEmail || userId) {
       return {
-        code: -1,
-        msg: '参数缺失'
+        code: 1
       }
     }
-    const res  = await this.userSessionDao.queryByUserId({userId})
     return {
-      code: 1,
-      data: res
+      code: -1,
+      msg: '登录已失效，请重新登录'
     }
   }
 }
