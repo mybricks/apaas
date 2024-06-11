@@ -779,42 +779,70 @@ export default class FileController {
     }
   }
 
+  private async _getParentModuleAndProjectInfo(id: number) {
+    let res = {
+      groupId: null, // 协作组
+      groupName: '',
+    }
+    const hierarchy = {}
+    let pPointer: any = hierarchy;
+    let qPointer: any = hierarchy;
+    try {
+      let count = 0;
+      let tempItem = await this.fileDao.queryById(id)
+      // @ts-ignore
+      // 最多遍历七层
+      while (tempItem?.parentId && count < 7) {
+        count++;
+        // 恶心兼容，等待完全删除
+        tempItem = await this.fileDao.queryById(tempItem.parentId, [1, -1]);
+        switch(tempItem.extName) {
+          case 'folder': {
+            qPointer.parent = {
+              fileId: tempItem.id,
+              isProject: true,
+              parent: {}
+            }
+            pPointer = pPointer.parent;
+            qPointer = pPointer;
+            break;
+          }
+        }
+      }
+      if(!tempItem?.parentId && tempItem?.groupId) {
+        // 补充协作组信息，作为文件的绝对路径
+        const [coopGroupInfo] = await this.userGroupDao.queryByIds({ids: [tempItem?.groupId]})
+        res.groupId = coopGroupInfo.id;
+        res.groupName = coopGroupInfo.name;
+      }
+      return res
+    } catch (e) {
+      throw e
+    }
+  }
+
   @Get("/getParentModuleAndProjectInfo")
   async getParentModuleAndProjectInfo(@Query() query) {
 
-    return {
-      code: 1,
-      data: {
-        groupId: 0,
-        projectId: 0
+    const { id } = query;
+    if (!id) {
+      return {
+        code: -1,
+        msg: '缺少ID'
       }
     }
-
-    // const { id } = query;
-    // if (!id) {
-    //   return {
-    //     code: -1,
-    //     msg: '缺少ID'
-    //   }
-    // }
-    // // if(id == 0) {
-    // //   // sdk兜底fileId，直接返回接口
-    // //   return {
-    // //     code: 1
-    // //   }
-    // // }
-    // try {
-    //   let res = await this._getParentModuleAndProjectInfo(id)
-    //   return {
-    //     code: 1,
-    //     data: res
-    //   }
-    // } catch (e) {
-    //   return {
-    //     code: -1,
-    //     msg: e.message
-    //   }
-    // }
+    try {
+      let res = await this._getParentModuleAndProjectInfo(id)
+      return {
+        code: 1,
+        data: res
+      }
+    } catch (e) {
+      return {
+        code: -1,
+        msg: e.message
+      }
+    }
   }
 
   @Get("/getMyFiles")
