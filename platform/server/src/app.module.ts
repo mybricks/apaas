@@ -18,6 +18,7 @@ import AppsModule from "./module/apps/apps.module";
 import OssModule from './module/oss/oss.module'
 import LogModule from './module/log/log.module'
 import ConfigModule from "./module/config/config.module";
+import OpenApiModule from "./module/open-api/open-api.module";
 
 import LoginModule from './module/login/login.module'
 
@@ -37,6 +38,7 @@ import { loadInstalledAppModules } from './mount-installed-apps'
     ConfigModule,
     SystemModule, // 系统模块，仅保留了上报埋点 / 重启应用 / 诊断服务 等功能
     LogModule, // 日志模块，仅保留运行时日志，性能日志、操作日志（比如应用保存时的diff日志）等功能
+    OpenApiModule,
     // 加载已安装的 APP
     ...(loadInstalledAppModules()),
   ],
