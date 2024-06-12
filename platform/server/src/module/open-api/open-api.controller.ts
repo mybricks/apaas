@@ -31,9 +31,9 @@ export default class OpenApiController {
   userDao = new UserDao();
 
 
-  @Post("/signup")
+  @Post("/signin")
   @UseInterceptors(SetCookieWhenCode1AndResHasCookieInterceptor)
-  async signUp(@Body('userId') userId: number) {
+  async signIn(@Body('userId') userId: number) {
     if (!userId) {
       return {
         code: ErrCode.INVALID_PARAM,
@@ -51,7 +51,7 @@ export default class OpenApiController {
       }
 
       const token = await this.jwtService.updateFingerprint(userId)
-      Logger.info(`[open-api: signup] 用户 ${userId} 登录完成.`);
+      Logger.info(`[open-api: signin] 用户 ${userId} 登录完成.`);
       return {
         code: ErrCode.SUCCESS,
         data: {
@@ -64,7 +64,7 @@ export default class OpenApiController {
         },
       };
     } catch (ex) {
-      Logger.error(`[open-api: signup] 未知错误 ${ex?.stack?.toString?.()} `);
+      Logger.error(`[open-api: signin] 未知错误 ${ex?.stack?.toString?.()} `);
       return {
         code: ErrCode.ERROR,
         message: ex.message,
