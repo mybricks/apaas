@@ -783,6 +783,8 @@ export default class FileController {
     let res = {
       groupId: null, // 协作组
       groupName: '',
+      absoluteNamePath: '', // 理论上只是展示，没有别的意义
+      absoluteIdPath: '' // 理论上只是展示，没有别的意义
     }
     const hierarchy = {}
     let pPointer: any = hierarchy;
@@ -790,7 +792,8 @@ export default class FileController {
     try {
       let count = 0;
       let tempItem = await this.fileDao.queryById(id)
-      // @ts-ignore
+      res.absoluteIdPath = `/${tempItem.id}`
+      res.absoluteNamePath = `/${tempItem.name}.${tempItem.extName}`
       // 最多遍历七层
       while (tempItem?.parentId && count < 7) {
         count++;
@@ -805,6 +808,8 @@ export default class FileController {
             }
             pPointer = pPointer.parent;
             qPointer = pPointer;
+            res.absoluteNamePath = `/${tempItem.name}${res.absoluteNamePath}`
+            res.absoluteIdPath = `/${tempItem.id}${res.absoluteIdPath}`
             break;
           }
         }
@@ -812,6 +817,8 @@ export default class FileController {
       if(!tempItem?.parentId && tempItem?.groupId) {
         // 补充协作组信息，作为文件的绝对路径
         const [coopGroupInfo] = await this.userGroupDao.queryByIds({ids: [tempItem?.groupId]})
+        res.absoluteNamePath = `/${coopGroupInfo.name}${res.absoluteNamePath}`
+        res.absoluteIdPath = `/${coopGroupInfo.id}${res.absoluteIdPath}`;
         res.groupId = coopGroupInfo.id;
         res.groupName = coopGroupInfo.name;
       }
