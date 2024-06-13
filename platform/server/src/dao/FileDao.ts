@@ -3,11 +3,6 @@ import {Column, DOBase, Mapping} from "@mybricks/rocker-dao";
 import {EffectStatus} from "../constants";
 import { genMainIndexOfDB } from '../utils/index'
 
-export const FileTypeEnum = {
-  SYSTEM: 'system',
-  USER: 'user'
-}
-
 export class FileDO {
   @Column
   id;
@@ -325,7 +320,7 @@ export default class FileDao extends DOBase {
       ...query,
       id: genMainIndexOfDB(),
       namespace: query.namespace || '_self',
-      type: query.type || FileTypeEnum.USER,
+      type: query.type,
       groupId: query.groupId ?? null,
       icon: query.icon || '',
       create_time: new Date().getTime(),
