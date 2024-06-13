@@ -10,6 +10,9 @@ const APPS_DEV_FOLDER = path.join(__dirname, './../apps');
 /** 运行时应用目录 */ 
 const APPS_FOLDER = path.join(FILE_LOCAL_STORAGE_BASE_FOLDER, './_apps');
 
+/** 运行时文件系统的根目录 */ 
+const FILE_LOCAL_STORAGE_FOLDER = path.join(FILE_LOCAL_STORAGE_BASE_FOLDER, './_localstorage');
+
 /** 平台前端目录 */
 const PLATFORM_FE_PATH = path.join(__dirname, './../platform/fe');
 
@@ -24,6 +27,7 @@ module.exports = {
   PLATFORM_FE_PATH,
   PLATFORM_SERVER_PATH,
   FILE_LOCAL_STORAGE_BASE_FOLDER,
+  FILE_LOCAL_STORAGE_FOLDER,
   APPS_FOLDER,
   APPS_DEV_FOLDER,
   SQL_PATH,

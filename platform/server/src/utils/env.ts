@@ -1,11 +1,8 @@
 import * as path from 'path'
-const { APPS_FOLDER, PLATFORM_FE_PATH, FILE_LOCAL_STORAGE_BASE_FOLDER } = require('./../../../../scripts/env.js')
+const { APPS_FOLDER, PLATFORM_FE_PATH, FILE_LOCAL_STORAGE_BASE_FOLDER, FILE_LOCAL_STORAGE_FOLDER } = require('./../../../../scripts/env.js')
 
 /** 日志根目录 */ 
 const LOGS_BASE_FOLDER = path.join(FILE_LOCAL_STORAGE_BASE_FOLDER, './logs');
-
-/** 运行时文件系统的根目录 */ 
-const FILE_LOCAL_STORAGE_FOLDER = path.join(FILE_LOCAL_STORAGE_BASE_FOLDER, './_localstorage');
 
 /** 性能分析目录 */
 const FILE_ANALYSIS_PERFORMANCE_FOLDER = path.join(FILE_LOCAL_STORAGE_FOLDER, './__analyse__/performance')

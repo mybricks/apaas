@@ -19,9 +19,12 @@
     "start": "node ./scripts/start",
     "stop": "node ./scripts/stop",
     "reload": "node ./scripts/reload",
-    "upgrade": "node ./scripts/upgrade"
+    "upgrade": "node ./scripts/upgrade",
+    "openapi:sign": "NODE_ENV=production node ./scripts/openapi-sign"
   },
   "dependencies": {
+    "adm-zip": "^0.5.14",
+    "axios": "^1.7.2",
     "fs-extra": "^10.1.0",
     "inquirer": "^8.2.5",
     "mysql2": "^2.3.3"
