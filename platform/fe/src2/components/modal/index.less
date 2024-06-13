@@ -1,0 +1,131 @@
+.mask {
+  position: fixed;
+  z-index: 2000;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  user-select: none;
+  background-color: rgba(30, 31, 32, 0.75);
+
+  .wrap {
+    width: 100%;
+    font-size: 13px;
+    max-height: 100%;
+    transform: translate3d(0px, 0px, 0px);
+    overflow: hidden auto;
+    overscroll-behavior: none;
+    background-color: rgb(255, 255, 255);
+    background-clip: padding-box;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 8px 16px 0px, rgba(0, 0, 0, 0.1) 0px 0px 0px 1px;
+    user-select: text;
+    border-radius: 16px;
+    margin: auto 0px;
+
+    .title {
+      margin: 0px;
+      padding: 32px 32px 4px;
+      text-transform: none;
+      word-break: break-word;
+      color: rgb(0, 0, 0);
+      display: block;
+      font-size: 20px;
+      font-weight: 600;
+      line-height: 1.6;
+      position: sticky;
+      top: 0px;
+      background: rgb(255, 255, 255);
+      z-index: 50;
+    }
+
+    .content {
+      font-size: 14px;
+      line-height: 1.4;
+      color: rgba(0, 0, 0, 0.7);
+      overflow-wrap: break-word;
+      padding: 0px 32px 32px;
+    }
+
+    .footer {
+      padding: 16px 16px 0 0;
+      border-top: 1px solid rgba(0, 0, 0, 0.1);
+      text-align: right;
+      position: sticky;
+      bottom: 0px;
+
+      .actions {
+        display: inline-flex;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+
+        button {
+          margin-bottom: 16px;
+          margin-left: 16px;
+        }
+      }
+    }
+  }
+}
+
+.maskEnter {
+  animation: maskFadeIn 0.3s forwards;
+
+  .wrap {
+    animation: wrapFadeIn 0.3s forwards;
+  }
+}
+
+.maskLeave {
+  animation: maskFadeOut 0.3s forwards;
+
+  .wrap {
+    animation: wrapFadeOut 0.3s forwards;
+  }
+}
+
+@keyframes maskFadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+    // transition: opacity 300ms;
+  }
+}
+
+@keyframes maskFadeOut {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    display: none;
+    // transition: opacity 300ms;
+  }
+}
+
+@keyframes wrapFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+    // transition: opacity 200ms transform 300ms cubic-bezier(0.4, 0.0, 0.2, 1);
+  }
+}
+
+@keyframes wrapFadeOut {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(10px);
+    // transition: opacity 300ms transform 200ms cubic-bezier(0.4, 0.0, 0.2, 1);
+  }
+}

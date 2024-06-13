@@ -1,0 +1,81 @@
+.loadingAnimationComponent {
+  display: inline-flex;
+  aspect-ratio: 1;
+  line-height: 1;
+  align-items: center;
+  overflow: hidden;
+
+  .bar {
+    animation-delay: var(--loading-mountDelay);
+    &::after {
+      animation-delay: var(--loading-mountDelay);
+    }
+  }
+}
+
+.bar {
+  width: 100%;
+  display: block;
+  height: 1em;
+  position: relative;
+  padding-right: 100%;
+  padding-left: 100%;
+  transform: translate3d(-50%, 0, 0);
+  animation: loading 1000ms linear infinite;
+
+  &::before {
+    width: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    content: '';
+    display: inline-block;
+    height: 1em;
+    opacity: 0.15;
+    background: currentColor;
+  }
+
+  &::after {
+    width: var(--loading-inner-bar-width);
+    border-radius: 999px;
+    content: '';
+    display: inline-block;
+    height: 1em;
+    background: currentColor;
+    animation: loading-before 1000ms linear infinite;
+  }
+}
+
+.barWrapper {
+  width: 100%;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+@keyframes loading-before {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+
+  50% {
+    transform: translate3d(-100%, 0, 0);
+  }
+
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes loading {
+  0% {
+    transform: translate3d(-50%, 0, 0);
+  }
+
+  50% {
+    transform: translate3d(0, 0, 0);
+  }
+
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}

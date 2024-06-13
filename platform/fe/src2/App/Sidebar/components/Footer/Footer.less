@@ -1,0 +1,107 @@
+.footer {
+  border-top: 1px solid rgb(230, 230, 230);
+
+  .system {
+    padding: 16px 8px;
+    border-bottom: 1px solid rgb(230, 230, 230);
+
+    // button {
+    //   width: 100%;
+    //   display: flex;
+    //   align-items: center;
+    //   background-color: transparent;
+    //   border: none;
+    //   border-radius: 5px;
+    //   font-size: 13px;
+    //   color: rgba(0, 0, 0, 0.85);
+    //   cursor: pointer;
+    //   padding: 8px 12px;
+    //   height: 32px;
+
+    //   svg {
+    //     width: 16px;
+    //     height: 16px;
+    //     margin-right: 12px;
+    //     opacity: 0.55;
+    //   }
+
+    //   &:hover {
+    //     background-color: rgba(0, 0, 0, 0.04);
+
+    //     svg {
+    //       opacity: 1;
+    //     }
+    //   }
+    // }
+  }
+
+  .personal {
+    padding: 8px;
+
+    button {
+      border: none;
+      background-color: transparent;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      width: 100%;
+      padding: 4px 8px;
+      color: rgb(0, 0, 0);
+      border-radius: 6px;
+      transition: background-color 200ms ease-in-out 0s;
+
+      img {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        margin-right: 12px;
+      }
+
+      span {
+        margin-right: 12px;
+        font-size: 14px;
+        font-weight: 500;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      &:hover {
+        background-color: rgba(0, 0, 0, 0.04);
+      }
+    }
+  }
+}
+
+.popover {
+  width: 216px;
+  :global {
+    .ant-popover-title {
+      padding: 8px 16px 12px;
+      margin-bottom: 12px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    }
+  }
+
+  .name {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: rgb(0, 0, 0);
+    line-height: 1.462;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .email {
+    display: block;
+    font-size: 12px;
+    font-weight: 400;
+    color: rgba(0, 0, 0, 0.55);
+    line-height: 1.333;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
