@@ -285,12 +285,20 @@ export default class LoginController {
 
   @Post('/queryCurrentSession')
   async queryCurrentSession(@Headers('username') us: string, @Request() request) {
-    const { userEmail, userId } = await this.jwtService.verifyUserIsLogin({ request, headerUsername: us })
-    if (userEmail || userId) {
+    try {
+      const { userEmail, userId } = await this.jwtService.verifyUserIsLogin({ request, headerUsername: us })
+      if (userEmail || userId) {
+        return {
+          code: 1
+        }
+      }
+    } catch (error) {
       return {
-        code: 1
+        code: -1,
+        msg: error?.message ?? '登录已失效，请重新登录'
       }
     }
+    
     return {
       code: -1,
       msg: '登录已失效，请重新登录'
