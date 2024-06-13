@@ -2,29 +2,13 @@ import { Body, Controller, Get, Res, Post, Query, UseInterceptors } from "@nestj
 import { Logger } from '@mybricks/rocker-commons'
 import JwtService from "./../login/jwt.service";
 import UserDao from "../../dao/UserDao";
-
+import { OpenApiErrCode } from './types'
 import { SetCookieWhenCode1AndResHasCookieInterceptor } from './../../interceptor/set-cookie'
-
-enum ErrCode {
-  /** 成功 */
-  SUCCESS = 1,
-
-  /** 未知错误 */
-  ERROR = -1,
-
-  /** token错误或失效 */
-  INVALID_TOKEN = 40002,
-
-  /** 非法参数 */
-  INVALID_PARAM = 40003,
-
-  /** 用户不存在 */
-  USER_NOT_EXIST = 46004,
-}
-
-
+import { OpenApiAuthInterceptor } from './open-api-auth.interceptor'
+const userConfig = require('./../../../../../scripts/shared/read-user-config.js')();
 
 @Controller("/paas/api/open")
+@UseInterceptors(new OpenApiAuthInterceptor(userConfig?.openApi?.tokenSecretOrPrivateKey))
 export default class OpenApiController {
 
   jwtService = new JwtService();
@@ -36,7 +20,7 @@ export default class OpenApiController {
   async signIn(@Body('userId') userId: number) {
     if (!userId) {
       return {
-        code: ErrCode.INVALID_PARAM,
+        code: OpenApiErrCode.INVALID_PARAM,
         message: '缺少 userId 参数'
       }
     }
@@ -45,7 +29,7 @@ export default class OpenApiController {
       const userInfo = await this.userDao.queryById({ id: userId })
       if (!userInfo) {
         return {
-          code: ErrCode.USER_NOT_EXIST,
+          code: OpenApiErrCode.USER_NOT_EXIST,
           message: '用户不存在，请先注册/创建用户'
         }
       }
@@ -53,7 +37,7 @@ export default class OpenApiController {
       const token = await this.jwtService.updateFingerprint(userId)
       Logger.info(`[open-api: signin] 用户 ${userId} 登录完成.`);
       return {
-        code: ErrCode.SUCCESS,
+        code: OpenApiErrCode.SUCCESS,
         data: {
           cookie: JSON.stringify({
             id: userId,
@@ -66,7 +50,7 @@ export default class OpenApiController {
     } catch (ex) {
       Logger.error(`[open-api: signin] 未知错误 ${ex?.stack?.toString?.()} `);
       return {
-        code: ErrCode.ERROR,
+        code: OpenApiErrCode.ERROR,
         message: ex.message,
       };
     }
