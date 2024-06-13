@@ -3,15 +3,16 @@ import { Inject, Injectable, Request } from '@nestjs/common';
 import UserSessionDao from './../../dao/UserSessionDao';
 import FileDao from './../../dao/FileDao';
 import * as jwt from 'jsonwebtoken';
+const userConfig = require('./../../../../../scripts/shared/read-user-config.js')();
 
 @Injectable()
-export default class SSOService {
+export default class JwtService {
   // userDao: UserDao;
   userSessionDao: UserSessionDao;
 
   fileDao: FileDao;
 
-  private loginSrcret: string = 'login_mybricks_asdw21412asdds';
+  private loginSecret: string = userConfig?.platformConfig?.jwtSecretOrPrivateKey ?  userConfig?.platformConfig?.jwtSecretOrPrivateKey : 'login_mybricks_asdw21412asdds';
 
   constructor() {
     this.fileDao = new FileDao();
@@ -21,14 +22,14 @@ export default class SSOService {
   private async createLoginJwtToken(payload) {
     const token =
       "Bearer " +
-      jwt.sign(payload, this.loginSrcret, {
+      jwt.sign(payload, this.loginSecret, {
         expiresIn: 60 * 60 * 24 * 90, // seconds unit
       });
     return token;
   }
 
   async verifyLoginJwtToken(token: string, callback) {
-    jwt.verify(token, this.loginSrcret, callback)
+    jwt.verify(token, this.loginSecret, callback)
   }
 
   public async updateFingerprint(userId) {
