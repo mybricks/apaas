@@ -18,16 +18,16 @@ const PAGE_MAP = {
 const Content: FC = () => {
   const { params: { appId, parentId, groupId } } = useLocationConetxt();
 
-  const HeaderChild = HEADER_MAP[appId];
-  const PageChild = PAGE_MAP[appId];
+  const HeaderView = HEADER_MAP[appId];
+  const PageView = PAGE_MAP[appId];
 
   return (
     <div className={css.content}>
       <Header>
-        {HeaderChild && <HeaderChild />}
+        {HeaderView && <HeaderView />}
       </Header>
       <Page>
-        {PageChild && <PageChild />}
+        {PageView && <PageView />}
       </Page>
     </div>
   )

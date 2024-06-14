@@ -1,10 +1,13 @@
-import React, { FC, useEffect } from "react";
+import React, { FC } from "react";
+
+import { Navbar } from "@/components";
 
 const AccountHeader: FC = () => {
   return (
-    <div>
-      用户操作栏
-    </div>
+    <Navbar.Section
+      value={"general"}
+      options={[{label: "账号信息", value: "general"}]}
+    />
   )
 }
 

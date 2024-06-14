@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useAppConetxt, useLocationConetxt } from "@/context";
 import { MenuButton } from "@/components";
 
-import css from "./content.less";
+import css from "./Content.less";
 
 export default function Content() {
   const navigate = useNavigate();

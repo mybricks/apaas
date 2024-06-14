@@ -4,8 +4,9 @@ import { initUser, User, UserProvider, useUserContext } from "./user";
 import { initSystem, System } from "./system";
 import { initApps, Apps } from "./app";
 import { LocationProvider, useLocationConetxt } from "./location";
+import { ModalProvider, useModalConetxt} from "./model";
 
-export { useLocationConetxt, useUserContext };
+export { useLocationConetxt, useUserContext, useModalConetxt };
 
 export class App {
   user: User;
@@ -51,11 +52,13 @@ export const AppContextProvider: FC<AppContextProviderProps> = ({ value, childre
   const { user, system, apps, getUserSystemConfig } = value;
   return (
     <appContext.Provider value={{ apps, system, getUserSystemConfig: getUserSystemConfig.bind(value) }}>
-      <UserProvider value={user}>
-        <LocationProvider>
-          {children}
-        </LocationProvider>
-      </UserProvider>
+      <ModalProvider>
+        <UserProvider value={user}>
+          <LocationProvider>
+            {children}
+          </LocationProvider>
+        </UserProvider>
+      </ModalProvider>
     </appContext.Provider>
   )
 };

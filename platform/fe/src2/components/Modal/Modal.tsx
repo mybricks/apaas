@@ -1,194 +1,85 @@
-import React, { forwardRef, PropsWithChildren, useEffect, useLayoutEffect, useState, ReactNode, useRef, FC } from "react";
-import { createPortal } from "react-dom";
+import React, { FC, ReactNode, PropsWithChildren, CSSProperties, TransitionEventHandler, useRef, useState, useEffect, MouseEventHandler } from "react";
 import classNames from "classnames";
 
-import { render as renderReact, unmount as unmountReact } from "@/utils/render";
-import { Button } from "@/components";
+import { useModalConetxt } from "@/context";
+import ModalHeader from "./ModalHeader";
 
 import css from "./Modal.less";
 
-let root: HTMLDivElement;
 
-// TODO: 区分销毁和非销毁
-interface ModalProps extends ConfirmProps {
-  open: boolean;
-  children: ReactNode;
-  afterClose?: () => void;
-  // destroyOnClose?: boolean;
+interface BackdropProps extends PropsWithChildren {
+  onClick?: () => void;
 }
 
-const Modal: FC<ModalProps> = (props) => {
-  const { open, children, title, onOk, onCancel, afterClose, ...confirmProps } = props;
-  const [shouldRender, setShouldRender] = useState(open);
-  // const ref = useRef(false);
-  // if (!ref.current && !open) {
-  //   return null;
-  // }
-  const handleOnOk = () => {
-    
-  }
+const Backdrop: FC<BackdropProps> = ({ children, onClick }) => {
+  const backdropRef = useRef(null);
+  const hasMouseDown = useRef(false);
+  const { isModalOpen, destroyModal } = useModalConetxt();
+  const [cn, setCn] = useState(classNames(css.backdrop))
 
-  const handleOnCancel = () => {
-
-  }
-
-  const onAnimationEnd = () => {
-    if (!open) {
-      setShouldRender(false);
-      afterClose?.();
+  const handleTransitionEnd: TransitionEventHandler<HTMLDivElement> = (event) => {
+    if (!isModalOpen) {
+      if (event.target === backdropRef.current) {
+        destroyModal();
+      }
     }
+  }
+  const handleClick: MouseEventHandler<HTMLDivElement> = (event) => {
+    if (!onClick || event.target !== backdropRef.current || !hasMouseDown.current) {
+      return;
+    }
+    onClick();
+  }
+  const handleMouseDown: MouseEventHandler<HTMLDivElement> = (event) => {
+    if (event.target !== backdropRef.current) {
+      return;
+    }
+    hasMouseDown.current = true;
   }
 
   useEffect(() => {
-    if (open) {
-      setShouldRender(true);
-    }
-  }, [open])
-
-  return shouldRender && createPortal(
-    <ConfirmWrap
-      open={open}
-      title={title}
-      content={children}
-      onCancel={onCancel}
-      onOk={onOk}
-      onAnimationEnd={onAnimationEnd}
-      {...confirmProps}
-    />,
-    createRoot()
-  );
-}
-
-interface ConfirmProps {
-  title: string | ReactNode;
-  content?: string | ReactNode;
-  width?: number;
-  okText?: string;
-  cancelText?: string;
-  confirmLoading?: boolean;
-  confirmDisabled?: boolean;
-  onOk?: () => void | Promise<any>;
-  onCancel?: () => void;
-}
-
-// @ts-ignore
-Modal.confirm = (props: ConfirmProps) => {
-  const root = createRoot();
-  const { onOk, onCancel, ...other } = props;
-  let currentProps = { ...other, open: true };
-
-  const handleOnOk = () => {
-    const okResponse = onOk?.();
-
-    if (okResponse instanceof Promise) {
-      currentProps = { ...currentProps, confirmLoading: true };
-      render();
-      okResponse.then(() => {
-        close();
-      }).catch(() => {
-        currentProps = { ...currentProps, confirmLoading: false };
-        render();
-      })
+    if (isModalOpen) {
+      setCn(classNames(cn, css.enter));
     } else {
-      close();
+      setCn(classNames(cn, css.leave));
     }
-  }
+  }, [isModalOpen])
 
-  const handleOnCancel = () => {
-    onCancel?.();
-    close();
-  }
-
-  const render = () => {
-    renderReact(
-      <ConfirmWrap
-        {...currentProps}
-        onCancel={handleOnCancel}
-        onOk={handleOnOk}
-        onAnimationEnd={onAnimationEnd}
-      />
-    , root);
-  }
-
-  const onAnimationEnd = () => {
-    if (!currentProps.open) {
-      unmountReact(root);
-    }
-  }
-
-  const close = () => {
-    currentProps = { ...currentProps, open: false };
-    render();
-  }
-
-  render();
-
-  return {
-    close
-  }
-}
-
-interface ConfirmWrapProps extends ConfirmProps {
-  open: boolean;
-  onAnimationEnd?: () => void;
-}
-
-function ConfirmWrap({
-  title,
-  content,
-  width = 512,
-  open,
-  okText = "确 认",
-  cancelText = "取 消",
-  confirmLoading,
-  confirmDisabled,
-  onCancel,
-  onOk,
-  onAnimationEnd
-}: ConfirmWrapProps) {
   return (
     <div
-      className={classNames(css.mask, {[css.maskEnter]: open, [css.maskLeave]: !open})}
-      onAnimationEnd={() => !open && onAnimationEnd?.()}
+      ref={backdropRef}
+      className={cn}
+      onClick={handleClick}
+      onMouseDown={handleMouseDown}
+      onTransitionEnd={handleTransitionEnd}
     >
-      <div
-        className={classNames(css.wrap, {[css.wrapEnter]: open, [css.wrapLeave]: !open})}
-        style={{ width }}
-      >
-        <div className={css.title}>
-          {title}
-        </div>
-        <div className={css.content}>
-          {content}
-        </div>
-        <div className={css.footer}>
-          <div className={css.actions}>
-            <Button onClick={() => onCancel?.()}>
-              {cancelText}
-            </Button>
-            <Button
-              type="primary"
-              loading={confirmLoading}
-              disabled={confirmDisabled}
-              onClick={() => onOk?.()}
-            >
-              {okText}
-            </Button>
-          </div>
-        </div>
-      </div>
+      {children}
     </div>
   )
 }
 
-function createRoot(): HTMLDivElement {
-  if (!root) {
-    root = document.createElement('div');
-    root.id = 'modal-root';
-    document.body.appendChild(root);
-    return root;
-  }
-  return root;
+interface ModalProps extends PropsWithChildren {
+  title?: string | ReactNode;
+  style?: CSSProperties;
+  cancelOnClickOutside?: boolean;
+  onCancel?: () => void;
+}
+
+const Modal: FC<ModalProps> = ({
+  title,
+  style,
+  cancelOnClickOutside = false,
+  children,
+  onCancel
+}) => {
+  return (
+    <Backdrop {...(cancelOnClickOutside && onCancel &&  { onClick: onCancel })}>
+      <div className={css.container} style={style}>
+        {title && <ModalHeader>{title}</ModalHeader>}
+        {children}
+      </div>
+    </Backdrop>
+  )
 }
 
 export default Modal;

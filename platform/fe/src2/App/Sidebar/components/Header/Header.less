@@ -17,8 +17,8 @@
     }
 
     .logo {
-      width: 36px;
-      height: 36px;
+      width: 24px;
+      height: 24px;
       border-radius: 4px;
       margin-right: 12px;
   
@@ -28,7 +28,14 @@
     }
 
     .name {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      line-height: 1.4;
+      text-align: left;
       font-weight: 500;
+      max-width: 100%;
+      font-size: 14px;
     }
   }
 }
