@@ -16,6 +16,7 @@ export class SetCookieWhenCode1AndResHasCookieInterceptor implements NestInterce
       map((data) => {
         if (data.code === 1 && data?.data?.cookie) {
           response.cookie('mybricks-login-user', data.data.cookie);
+          data.data.cookie = encodeURIComponent(data.data.cookie)
         }
         return data;
       }),
