@@ -1,7 +1,7 @@
-import React, { useRef } from "react";
+import React, { FC, useRef } from "react";
 import classNames from "classnames";
 
-import css from "./index.less";
+import css from "./LoadingPlaceholder.less";
 
 interface LoadingPlaceholderProps {
   className?: string;
@@ -21,11 +21,11 @@ const INNER_BAR_WIDTH = {
   64: 20,
 };
 
-export default function LoadingPlaceholder({
+const LoadingPlaceholder: FC<LoadingPlaceholderProps> = ({
   className,
   size = 24,
   primary = false
-}: LoadingPlaceholderProps) {
+}) => {
   const mountTime = useRef(Date.now());
   // 实现加载动画的同步
   const mountDelay = -(mountTime.current % ANIMATION_TIME);
@@ -47,3 +47,5 @@ export default function LoadingPlaceholder({
     </span>
   )
 }
+
+export default LoadingPlaceholder;

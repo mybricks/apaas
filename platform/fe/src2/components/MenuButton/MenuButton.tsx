@@ -1,9 +1,9 @@
-import React, { ReactNode, PropsWithChildren } from "react";
+import React, { FC, ReactNode, PropsWithChildren } from "react";
 import classNames from "classnames";
 
 import { Icon } from "@/components/icon";
 
-import css from "./index.less";
+import css from "./MenuButton.less";
 
 interface MenuButtonProps extends PropsWithChildren {
   icon: string | ReactNode;
@@ -13,7 +13,7 @@ interface MenuButtonProps extends PropsWithChildren {
   onClick?: () => void;
 }
 
-export default function MenuButton({ icon, search, locationSearch, onClick, prefix, children }: MenuButtonProps) {
+const MenuButton: FC<MenuButtonProps> = ({ icon, search, locationSearch, onClick, prefix, children }) => {
   return (
     <button
       className={classNames(css.menuButton, { [css.active]: search && search === locationSearch })}
@@ -27,3 +27,5 @@ export default function MenuButton({ icon, search, locationSearch, onClick, pref
     </button>
   );
 }
+
+export default MenuButton;

@@ -1,7 +1,7 @@
-import React from "react";
+import React, { FC } from "react";
 import classNames from "classnames";
 
-import css from "./index.less";
+import css from "./Input.less";
 
 interface InputProps {
   value: string;
@@ -13,7 +13,7 @@ interface InputProps {
   autoFocus?: boolean;
 }
 
-export default function Input({ value, onChange, error, className, label, placeholder, autoFocus }: InputProps) {
+const Input: FC<InputProps> = ({ value, onChange, error, className, label, placeholder, autoFocus }) => {
   return (
     <div className={classNames(css.input, className)}>
       {label && (
@@ -31,3 +31,5 @@ export default function Input({ value, onChange, error, className, label, placeh
     </div>
   )
 }
+
+export default Input;

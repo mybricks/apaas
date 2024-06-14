@@ -1,9 +1,9 @@
-import React, { ReactNode, PropsWithChildren } from "react";
+import React, { FC, ReactNode, PropsWithChildren } from "react";
 import classNames from "classnames";
 
 import { LoadingPlaceholder } from "@/components";
 
-import css from "./index.less";
+import css from "./Button.less";
 
 interface ButtonProps extends PropsWithChildren {
   loading?: boolean;
@@ -23,7 +23,7 @@ const SIZE_MAP = {
   48: css.size48
 }
 
-export default function Button({
+const Button: FC<ButtonProps> = ({
   loading,
   className,
   type = "secondary",
@@ -33,7 +33,7 @@ export default function Button({
   disabled,
   children,
   onClick
-}: ButtonProps) {
+}) => {
   return (
     <button
       className={classNames(
@@ -80,3 +80,5 @@ function LoadingWrapper({ primary }) {
     </div>
   )
 }
+
+export default Button;

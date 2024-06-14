@@ -1,11 +1,11 @@
-import React, { forwardRef, PropsWithChildren, useEffect, useLayoutEffect, useState, ReactNode, useRef } from "react";
+import React, { forwardRef, PropsWithChildren, useEffect, useLayoutEffect, useState, ReactNode, useRef, FC } from "react";
 import { createPortal } from "react-dom";
 import classNames from "classnames";
 
 import { render as renderReact, unmount as unmountReact } from "@/utils/render";
 import { Button } from "@/components";
 
-import css from "./index.less";
+import css from "./Modal.less";
 
 let root: HTMLDivElement;
 
@@ -17,7 +17,7 @@ interface ModalProps extends ConfirmProps {
   // destroyOnClose?: boolean;
 }
 
-export default function Modal(props: ModalProps) {
+const Modal: FC<ModalProps> = (props) => {
   const { open, children, title, onOk, onCancel, afterClose, ...confirmProps } = props;
   const [shouldRender, setShouldRender] = useState(open);
   // const ref = useRef(false);
@@ -71,6 +71,7 @@ interface ConfirmProps {
   onCancel?: () => void;
 }
 
+// @ts-ignore
 Modal.confirm = (props: ConfirmProps) => {
   const root = createRoot();
   const { onOk, onCancel, ...other } = props;
@@ -189,3 +190,5 @@ function createRoot(): HTMLDivElement {
   }
   return root;
 }
+
+export default Modal;

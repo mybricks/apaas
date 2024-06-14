@@ -7,7 +7,7 @@ import { useState } from 'react';
  *   - 第一个元素：当前开关是否开启（true表示开启，false表示关闭）
  *   - 第二个元素：一个无参数的函数，调用时会切换开关状态
  */
-export default function useToggle(initialValue = false): [boolean, () => void] {
+const useToggle = (initialValue: boolean = false): [boolean, () => void] => {
   const [isToggled, setIsToggled] = useState(initialValue);
 
   function toggle() {
@@ -16,3 +16,5 @@ export default function useToggle(initialValue = false): [boolean, () => void] {
 
   return [isToggled, toggle];
 }
+
+export default useToggle;
