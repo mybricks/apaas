@@ -1,8 +1,11 @@
 const path = require('path')
 const userConfig = require('./shared/read-user-config')()
 
+// TODO：兼容下文档错误
+const externalStoragePath = userConfig?.platformConfig?.externalFilesStoragePath ?? userConfig?.platformConfig?.exteralFilesStoragePath;
+
 /** 支持挂载的运行时根目录，包含各类动态数据，比如安装的应用、日志、静态资源以及运行时实现的文件系统 */ 
-const FILE_LOCAL_STORAGE_BASE_FOLDER = userConfig?.platformConfig?.exteralFilesStoragePath ? userConfig?.platformConfig?.exteralFilesStoragePath : path.resolve(__dirname, './../');
+const FILE_LOCAL_STORAGE_BASE_FOLDER = externalStoragePath ? externalStoragePath : path.resolve(__dirname, './../');
 
 /** 开发应用目录 */ 
 const APPS_DEV_FOLDER = path.join(__dirname, './../apps');

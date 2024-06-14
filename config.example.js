@@ -29,7 +29,7 @@ module.exports = {
     /**
      * @description [可选项] 如果是容器化技术必填，各类持久化文件的读写位置，不填写时默认取当前路径的根目录，使用绝对路径
      */
-    exteralFilesStoragePath: '',
+    externalFilesStoragePath: '',
     /**
      * @description [可选项] 建议设置，用于登录的时候生成jwt token的 加盐值或者私钥，可以填写一个不容易生成的随机值
      */
