@@ -64,7 +64,7 @@ export default class JwtService {
       cookieInfo = request?.cookies?.['mybricks-login-user'] ? JSON.parse(request?.cookies?.['mybricks-login-user']) : null;
       userId = cookieInfo?.id;
     } catch (error) {
-      
+      Logger.error(`[登录态校验] 获取登录态失败，cookie信息为 ${request?.cookies?.['mybricks-login-user']}`)
     }
 
     // 多次登录
