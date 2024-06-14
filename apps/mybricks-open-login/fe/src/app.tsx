@@ -25,31 +25,23 @@ const emailReg = /^[a-zA-Z\d.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z\d](?:[a-zA-Z\d-]{0,6
 
 const checkCurrentIsLogin = async () => {
   return new Promise((resolve) => {
-    let user: any = getCookie(COOKIE_LOGIN_USER)
-    user = JSON.parse(user || '{}')
-    if (user && user.id) {
-      axios
-        .post('/paas/api/user/queryCurrentSession', {
-          userId: user.id,
-        })
-        .then(({ data }) => {
-          if (data.code === 1) {
-            const { redirectUrl } = getUrlQuery()
-            if (typeof redirectUrl === 'string') {
-              location.href = decodeURIComponent(redirectUrl)
-            } else {
-              location.href = '/workspace.html'
-            }
-            resolve(true)
+    axios
+      .post('/paas/api/user/queryCurrentSession')
+      .then(({ data }) => {
+        if (data.code === 1) {
+          const { redirectUrl } = getUrlQuery()
+          if (typeof redirectUrl === 'string') {
+            location.href = decodeURIComponent(redirectUrl)
           } else {
-            Message.success('当前登录已失效，请重新登录', 5)
-            // 当前账户在其他设备登录
-            resolve(false)
+            location.href = '/workspace.html'
           }
-        })
-    } else {
-      resolve(false)
-    }
+          resolve(true)
+        } else {
+          Message.success(data?.message ?? '当前登录已失效，请重新登录', 5)
+          // 当前账户在其他设备登录
+          resolve(false)
+        }
+      })
   })
 }
 
