@@ -1,37 +1,43 @@
-import React, { FC } from "react";
+import React, { FC, Fragment } from "react";
 
 import { useLocationConetxt } from "@/context";
 import Header from "./components/Header";
 import Page from "./components/Page";
-import { AccountHeader, AccountPage, id as AccountID } from "@/Pages/Account";
-import { OperationLogHeader, OperationLogPage, id as OperationLogID } from "@/Pages/OperationLog";
+import Account from "@/Pages/Account";
+import OperationLog from "@/Pages/OperationLog";
+import UserManagement from "@/Pages/UserManagement";
 
 import css from "./index.less";
 
-const HEADER_MAP = {
-  [AccountID]: AccountHeader,
-  [OperationLogID]: OperationLogHeader
-}
-
-const PAGE_MAP = {
-  [AccountID]: AccountPage,
-  [OperationLogID]: OperationLogPage
+const CONTENT_MAP: {[key: string]: {
+  header: FC,
+  page: FC,
+  provider?: FC
+}} = {
+  [Account.id]: Account,
+  [OperationLog.id]: OperationLog,
+  [UserManagement.id]: UserManagement
 }
 
 const Content: FC = () => {
   const { params: { appId, parentId, groupId } } = useLocationConetxt();
 
-  const HeaderView = HEADER_MAP[appId];
-  const PageView = PAGE_MAP[appId];
+  const {
+    header: HeaderView,
+    page: PageView,
+    provider: ProviderView = Fragment
+  } = CONTENT_MAP[appId] || {};
 
   return (
     <div className={css.content}>
-      <Header>
-        {HeaderView && <HeaderView />}
-      </Header>
-      <Page>
-        {PageView && <PageView />}
-      </Page>
+      <ProviderView>
+        <Header>
+          {HeaderView && <HeaderView />}
+        </Header>
+        <Page>
+          {PageView && <PageView />}
+        </Page>
+      </ProviderView>
     </div>
   )
 }

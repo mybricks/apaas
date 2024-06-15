@@ -37,9 +37,6 @@ const AccountPage: FC = () => {
 
   return (
     <div className={css.account}>
-      <div className={css.title}>
-        个人设置
-      </div>
       <div className={css.form}>
         <div className={css.item}>
           <div className={css.avatar}>

@@ -1,3 +1,11 @@
-export { default as OperationLogPage } from './OperationLogPage';
-export { default as OperationLogHeader } from './OperationLogHeader';
-export { id, OperationLogMenuButton } from './OperationLogMenuButton';
+import page from "./OperationLogPage";
+import header from "./OperationLogHeader";
+import { id, OperationLogMenuButton as button } from "./OperationLogMenuButton";
+
+export { button };
+
+export default {
+  id,
+  page,
+  header,
+};
