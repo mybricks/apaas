@@ -141,3 +141,20 @@ export function getPlatformFingerPrint() {
   var hash = crypto.createHash('md5').update(serverInfo).digest('hex');
   return hash;
 }
+
+export function isObject (obj: any): boolean {
+  return Object.prototype.toString.call(obj) === '[object Object]';
+}
+
+
+export function pick(obj: any, keys: string[]) {
+  const result = {};
+  if (isObject(obj)) {
+    keys.forEach(key => {
+      if (key in obj) {
+        result[key] = obj[key];
+      }
+    });
+  }
+  return result;
+}

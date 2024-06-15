@@ -11,14 +11,15 @@ export default class ShareController {
   }
 
   @Post("/getAll")
-  async getAll(@Body('pageSize') pageSize: number, @Body('page') page: number, @Body('extName') extName: string) {
+  async getAll(@Body('pageSize') pageSize: number, @Body('page') page: number, @Body('extName') extName: string, @Body('onlyPublished') onlyPublished) {
     try {
       const rtn = await this.fileService.getAllShareFiles({
         pageSize,
         page,
-        extName
+        extName,
+        onlyPublished
       });
-      const total = await this.fileService.getCountOfShareFiles(extName)
+      const total = await this.fileService.getCountOfShareFiles(extName, onlyPublished)
       return {
         code: 1,
         data: {

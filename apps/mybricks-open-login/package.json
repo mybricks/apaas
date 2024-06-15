@@ -15,7 +15,6 @@
   "author": "MyBricks Team",
   "license": "ISC",
   "dependencies": {
-    "@fingerprintjs/fingerprintjs": "^4.0.0",
     "@mybricks/rocker-commons": "0.0.2",
     "@mybricks/rocker-dao": "0.0.16",
     "@mybricks/sdk-for-app": "1.0.36",

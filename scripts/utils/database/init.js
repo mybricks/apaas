@@ -9,7 +9,7 @@ const userConfig = readUserConfig();
 async function _initDatabase({ execSqlAsync, console }) {
   await execSqlAsync(`create database IF NOT EXISTS \`${userConfig.database.database}\` default charset utf8mb4;`)
   await execSqlAsync(`use \`${userConfig.database.database}\`;`)
-  console.log(`database ${userConfig.database.database} 初始化成功并使用`)
+  console.log(`数据库database ${userConfig.database.database} 已准备完成`)
 }
 
 async function _initDatabaseTables({ execSqlAsync, console }) {
@@ -23,7 +23,7 @@ async function _initDatabaseTables({ execSqlAsync, console }) {
       await execSqlAsync(temp)
     }
   }
-  console.log(`平台数据表共计 ${dirs.length} 张初始化成功`)
+  console.log(`平台数据表共计 ${dirs.length} 张准备完成`)
 }
 
 async function _initDatabaseRecord({ execSqlAsync, console }) {
@@ -53,6 +53,7 @@ async function _initAppsDatabase ({ execSqlAsync, console }) {
 }
 
 module.exports = async function startInitDatabase ({ console }) {
+  console.log(`开始检测数据库`)
   const mySqlExecutor = MySqlExecutor()
   console.log(`数据库连接中...`)
   try {
@@ -68,6 +69,7 @@ module.exports = async function startInitDatabase ({ console }) {
     await mySqlExecutor.closeConnection();
     process.exit(1)
   }
-  console.log(`数据库初始化操作成功`)
+  console.log(`数据库准备完毕`)
   await mySqlExecutor.closeConnection();
+  console.log(`数据库执行环境已退出`)
 }

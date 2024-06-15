@@ -3,11 +3,6 @@ import {Column, DOBase, Mapping} from "@mybricks/rocker-dao";
 import {EffectStatus} from "../constants";
 import { genMainIndexOfDB } from '../utils/index'
 
-export const FileTypeEnum = {
-  SYSTEM: 'system',
-  USER: 'user'
-}
-
 export class FileDO {
   @Column
   id;
@@ -181,6 +176,7 @@ export default class FileDao extends DOBase {
     pageSize: number;
     shareTypes: number[];
     extName?: string;
+    onlyPublished?: 1
   }): Promise<any> {
     query = Object.assign({}, query)
 
@@ -197,6 +193,7 @@ export default class FileDao extends DOBase {
   public async getCountOfShareFiles(query?: {
     shareType: number;
     extName?: string;
+    onlyPublished?: 1
   }): Promise<any> {
     const count = await this.exe<any>("apaas_file:countShareFiles", {
       ...query
@@ -323,7 +320,7 @@ export default class FileDao extends DOBase {
       ...query,
       id: genMainIndexOfDB(),
       namespace: query.namespace || '_self',
-      type: query.type || FileTypeEnum.USER,
+      type: query.type,
       groupId: query.groupId ?? null,
       icon: query.icon || '',
       create_time: new Date().getTime(),

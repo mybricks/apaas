@@ -79,21 +79,6 @@ module.exports = {
               },
             },
           },
-          // {
-          //   loader: "postcss-loader",
-          //   options: {
-          //     postcssOptions: {
-          //       plugins: [
-          //         [
-          //           "postcss-preset-env",
-          //           {
-          //             // 其他选项
-          //           },
-          //         ],
-          //       ],
-          //     },
-          //   },
-          // },
           {
             loader: "less-loader",
             options: {

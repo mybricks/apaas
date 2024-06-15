@@ -157,15 +157,11 @@ export default class FilePubDao extends DOBase {
 
   @Mapping(FilePublishDO)
   async getLatestPubByIds(params: {
-    ids: number[], envType: string
+    ids: number[]
   }) {
-    let envType = 'prod'
-    if(params.envType) {
-      envType = params.envType
-    }
     return await this.exe<any>(
       "apaas_file_pub:getLatestPubByIds",
-      { ids: params.ids, envType }
+      { ids: params.ids }
     );
   }
 

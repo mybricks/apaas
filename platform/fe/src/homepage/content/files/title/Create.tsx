@@ -421,7 +421,7 @@ function CreateFileModal({ app, onOk, onCancel }) {
             <Select
               options={[
                 { value: 'UI', label: 'UI组件' },
-                { value: 'JS', label: 'JS组件' }
+                { value: 'JS', label: '逻辑组件' }
               ]}
             />
           </Form.Item>

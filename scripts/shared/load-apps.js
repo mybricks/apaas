@@ -1,6 +1,6 @@
 const fse = require('fs-extra')
 const path = require('path')
-const { APPS_FOLDER } = require('./../env')
+const { APPS_FOLDER, APPS_DEV_FOLDER } = require('./../env')
 
 function isObject (obj) { return Object.prototype.toString.call(obj) === '[object Object]' } 
 
@@ -75,6 +75,14 @@ const scanAppDir = (dirFullPath, appName, callback) => {
     })
   }
 
+  // 静态资源等等
+  const publicDirectory = fse.existsSync(publicFolderPath) ? publicFolderPath : null;
+  const assetsDirectory = fse.existsSync(assetsFolderPath) ? assetsFolderPath : null;
+
+  const homepageHtmlPath = path.join(assetsFolderPath, 'index.html');
+  const settingHtmlPath = path.join(assetsFolderPath, 'setting.html');
+  const groupSettingHtmlPath = path.join(assetsFolderPath, 'groupSetting.html');
+
   let appExports = [];
   // 应用导出能力
   if (packageJson?.mybricks?.serviceProvider) {
@@ -98,9 +106,6 @@ const scanAppDir = (dirFullPath, appName, callback) => {
 
   const preInstallPath = path.join(dirFullPath, 'preinstall.js')
   const preInstallJsPath = fse.existsSync(preInstallPath) ? preInstallPath : null;
-
-  const publicDirectory = fse.existsSync(publicFolderPath) ? publicFolderPath : null;
-  const assetsDirectory = fse.existsSync(assetsFolderPath) ? assetsFolderPath : null;
 
 
   const extraParams = callback && callback({
@@ -132,13 +137,30 @@ const scanAppDir = (dirFullPath, appName, callback) => {
     /** 是否包含服务端代码 */
     hasServer,
     exports: appExports,
-    ...(isObject(extraParams) ? extraParams : {})
+
+    title: packageJson?.mybricks?.title,
+    description: packageJson.description,
+    icon: packageJson?.mybricks?.icon,
+    type: packageJson?.mybricks?.type,
+    version: packageJson?.version,
+    extName: packageJson?.mybricks?.extName,
+    snapshot: packageJson?.mybricks?.snapshot,
+
+    // --- 这里是历史遗留字段，主要在前端页面中使用，后续可以看下还有没有必要存在
+    homepage: `/${packageJson.name}/index.html`, // 约定
+    _hasPage: fse.existsSync(homepageHtmlPath),
+
+    setting: packageJson?.mybricks?.setting ? packageJson?.mybricks?.setting : (fse.existsSync(settingHtmlPath) ? `/${packageJson.name}/setting.html` : undefined),
+    groupSetting: packageJson?.mybricks?.groupSetting ? packageJson?.mybricks?.groupSetting : (fse.existsSync(groupSettingHtmlPath) ? `/${packageJson.name}/groupSetting.html` : undefined),
+
+    isSystem: packageJson?.mybricks?.isSystem ? true : false,
+    // --- 这里是历史遗留字段，主要在前端页面中使用，后续可以看下还有没有必要存在
+
+    ...(isObject(extraParams) ? extraParams : {}),
   };
 };
 
-
-function loadApps (callback) {
-  const appDir = APPS_FOLDER;
+function loadAppsFromFolder (appDir, callback) {
   const apps = []
 
   if (fse.existsSync(appDir)) {
@@ -167,6 +189,13 @@ function loadApps (callback) {
   }
 
   return apps
+}
+
+function loadApps (callback) {
+  if (path.resolve(APPS_FOLDER) === path.resolve(APPS_DEV_FOLDER)) {
+    return loadAppsFromFolder(APPS_FOLDER, callback)
+  }
+  return loadAppsFromFolder(APPS_FOLDER, callback).concat(loadAppsFromFolder(APPS_DEV_FOLDER, callback))
 }
 
 module.exports = loadApps

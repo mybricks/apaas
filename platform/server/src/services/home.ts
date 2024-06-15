@@ -3,14 +3,14 @@ import AppService from '../module/apps/apps.service';
 
 @Controller()
 export default class HomeService {
-  appService: AppService;
+  appService = new AppService();
 
   constructor() {
     this.appService = new AppService()
   }
 
   @Get('/')
-  async getInstalledList(@Req() req: Request, @Res() res) {
+  async index(@Req() req: Request, @Res() res) {
     const apps: any = await this.appService.getAllInstalledList({ filterSystemApp: false })
     let redirectUrl = null;
     apps?.forEach(app => {

@@ -14,8 +14,12 @@ import { lockUpgrade, unLockUpgrade } from '../../utils/lock';
 import ConfigService from '../config/config.service';
 import AppService from './apps.service';
 import { USER_LOG_TYPE } from '../../constants'
-const { getAppThreadName } = require('../../../env.js')
-import { installAppFromFolder, installAppDeps } from './../../utils/install-apps'
+import { installAppFromFolder } from './../../utils/install-apps'
+import { pick } from './../../utils'
+const userConfig = require('./../../../../../scripts/shared/read-user-config.js')()
+
+/** 临时解压app，安装依赖的地方 */
+const TEMP_FOLDER_PATH = path.join(__dirname, '../../../../../_tempapp_')
 
 @Controller("/paas/api/apps")
 @UseFilters(ErrorExceptionFilter)
@@ -50,7 +54,7 @@ export default class AppsController {
     const apps = await this.appService.getAllInstalledList({ filterSystemApp: true })
     return {
       code: 1,
-      data: apps,
+      data: apps.map(a => pick(a, ['title', 'description', 'version', '_hasPage', 'namespace', 'icon', 'homepage', 'extName', 'exports', 'setting', 'groupSetting'])),
       msg: '成功!'
     };
   }
@@ -153,8 +157,9 @@ export default class AppsController {
     Logger.info(`${logPrefix} 安装应用的最新版本：${remoteApp.version}`);
     const remoteAppInstallInfo = JSON.parse(remoteApp.installInfo || "{}");
     /** 已安装应用 */
-    const installedAppPkgPath = path.join(env.getAppInstallFolder(), namespace, 'package.json');
-    let installedApp = fse.existsSync(installedAppPkgPath) ? fse.readJSONSync(installedAppPkgPath, { encoding: 'utf-8' }) : null;
+
+    const installedApp = await this.appService.getInstalledApp({ namespace });
+
     let installPkgName = "";
     let logInfo = null;
     let needServiceUpdate = !remoteAppInstallInfo?.noServiceUpdate;
@@ -201,26 +206,22 @@ export default class AppsController {
         content: `更新应用：${remoteApp.name || installPkgName}，版本从 ${preVersion} 到 ${remoteApp.version}`,
       };
 
-      Logger.info(logPrefix + '更新版本', installedApp)
+      Logger.info(logPrefix + '更新版本')
     }
 
     Logger.info(logPrefix + "开始下载应用");
     const downloadStartTime = Date.now();
 
-    const serverModulePath = path.join(
-      env.getAppInstallFolder(),
-      `./${installPkgName}/nodejs/index.module.ts`
-    );
-    if (fs.existsSync(serverModulePath) && needServiceUpdate && logInfo) {
+    if (installedApp?.serverModuleDirectory && needServiceUpdate && logInfo) {
       logInfo.content += ', 服务已更新'
     }
 
-    const tempFolder = path.join(__dirname, '../../../../../_tempapp_')
+    const destAppDir = installedApp?.directory ? installedApp.directory : path.join(env.getAppInstallFolder(), installPkgName)
     try {
-      const zipFilePath = path.join(tempFolder, `${namespace}.zip`)
+      const zipFilePath = path.join(TEMP_FOLDER_PATH, `${namespace}.zip`)
 
-      await fse.ensureDir(tempFolder);
-      await fse.emptydir(tempFolder);
+      await fse.ensureDir(TEMP_FOLDER_PATH);
+      await fse.emptydir(TEMP_FOLDER_PATH);
       const res = (await (axios as any).post(
         'https://my.mybricks.world/central/api/channel/gateway',
         {
@@ -233,7 +234,7 @@ export default class AppsController {
       if (res.code !== 1) {
         Logger.error(`${logPrefix} 应用 ${namespace} 安装失败，跳过...`)
         Logger.error(`${logPrefix} 错误是 ${res.msg}`)
-        await fse.remove(tempFolder)
+        await fse.remove(TEMP_FOLDER_PATH)
         await response200({ code: 0, message: '下载应用失败，请重试' })
         return
       }
@@ -244,12 +245,12 @@ export default class AppsController {
 
       Logger.info(`${logPrefix} 开始解压文件`)
       const zipStartTime = Date.now();
-      childProcess.execSync(`unzip -o ${zipFilePath} -d ${tempFolder}`, {
+      childProcess.execSync(`unzip -o ${zipFilePath} -d ${TEMP_FOLDER_PATH}`, {
         stdio: 'inherit' // 不inherit输出会导致 error: [Circular *1]
       })
       Logger.info(`${logPrefix} 解压文件结束，耗时${Date.now() - zipStartTime}ms`)
       
-      const subFolders = fs.readdirSync(tempFolder)
+      const subFolders = fs.readdirSync(TEMP_FOLDER_PATH)
       let unzipFolderSubpath = ''
       Logger.info(`${logPrefix} subFolders: ${JSON.stringify(subFolders)}}`)
       for(let name of subFolders) {
@@ -258,16 +259,12 @@ export default class AppsController {
           break
         }
       }
-      const unzipFolderPath = path.join(tempFolder, unzipFolderSubpath)
+      const unzipFolderPath = path.join(TEMP_FOLDER_PATH, unzipFolderSubpath)
 
-      const destAppDir = path.join(env.getAppInstallFolder(), installPkgName)
 
       Logger.info(`${logPrefix} 开始安装APP`)
-      await installAppFromFolder(unzipFolderPath, destAppDir, { namespace: installPkgName || '未知namespace' }, { logPrefix })
-
-      Logger.info(`${logPrefix} 安装node_modules中`)
-      await installAppDeps(unzipFolderPath, destAppDir, needServiceUpdate);
-      Logger.info(`${logPrefix} 安装node_modules成功`)
+      await installAppFromFolder(unzipFolderPath, destAppDir, { namespace: installPkgName || '未知namespace', needInstallDeps: needServiceUpdate }, { logPrefix })
+      Logger.info(`${logPrefix} 安装APP成功`)
 
       Logger.info(`${logPrefix} 平台更新成功，准备写入操作日志`)
       if (logInfo) {
@@ -281,16 +278,20 @@ export default class AppsController {
       Logger.info(logPrefix + e.message);
       Logger.info(logPrefix + e?.stack?.toString())
 
-      fse.removeSync(tempFolder)
+      fse.removeSync(TEMP_FOLDER_PATH)
 
       await response200({ code: -1, message: e.message })
       return
     }
 
-    await fse.remove(tempFolder)
+    await fse.remove(TEMP_FOLDER_PATH)
 
     await response200({ code: 1, data: null, message: "安装成功" })
 
+    const serverModulePath = path.join(
+      destAppDir,
+      `/nodejs/index.module.ts`
+    );
     if (fs.existsSync(serverModulePath)) {
       if(!needServiceUpdate) {
         Logger.info(logPrefix + "有service，但是未更新服务端，无需重启");
@@ -327,7 +328,7 @@ export default class AppsController {
       return
     }
 
-    const uninstallApp = this.appService.getInstalledApp({ namespace })
+    const uninstallApp = await this.appService.getInstalledApp({ namespace })
 
     /** 不存在返回错误 */
     if (!uninstallApp) {
@@ -339,7 +340,6 @@ export default class AppsController {
     const logInfo = {
       action: 'uninstall',
       type: 'application',
-      installType: uninstallApp.installType,
       preVersion: uninstallApp.version,
       version: uninstallApp.version,
       namespace,
@@ -348,7 +348,7 @@ export default class AppsController {
     };
 
     try {
-      await fse.remove(path.join(env.getAppInstallFolder(), namespace));
+      await fse.remove(uninstallApp.directory);
       await this.userLogDao.insertLog({ type: USER_LOG_TYPE.APPS_UNINSTALL_LOG, userId, logContent: JSON.stringify({ ...logInfo, status: 'success' }) });
     } catch (e) {
       await this.userLogDao.insertLog({ type: USER_LOG_TYPE.APPS_UNINSTALL_LOG, userId, logContent: JSON.stringify({ ...logInfo, status: 'error' }) });
@@ -411,20 +411,19 @@ export default class AppsController {
       return
     }
 
-    const tempFolder = path.join(__dirname, '../../../../../_tempapp_');
-    await fse.ensureDir(tempFolder);
-    await fse.emptydir(tempFolder);
+    await fse.ensureDir(TEMP_FOLDER_PATH);
+    await fse.emptydir(TEMP_FOLDER_PATH);
     try {
-      const zipFilePath = path.join(tempFolder, `./${file.originalname}`)
+      const zipFilePath = path.join(TEMP_FOLDER_PATH, `./${file.originalname}`)
       Logger.info(`${logPrefix} 开始持久化压缩包`)
       fs.writeFileSync(zipFilePath, file.buffer);
       childProcess.execSync(`which unzip`).toString()
       Logger.info(`${logPrefix} 开始解压文件`)
-      childProcess.execSync(`unzip -o ${zipFilePath} -d ${tempFolder}`, {
+      childProcess.execSync(`unzip -o ${zipFilePath} -d ${TEMP_FOLDER_PATH}`, {
         stdio: 'inherit' // 不inherit输出会导致 error: [Circular *1]
       })
       
-      const subFolders = fs.readdirSync(tempFolder)
+      const subFolders = fs.readdirSync(TEMP_FOLDER_PATH)
       let unzipFolderSubpath = ''
       Logger.info(`${logPrefix} subFolders: ${JSON.stringify(subFolders)}}`)
       for(let name of subFolders) {
@@ -433,18 +432,16 @@ export default class AppsController {
           break
         }
       }
-      const unzipFolderPath = path.join(tempFolder, unzipFolderSubpath)
+      const unzipFolderPath = path.join(TEMP_FOLDER_PATH, unzipFolderSubpath)
       const pkg = require(path.join(unzipFolderPath, './package.json'))
       Logger.info(`${logPrefix} pkg: ${JSON.stringify(pkg)}`)
 
-      const destAppDir = path.join(env.getAppInstallFolder(), pkg.name)
+      const installedApp = await this.appService.getInstalledApp({ namespace: pkg.name });
+      const destAppDir = installedApp?.directory ? installedApp.directory : path.join(env.getAppInstallFolder(), pkg.name)
       
       Logger.info(`${logPrefix} 准备安装APP ${pkg.name}`)
-      await installAppFromFolder(unzipFolderPath, destAppDir, { namespace: pkg.name || '未知namespace' }, { logPrefix })
-
-      Logger.info(`${logPrefix} 安装node_modules中`)
-      await installAppDeps(unzipFolderPath, destAppDir, true);
-      Logger.info(`${logPrefix} 安装node_modules成功`)
+      await installAppFromFolder(unzipFolderPath, destAppDir, { namespace: pkg.name || '未知namespace', needInstallDeps: true }, { logPrefix })
+      Logger.info(`${logPrefix} 安装APP成功`)
 
       Logger.info(`${logPrefix} 平台更新成功，准备写入操作日志`)
       await this.userLogDao.insertLog({ type: USER_LOG_TYPE.APPS_INSTALL_LOG, userId: req?.query?.userId,
@@ -460,11 +457,11 @@ export default class AppsController {
         )
       });
 
-      await fse.remove(tempFolder)
+      await fse.remove(TEMP_FOLDER_PATH)
     } catch(e) {
       Logger.info(`${logPrefix} 安装应用失败！！ 错误信息是 ${e.message}`)
       Logger.info(`${logPrefix} ${e?.stack?.toString()}`)
-      fse.removeSync(tempFolder)
+      fse.removeSync(TEMP_FOLDER_PATH)
 
       await response200({ code: -1, message: e.message })
       return
@@ -485,7 +482,7 @@ export default class AppsController {
       setTimeout(() => {
         // 重启服务
         childProcess.exec(
-          `npx pm2 reload ${getAppThreadName()}`,
+          `npx pm2 reload ${userConfig?.platformConfig?.appName}`,
           {
             cwd: path.join(process.cwd()),
           },
