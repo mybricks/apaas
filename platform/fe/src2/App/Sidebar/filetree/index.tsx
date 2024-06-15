@@ -70,7 +70,6 @@ export default function FileTree({ id, title, search, leaf, locationSearch, navi
       prefix={<LeafSwitch loading={loading} open={open} onClick={handleSwitchClick} />}
       onClick={handleButtonClick}
       search={search}
-      locationSearch={locationSearch}
     >
       {title}
     </MenuButton>

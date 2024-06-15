@@ -2,24 +2,25 @@ import React, { FC } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { MenuButton } from "@/components";
-import { Account } from "@/components/icon";
+import { OperationLog } from "@/components/icon";
 
-const id = "account";
+const id = "operationLog";
 const search = `?appId=${id}`;
 
-const AccountMenuButton: FC = () => {
+const OperationLogMenuButton: FC = () => {
   const navigate = useNavigate();
   return (
     <MenuButton
-      icon={<Account />}
+      icon={<OperationLog />}
+      search={search}
       onClick={() => navigate(search)}
     >
-      个人设置
+      操作日志
     </MenuButton>
   )
 }
 
 export {
   id,
-  AccountMenuButton
+  OperationLogMenuButton
 };

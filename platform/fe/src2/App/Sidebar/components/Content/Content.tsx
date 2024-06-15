@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-import { useAppConetxt, useLocationConetxt } from "@/context";
+import { useAppConetxt } from "@/context";
 import { MenuButton } from "@/components";
 
 import css from "./Content.less";
@@ -9,7 +9,6 @@ import css from "./Content.less";
 export default function Content() {
   const navigate = useNavigate();
   const { apps } = useAppConetxt();
-  const { search: locationSearch } = useLocationConetxt();
   const { menuApps } = apps;
 
   return (
@@ -21,7 +20,6 @@ export default function Content() {
             key={namespace}
             icon={icon}
             search={search}
-            locationSearch={locationSearch}
             onClick={() => navigate(search)}
           >
             {title}
