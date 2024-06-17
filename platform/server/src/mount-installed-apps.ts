@@ -15,9 +15,13 @@ export function installedAppMount(app: any, installedAppsMeta: any[]) {
       setHeaders: (res, path, stat) => {
         res.set('Access-Control-Allow-Origin', '*');
         res.set('X-Cached-By', 'MyBricks-App');
+        if (path?.indexOf('.html') > -1) {
+          res.set('Cache-Control', 'private, max-age=0') // html文件走协商缓存，private 为仅客户端可缓存，代理服务器不缓存
+        } else {
+          res.set('Cache-Control', `private, max-age=${60 * 60 * 24 * 7}`) // 其它文件走强缓存，7天内同名文件缓存，private 为仅客户端可缓存，代理服务器不缓存
+        }
       },
-      etag: false,
-      lastModified: true,
+      etag: true
     });
  
     // 静态资源hash规范，也支持直接访问
@@ -27,9 +31,13 @@ export function installedAppMount(app: any, installedAppsMeta: any[]) {
       setHeaders: (res, path, stat) => {
         res.set('Access-Control-Allow-Origin', '*');
         res.set('X-Cached-By', 'MyBricks-App');
+        if (path?.indexOf('.html') > -1) {
+          res.set('Cache-Control', 'private, max-age=0') // html文件走协商缓存，private 为仅客户端可缓存，代理服务器不缓存
+        } else {
+          res.set('Cache-Control', `private, max-age=${60 * 60 * 24 * 7}`) // 其它文件走强缓存，7天内同名文件缓存，private 为仅客户端可缓存，代理服务器不缓存
+        }
       },
-      etag: false,
-      lastModified: true,
+      etag: true
     });
   })
 }
