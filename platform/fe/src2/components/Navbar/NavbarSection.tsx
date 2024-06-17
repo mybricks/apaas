@@ -1,22 +1,22 @@
-import React, { FC } from "react";
+import React from "react";
 import classNames from "classnames";
 
 import css from "./NavbarSection.less";
 
-interface NavbarSection {
-  value: string;
+interface NavbarSectionProps<T> {
+  value: T;
   options: {
     label: string;
-    value: string;
+    value: T;
   }[];
-  onChange?: (value: string) => void;
+  onChange?: (value: T) => void;
 }
 
-const NavbarSection: FC<NavbarSection> = ({
+function NavbarSection<T extends string>({
   value,
   options,
   onChange,
-}) => {
+}: NavbarSectionProps<T>) {
   return (
     <div className={css.navbarSection}>
       {options.map(({ label, value: optionValue }) => {

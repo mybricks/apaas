@@ -5,6 +5,7 @@ import { removeCookie } from "@/utils/local";
 import { MenuButton, Modal, Popover } from "@/components";
 import { AppStore, Settings, OperationLog, UserManagement, StaticFiles, Account, Signout } from "@/components/icon";
 import { useUserContext, useLocationConetxt, useModalConetxt } from "@/context";
+import { button as AppStoreMenuButton } from "@/Pages/AppStore";
 import { button as AccountMenuButton } from "@/Pages/Account";
 import { button as OperationLogMenuButton } from "@/Pages/OperationLog";
 import { button as UserManagementMenuButton } from "@/Pages/UserManagement";
@@ -75,6 +76,7 @@ const Footer = () => {
             </MenuButton>
           )
         })} */}
+        <AppStoreMenuButton />
         <OperationLogMenuButton />
         <UserManagementMenuButton />
         <StaticFilesMenuButton />
