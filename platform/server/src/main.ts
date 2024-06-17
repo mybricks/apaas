@@ -31,10 +31,12 @@ async function bootstrap() {
   initLogger()
 
   // 进程错误日志
-  process.on("unhandledRejection", (e: any) => {
-    Logger.info(`[global error][unhandledRejection]: \n`);
-    Logger.info(e.message)
-    Logger.info(e?.stack?.toString())
+  process.on("unhandledRejection", (e: Error) => {
+    Logger.error(`[global error][unhandledRejection]: ${e?.stack ? e?.stack?.toString() : e?.message}`);
+  });
+
+  process.on('uncaughtException', (e: Error) => {
+    Logger.error(`[global error][uncaughtException]: ${e?.stack ? e?.stack?.toString() : e?.message}`);
   });
 
   // 加载当前安装的所有应用
