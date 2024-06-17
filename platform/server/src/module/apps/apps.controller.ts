@@ -480,9 +480,10 @@ export default class AppsController {
     if (env.isProd()) {
       Logger.info('开始重启服务')
       setTimeout(() => {
+        const command = process.env?.pm_id !== undefined ? `npx pm2 reload ${process.env?.pm_id}` : `npx pm2 reload ${userConfig?.platformConfig?.appName}`;
         // 重启服务
         childProcess.exec(
-          `npx pm2 reload ${userConfig?.platformConfig?.appName}`,
+          command,
           {
             cwd: path.join(process.cwd()),
           },

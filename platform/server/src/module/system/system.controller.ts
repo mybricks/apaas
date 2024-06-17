@@ -12,9 +12,9 @@ import ConfigService from '../config/config.service';
 import env from './../../utils/env'
 import * as fse from 'fs-extra'
 
+const readUserConfig = require('./../../../../../scripts/shared/read-user-config.js')
 const childProcess = require('child_process');
 const path = require('path')
-const fs = require('fs')
 
 @Controller('/paas/api')
 export default class SystemController {
@@ -169,6 +169,25 @@ export default class SystemController {
             msg += `\n[必要资源检测]：发现异常，请与管理员确认 externalFilesStoragePath 是否配置正确 \n`
             msg += `\n[必要资源检测]：${error.message ?? '未知错误'}\n`
           }
+
+          try {
+            msg += `\n[重启服务检测]：开始检测`
+            const uesrConfig = readUserConfig();
+            if (!uesrConfig?.platformConfig?.appName) {
+              throw new Error('当前未配置 platformConfig 的 appName，请联系管理员配置')
+            }
+            msg += `\n[重启服务检测]：当前平台配置 appName 为${uesrConfig.platformConfig.appName}`
+            if (process.env.pm_id) {
+              const appName = getAppNameById(process.env.pm_id);
+              if (appName && appName !== uesrConfig.platformConfig.appName) {
+                throw new Error(`当前启动的 appName 与配置的 appName 不相等\n 建议管理员 npx pm2 delete ${appName}，并使用 npm run reload 重启平台`)
+              }
+              msg += `\n[重启服务检测]：当前平台PM2 Id 为 ${process.env.pm_id}，name为 ${appName}`
+            }
+            msg += `\n[重启服务检测]：未发现异常`
+          } catch (error) {
+            msg += `\n[重启服务检测]：${error.message ?? '未知错误'}`
+          }
           
           return {
             code: 1,
@@ -184,5 +203,18 @@ export default class SystemController {
         msg: `诊断服务出错：${e.message ?? '未知错误'}`
       }
     }
+  }
+}
+
+
+function getAppNameById(pm_id) {
+  try {
+    const stdout = childProcess.execSync(`npx pm2 describe ${pm_id}`).toString();
+    const nameMatch = stdout.match(/Describing process with id \d+ - name (\S+)/);
+    if (nameMatch && nameMatch[1]) {
+      return nameMatch[1].trim()
+    }
+  } catch (error) {
+    
   }
 }
