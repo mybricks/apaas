@@ -10,6 +10,7 @@ import { button as AccountMenuButton } from "@/Pages/Account";
 import { button as OperationLogMenuButton } from "@/Pages/OperationLog";
 import { button as UserManagementMenuButton } from "@/Pages/UserManagement";
 import { button as StaticFilesMenuButton } from "@/Pages/StaticFiles";
+import { button as SettingsMenuButton } from "@/Pages/Settings";
 
 import css from "./Footer.less";
 
@@ -80,6 +81,7 @@ const Footer = () => {
         <OperationLogMenuButton />
         <UserManagementMenuButton />
         <StaticFilesMenuButton />
+        <SettingsMenuButton />
       </div>
       <div className={css.personal}>
         <Popover

@@ -9,6 +9,7 @@ import AppStore from "@/Pages/AppStore";
 import OperationLog from "@/Pages/OperationLog";
 import UserManagement from "@/Pages/UserManagement";
 import StaticFiles from "@/Pages/StaticFiles";
+import Settings from "@/Pages/Settings";
 
 import css from "./index.less";
 
@@ -22,7 +23,8 @@ const CONTENT_MAP: {[key: string]: {
   [AppStore.id]: AppStore,
   [OperationLog.id]: OperationLog,
   [UserManagement.id]: UserManagement,
-  [StaticFiles.id]: StaticFiles
+  [StaticFiles.id]: StaticFiles,
+  [Settings.id]: Settings
 }
 
 const Content: FC = () => {
