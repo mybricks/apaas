@@ -6,3 +6,4 @@ export { default as LoadingPlaceholder } from "./LoadingPlaceholder";
 export { default as Navbar } from "./Navbar";
 export { default as Modal } from "./Modal";
 export { default as Form } from "./Form";
+export { default as Link } from "./Link";

@@ -252,10 +252,12 @@ export default () => {
               border="0"
               style={{
                 paddingTop: 20,
-                minHeight: '500px',
-                maxHeight: '90vh',
-                height: 600,
-                width: '100%',
+                paddingBottom: 20,
+                flex: 1
+                // minHeight: '500px',
+                // maxHeight: '90vh',
+                // height: 600,
+                // width: '100%',
               }}
             />
           )

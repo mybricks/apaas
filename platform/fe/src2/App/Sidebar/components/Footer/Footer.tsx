@@ -14,39 +14,8 @@ import { button as SettingsMenuButton } from "@/Pages/Settings";
 
 import css from "./Footer.less";
 
-
-// const menuButtons = [
-//   {
-//     icon: <AppStore />,
-//     name: "我的应用",
-//     search: "?appId=appStore",
-//   },
-//   {
-//     icon: <OperationLog />,
-//     name: "操作日志",
-//     search: "?appId=operationLog",
-//   },
-//   {
-//     icon: <UserManagement />,
-//     name: "用户管理",
-//     search: "?appId=userManagement",
-//   },
-//   {
-//     icon: <StaticFiles />,
-//     name: "静态文件",
-//     search: "?appId=staticFiles",
-//   },
-//   {
-//     icon: <Settings />,
-//     name: "设置",
-//     search: "?appId=settings",
-//   },
-// ]
-
 const Footer = () => {
-  // const navigate = useNavigate();
   const { user: { name, email, avatar } } = useUserContext();
-  // const { search: locationSearch } = useLocationConetxt();
   const { showModal } = useModalConetxt();
 
   const handleSignout = () => {
@@ -63,20 +32,6 @@ const Footer = () => {
   return (
     <div className={css.footer}>
       <div className={css.system}>
-        {/* {menuButtons.map(({ icon, name, search }) => {
-          console.log(search)
-          return (
-            <MenuButton
-              key={name}
-              icon={icon}
-              search={search}
-              locationSearch={locationSearch}
-              onClick={() => navigate(search)}
-            >
-              {name}
-            </MenuButton>
-          )
-        })} */}
         <AppStoreMenuButton />
         <OperationLogMenuButton />
         <UserManagementMenuButton />

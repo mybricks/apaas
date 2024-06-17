@@ -1,19 +1,19 @@
 import React, { FC } from "react";
 
 import { MenuButton, Link } from "@/components";
-import { UserManagement } from "@/components/icon";
+import { Account } from "@/components/icon";
 
-const id = "userManagement";
+const id = "files";
 const search = `?appId=${id}`;
 
-const UserManagementMenuButton: FC = () => {
+const FilesMenuButton: FC = () => {
   return (
     <Link to={search}>
       <MenuButton
-        icon={<UserManagement />}
+        icon={<Account />}
         search={search}
       >
-        用户管理
+        我的
       </MenuButton>
     </Link>
   )
@@ -21,5 +21,5 @@ const UserManagementMenuButton: FC = () => {
 
 export {
   id,
-  UserManagementMenuButton
+  FilesMenuButton
 };

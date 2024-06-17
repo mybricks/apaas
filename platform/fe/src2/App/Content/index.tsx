@@ -5,6 +5,7 @@ import Header from "./components/Header";
 import Page from "./components/Page";
 import SharedWithAll from "@/Pages/SharedWithAll";
 import Trash from "@/Pages/Trash";
+import Files from "@/Pages/Files";
 import Account from "@/Pages/Account";
 import AppStore from "@/Pages/AppStore";
 import OperationLog from "@/Pages/OperationLog";
@@ -21,6 +22,7 @@ const CONTENT_MAP: {[key: string]: {
 }} = {
   [SharedWithAll.id]: SharedWithAll,
   [Trash.id]: Trash,
+  [Files.id]: Files,
   [Account.id]: Account,
   [AppStore.id]: AppStore,
   [OperationLog.id]: OperationLog,

@@ -1,4 +1,4 @@
-import React, { FC, ReactNode, PropsWithChildren } from "react";
+import React, { FC, ReactNode, PropsWithChildren, memo } from "react";
 import classNames from "classnames";
 
 import { Icon } from "@/components/icon";
@@ -11,15 +11,23 @@ interface MenuButtonProps extends PropsWithChildren {
   icon: string | ReactNode;
   search?: string;
   prefix?: ReactNode;
+  active?: boolean;
   onClick?: () => void;
 }
 
-const MenuButton: FC<MenuButtonProps> = ({ icon, search, onClick, prefix, children }) => {
-  const { search: locationSearch } = search ? useLocationConetxt() : {} as LocationContext;
+const MenuButton: FC<MenuButtonProps> = memo(({
+  icon,
+  search,
+  active,
+  onClick,
+  prefix,
+  children
+}) => {
+  const isactive = active || (search ? useLocationConetxt().search === search : false);
 
   return (
     <button
-      className={classNames(css.menuButton, { [css.active]: search && search === locationSearch })}
+      className={classNames(css.menuButton, { [css.active]: isactive })}
       onClick={onClick}
     >
       {prefix}
@@ -29,6 +37,6 @@ const MenuButton: FC<MenuButtonProps> = ({ icon, search, onClick, prefix, childr
       </span>
     </button>
   );
-}
+})
 
 export default MenuButton;

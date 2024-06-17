@@ -5,12 +5,13 @@ import { useAppConetxt } from "@/context";
 // import { MenuButton } from "@/components";
 import { button as SharedWithAllMenuButton } from "@/Pages/SharedWithAll";
 import { button as TrashMenuButton } from "@/Pages/Trash";
+import { button as FilesButton } from "@/Pages/Files";
 
 import css from "./Content.less";
 
 export default function Content() {
-  const navigate = useNavigate();
-  const { apps } = useAppConetxt();
+  // const navigate = useNavigate();
+  // const { apps } = useAppConetxt();
   // const { menuApps } = apps;
 
   return (
@@ -31,6 +32,7 @@ export default function Content() {
         )
       })} */}
       <div className={css.split}></div>
+      <FilesButton />
     </div>
   )
 }
