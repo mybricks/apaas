@@ -9,6 +9,8 @@ import { Logger } from '@mybricks/rocker-commons';
 import * as axios from "axios";
 import { STATUS_CODE, USER_LOG_TYPE } from '../../constants'
 import ConfigService from '../config/config.service';
+import env from './../../utils/env'
+import * as fse from 'fs-extra'
 
 const childProcess = require('child_process');
 const path = require('path')
@@ -127,16 +129,46 @@ export default class SystemController {
           }
         }
         case 'envCheck': {
-          let msg = '';
+          let msg = '开始检测\n';
           if(global?.MYBRICKS_PLATFORM_START_ERROR) {
             msg += global.MYBRICKS_PLATFORM_START_ERROR
+          } else {
+            msg += '\n[启动报错检测]：未发现异常'
           }
-          await childProcess.execSync('unzip').toString()
-          const reqUrl = `${domain}/paas/api/system/diagnostics`
-          Logger.info(`诊断服务请求日志：${reqUrl}`)
-          // @ts-ignore
-          await axios.post(reqUrl, { action: "init"})
-          msg += `\n 接口请求域名是：${domain}`
+
+          try {
+            await childProcess.execSync('unzip').toString()
+            msg+= `\n[unzip命令检测]：未发现异常`
+          } catch (error) {
+            msg+= `\n[unzip命令检测]：执行unzip命令失败 ${error.message}`
+          }
+          
+          const fetchStartTimestamp = Date.now();
+          try {
+            msg += `\n[中心化服务探测]：开始检测，请求域名是 ${domain}\n`
+            const reqUrl = `${domain}/paas/api/system/diagnostics`
+            // @ts-ignore
+            await axios.post(reqUrl, { action: "init"})
+            msg+= `[中心化服务探测]：耗时${Date.now() - fetchStartTimestamp}ms，未发现异常`
+          } catch (error) {
+            msg+= `[中心化服务探测]：耗时${Date.now() - fetchStartTimestamp}ms，失败 ${error.message ?? '未知错误'}`
+          }
+
+          try {
+            msg += `\n[必要资源检测]：开始检测`
+            const ManacoEditorAssets = path.join(env.FILE_LOCAL_STORAGE_FOLDER, 'editor_assets', 'monaco-editor');
+            const isExist = await fse.pathExists(ManacoEditorAssets)
+            const MaterialExternalAssets = path.join(env.FILE_LOCAL_STORAGE_FOLDER, 'mybricks_material_externals');
+            const isMaterialExternalExist = await fse.pathExists(MaterialExternalAssets)
+            if (isExist && isMaterialExternalExist) {
+              msg += `\n[必要资源检测]：未发现异常`
+            } else {
+              msg += `\n[必要资源检测]：文件缺失，请联系管理员确认，可通过 npm run prepare:start 补全文件`
+            }
+          } catch (error) {
+            msg += `\n[必要资源检测]：发现异常，请与管理员确认 externalFilesStoragePath 是否配置正确 \n`
+            msg += `\n[必要资源检测]：${error.message ?? '未知错误'}\n`
+          }
           
           return {
             code: 1,
@@ -149,7 +181,7 @@ export default class SystemController {
       Logger.info(`诊断服务出错：${e?.stack?.toString()}`)
       return {
         code: -1,
-        msg: (e.message || '未知错误') + `\n后台服务请求域名是: ${domain}`
+        msg: `诊断服务出错：${e.message ?? '未知错误'}`
       }
     }
   }
