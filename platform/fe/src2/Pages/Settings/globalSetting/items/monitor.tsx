@@ -57,7 +57,7 @@ function Monitor() {
       }
     }).catch(e => {
       console.log(e)
-      message.warn(e.message || '获取接口列表失败')
+      message.warning(e.message || '获取接口列表失败')
     })
 
   }, [])
@@ -102,7 +102,7 @@ function Monitor() {
       }
     }).catch(e => {
       console.log(e)
-      message.warn(e.mgs || '获取接口列表失败')
+      message.warning(e.mgs || '获取接口列表失败')
     })
   }
 

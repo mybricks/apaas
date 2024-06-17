@@ -108,7 +108,7 @@ export default ({ value, onChange, onInit }) => {
                     key="edit"
                     onClick={() => {
                       if (!envList[field.name]?.fileId) {
-                        message.warn('请先选择任务')
+                        message.warning('请先选择任务')
                         return
                       }
                       openTask(envList[field.name]?.fileId)

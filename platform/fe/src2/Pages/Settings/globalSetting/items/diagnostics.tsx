@@ -36,7 +36,7 @@ export default function Diagnostics() {
       })
       
     } catch(e) {
-      message.warn(e)
+      message.warning(e)
     }
   }, [])
 
