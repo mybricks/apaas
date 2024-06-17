@@ -208,8 +208,7 @@ export default function App() {
   const visibleSubmit = useMemo(() => {
     return (
       !!formData.email &&
-      !!formData.password &&
-      (action.type === 'signup' ? formData.captcha?.length === 6 : true)
+      !!formData.password
     )
   }, [formData, action])
 
