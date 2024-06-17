@@ -86,12 +86,10 @@ const columns: TableColumnsType<DataItem> = [
   },
 ];
 
-const PAGE_SIZE = 10;
-
 const OperationLogPage: FC = () => {
   const [pagination, setPagination] = useState<TablePaginationConfig>({
     position: ["bottomRight"],
-    pageSize: PAGE_SIZE,
+    pageSize: 10,
     total: 0,
     current: 1
   });
@@ -103,7 +101,7 @@ const OperationLogPage: FC = () => {
 
     const operationLogData = (await axios.post("/paas/api/log/operateLog/search", {
       pageNum: current,
-      pageSize: PAGE_SIZE
+      pageSize: pagination.pageSize
     })).data.data;
 
     setDataSource((operationLogData.list.map((item) => {
@@ -136,7 +134,7 @@ const OperationLogPage: FC = () => {
         dataSource={dataSource}
         columns={columns}
         onChange={handleFetchOperationLogData}
-        scroll={{ x: 400, y: 400 }} 
+        scroll={{ x: 840 }} 
         locale={{
           emptyText: "暂无日志能容"
         }}
