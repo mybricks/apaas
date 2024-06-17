@@ -1,0 +1,133 @@
+// TODO: Next
+.files {
+  overflow: auto;
+  max-height: 100%;
+  margin-left: -5px;
+  display: flex;
+  flex-wrap: wrap;
+
+  &::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    border-radius: 7px;
+    background: #BBB;
+    border: 0 solid transparent;
+    background-clip: padding-box;
+  }
+
+  &::-webkit-scrollbar-button {
+    display: none;
+  }
+
+  &::-webkit-scrollbar-corner {
+    display: none;
+  }
+
+  .loading {
+    display: flex;
+    justify-content: center;
+    font-style: italic;
+    color: #AAA;
+    font-size: 12px;
+    width: 100%;
+    height: 30px;
+  }
+
+  .file {
+    position: relative;
+    cursor: pointer;
+    width: 250px;
+    max-height: 192px;
+    display: inline-flex;
+    flex-direction: column;
+    white-space: nowrap;
+    border: 1px solid #EEE;
+    border-radius: 5px;
+    margin: 5px;
+
+    &:hover {
+      outline: 1px solid #DDD;
+
+      .btns {
+        visibility: visible !important;
+      }
+    }
+
+    .snap {
+      height: 140px;
+      background-color: #FAFAFA;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+
+      > img {
+        max-width: 240px;
+        max-height: 130px;
+      }
+
+      .shared {
+        position: absolute;
+        right: 11px;
+        top: 5px;
+
+        svg {
+          max-width: 14px;
+
+          path {
+            fill: #777;
+          }
+        }
+      }
+    }
+
+    .tt {
+      height: 50px;
+      display: flex;
+      padding: 5px 6px 0 6px;
+      background-color: #fff;
+
+      .typeIcon {
+        padding: 0 7px 0 6px;
+
+        svg {
+          max-width: 18px;
+        }
+      }
+
+      .detail {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+
+        .name {
+          font-size: 12px;
+          font-weight: 800;
+        }
+
+        .path {
+          font-size: 12px;
+          color: #AAA;
+          overflow: hidden;
+          white-space: nowrap;
+          display: flex;
+          position: relative;
+          height: 22px;
+        }
+      }
+
+      .menu {
+        position: relative;
+
+        svg {
+          max-height: 14px;
+        }
+      }
+    }
+  }
+}

@@ -1,7 +1,7 @@
 import React, { ReactNode } from "react";
 import axios from "axios";
 
-import { PeopleShare, Folder } from "@/components/icon";
+import { SharedWithAll, Folder } from "@/components/icon";
 
 export interface Apps {
   /** 侧边栏应用 */
@@ -51,8 +51,8 @@ export function initApps(): Promise<Apps> {
       {
         title: "大家的分享",
         version: "1.0.0",
-        namespace: "peopleShare",
-        icon: <PeopleShare />
+        namespace: "sharedWithAll",
+        icon: <SharedWithAll />
       },
     ];
     const designApps: InstalledApps = [];

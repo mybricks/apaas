@@ -3,6 +3,7 @@ import React, { FC, Fragment } from "react";
 import { useLocationConetxt } from "@/context";
 import Header from "./components/Header";
 import Page from "./components/Page";
+import SharedWithAll from "@/Pages/SharedWithAll";
 import Account from "@/Pages/Account";
 import OperationLog from "@/Pages/OperationLog";
 import UserManagement from "@/Pages/UserManagement";
@@ -15,6 +16,7 @@ const CONTENT_MAP: {[key: string]: {
   page: FC,
   provider?: FC
 }} = {
+  [SharedWithAll.id]: SharedWithAll,
   [Account.id]: Account,
   [OperationLog.id]: OperationLog,
   [UserManagement.id]: UserManagement,
