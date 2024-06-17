@@ -81,7 +81,7 @@ export default class AppsController {
   @Get("/getLatestAllAppFromSource")
   async getLatestAllAppFromSource() {
     try {
-      const WHITE_LIST = ['mybricks-app-pcspa', 'mybricks-material', 'mybricks-app-pc-cdm', 'mybricks-app-mpsite', 'mybricks-app-theme'];
+      const WHITE_LIST = ['mybricks-app-pcspa', 'mybricks-material', 'mybricks-app-pc-cdm'];
       const appList = await this.appService.getAllAppsFromRemote();
       return {
         code: 1,
