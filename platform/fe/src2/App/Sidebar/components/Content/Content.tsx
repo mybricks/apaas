@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useAppConetxt } from "@/context";
 // import { MenuButton } from "@/components";
 import { button as SharedWithAllMenuButton } from "@/Pages/SharedWithAll";
+import { button as TrashMenuButton } from "@/Pages/Trash";
 
 import css from "./Content.less";
 
@@ -15,6 +16,7 @@ export default function Content() {
   return (
     <div className={css.content}>
       <SharedWithAllMenuButton />
+      <TrashMenuButton />
       {/* {menuApps.map(({ icon, namespace, title }) => {
         const search = `?appId=${namespace}`;
         return (
