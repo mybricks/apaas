@@ -8,6 +8,7 @@ import { useUserContext, useLocationConetxt, useModalConetxt } from "@/context";
 import { button as AccountMenuButton } from "@/Pages/Account";
 import { button as OperationLogMenuButton } from "@/Pages/OperationLog";
 import { button as UserManagementMenuButton } from "@/Pages/UserManagement";
+import { button as StaticFilesMenuButton } from "@/Pages/StaticFiles";
 
 import css from "./Footer.less";
 
@@ -76,6 +77,7 @@ const Footer = () => {
         })} */}
         <OperationLogMenuButton />
         <UserManagementMenuButton />
+        <StaticFilesMenuButton />
       </div>
       <div className={css.personal}>
         <Popover

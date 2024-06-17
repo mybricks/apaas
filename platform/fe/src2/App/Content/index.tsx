@@ -6,6 +6,7 @@ import Page from "./components/Page";
 import Account from "@/Pages/Account";
 import OperationLog from "@/Pages/OperationLog";
 import UserManagement from "@/Pages/UserManagement";
+import StaticFiles from "@/Pages/StaticFiles";
 
 import css from "./index.less";
 
@@ -16,7 +17,8 @@ const CONTENT_MAP: {[key: string]: {
 }} = {
   [Account.id]: Account,
   [OperationLog.id]: OperationLog,
-  [UserManagement.id]: UserManagement
+  [UserManagement.id]: UserManagement,
+  [StaticFiles.id]: StaticFiles
 }
 
 const Content: FC = () => {

@@ -1,0 +1,107 @@
+// TODO: Next
+.operate {
+  .button {
+    margin-right: 16px;
+    border-radius: 4px;
+
+    .icon {
+      vertical-align: top;
+      display: inline-flex;
+      height: 22px;
+      align-items: center;
+      margin-right: 8px;
+    }
+  }
+}
+
+.breadcrumb {
+  margin-top: 24px;
+
+  .breadcrumbContent {
+    display: inline-flex;
+    align-items: center;
+    vertical-align: middle;
+
+    span {
+      margin-left: 4px;
+    }
+  }
+}
+
+.table {
+  flex: 1;
+  overflow: auto;
+  margin-top: 8px;
+  padding-bottom: 16px;
+
+  .name {
+    display: flex;
+    align-items: center;
+    word-wrap: break-word;
+    word-break: break-word;
+
+    & > span {
+      margin-left: 8px;
+    }
+
+    .folder {
+      cursor: pointer;
+
+      &:hover {
+        text-decoration: underline;
+        color: #fa6400;
+      }
+    }
+  }
+
+  .operateColumn {
+    span {
+      cursor: pointer;
+      line-height: 22px;
+
+      &:hover {
+        color: #fa6400;
+      }
+    }
+
+    span + span {
+      margin-left: 12px;
+    }
+  }
+
+  .danger {
+    cursor: pointer;
+    color: #ff4d4f;
+    line-height: 22px;
+
+    &:hover {
+      color: #ff0000;
+    }
+  }
+}
+
+.uploadModal {
+  max-height: 70%;
+
+  :global {
+    .ant-modal-content {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .ant-modal-body {
+      flex: 1;
+      overflow: auto;
+    }
+  }
+}
+
+.deleteTip {
+  margin-bottom: 12px;
+  font-size: 16px;
+
+  .danger {
+    color: #ff4d4f;
+  }
+}
