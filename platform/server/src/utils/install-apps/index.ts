@@ -67,19 +67,20 @@ export async function installAppFromFolder(installAppFolderDir, destAppDir, { na
   Logger.info(`${logPrefix} 资源复制中`)
   await copyFiles(['assets', 'nodejs', 'package.json', 'preinstall.js', 'tsconfig.json', '.gitignore', 'README.md'], installAppFolderDir, destAppDir)
 
-  Logger.info(`${logPrefix} 开始处理 node_modules`)
   if (await fse.pathExists(path.join(installAppFolderDir, 'node_modules'))) {
-    Logger.info(`${logPrefix} 检测到安装包包含 node_modules，开始复制 node_modules`)
-    await copyFiles(['node_modules'], installAppFolderDir, destAppDir);
-    Logger.info(`${logPrefix} 复制 node_modules 成功`)
+    Logger.info(`${logPrefix} 检测到安装包包含 node_modules，开始移动 node_modules`)
+    await moveNodeModules(installAppFolderDir, destAppDir, (info) => {
+      Logger.info(`${logPrefix} ${info}`)
+    });
     return
   }
 
   await installAppDeps(installAppFolderDir, needInstallDeps);
 
-  Logger.info(`${logPrefix} 开始复制 node_modules`);
-  await copyFiles(['node_modules'], installAppFolderDir, destAppDir);
-  Logger.info(`${logPrefix} 复制 node_modules 成功`);
+  Logger.info(`${logPrefix} 开始移动 node_modules`);
+  await moveNodeModules(installAppFolderDir, destAppDir, (info) => {
+    Logger.info(`${logPrefix} ${info}`)
+  });
 }
 
 
@@ -149,16 +150,28 @@ async function copyFiles(fileList, sourceDir, targetDir) {
     const sourceFile = path.join(sourceDir, file);
     const targetFile = path.join(targetDir, file);
 
+    if (!fse.existsSync(sourceFile)) {
+      continue
+    }
+
     // 删除历史文件
     if (fse.existsSync(targetFile)) {
       await fse.remove(targetFile)
     }
 
-    if (!fse.existsSync(sourceFile)) {
-      continue
-    }
-
     // 拷贝文件
     await fse.copy(sourceFile, targetFile, { overwrite: true });
   }
+}
+
+async function moveNodeModules (sourceDir, targetDir, log) {
+  let startTimeStamp = Date.now();
+
+  const sourceFolderPath = path.join(sourceDir, 'node_modules');
+  const targetFolderPath = path.join(targetDir, 'node_modules')
+
+  // 注意，这里node_modules处理一定用move方法，否则性能差到十几分钟往上
+  await fse.move(sourceFolderPath, targetFolderPath)
+
+  log(`移动node_modules成功，总计耗时 ${Date.now() - startTimeStamp}ms`)
 }

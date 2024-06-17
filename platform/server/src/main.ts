@@ -31,10 +31,12 @@ async function bootstrap() {
   initLogger()
 
   // 进程错误日志
-  process.on("unhandledRejection", (e: any) => {
-    Logger.info(`[global error][unhandledRejection]: \n`);
-    Logger.info(e.message)
-    Logger.info(e?.stack?.toString())
+  process.on("unhandledRejection", (e: Error) => {
+    Logger.error(`[global error][unhandledRejection]: ${e?.stack ? e?.stack?.toString() : e?.message}`);
+  });
+
+  process.on('uncaughtException', (e: Error) => {
+    Logger.error(`[global error][uncaughtException]: ${e?.stack ? e?.stack?.toString() : e?.message}`);
   });
 
   // 加载当前安装的所有应用
@@ -58,12 +60,9 @@ async function bootstrap() {
     index: false,
     setHeaders: (res, path, stat) => {
       res.set('Access-Control-Allow-Origin', '*');
-      // if (path?.indexOf('.js') > -1 || path?.indexOf('.css') > -1) {
-      //   res.set('Cache-Control', 'no-cache') // 1d
-      // }
+      res.set('Cache-Control', 'private, max-age=0') // 平台文件不大，都走协商缓存
     },
     etag: true,
-    lastModified: true,
   });
 
   // 设置整个 mfs 的静态资源
@@ -72,10 +71,13 @@ async function bootstrap() {
     index: false,
     setHeaders: (res, path, stat) => {
       res.set('Access-Control-Allow-Origin', '*');
-      // res.set('Cache-Control', 'max-age=86400000') // 1d
+      if (path?.indexOf('.html') > -1) {
+        res.set('Cache-Control', 'private, max-age=0') // html文件走协商缓存，private 为仅客户端可缓存，代理服务器不缓存
+      } else {
+        res.set('Cache-Control', `private, max-age=${60 * 60 * 24 * 7}`) // 其它文件走强缓存，7天内同名文件缓存，private 为仅客户端可缓存，代理服务器不缓存
+      }
     },
     etag: true,
-    lastModified: true,
   });
   
   // 支持应用调试时的http代理

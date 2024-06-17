@@ -81,7 +81,7 @@ export default class AppsController {
   @Get("/getLatestAllAppFromSource")
   async getLatestAllAppFromSource() {
     try {
-      const WHITE_LIST = ['mybricks-app-pcspa', 'mybricks-material', 'mybricks-app-pc-cdm', 'mybricks-app-mpsite', 'mybricks-app-theme'];
+      const WHITE_LIST = ['mybricks-app-pcspa', 'mybricks-material', 'mybricks-app-pc-cdm'];
       const appList = await this.appService.getAllAppsFromRemote();
       return {
         code: 1,
@@ -480,9 +480,10 @@ export default class AppsController {
     if (env.isProd()) {
       Logger.info('开始重启服务')
       setTimeout(() => {
+        const command = process.env?.pm_id !== undefined ? `npx pm2 reload ${process.env?.pm_id}` : `npx pm2 reload ${userConfig?.platformConfig?.appName}`;
         // 重启服务
         childProcess.exec(
-          `npx pm2 reload ${userConfig?.platformConfig?.appName}`,
+          command,
           {
             cwd: path.join(process.cwd()),
           },
