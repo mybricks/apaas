@@ -171,7 +171,7 @@ async function moveNodeModules (sourceDir, targetDir, log) {
   const targetFolderPath = path.join(targetDir, 'node_modules')
 
   // 注意，这里node_modules处理一定用move方法，否则性能差到十几分钟往上
-  await fse.move(sourceFolderPath, targetFolderPath)
+  await fse.move(sourceFolderPath, targetFolderPath, { overwrite: true })
 
   log(`移动node_modules成功，总计耗时 ${Date.now() - startTimeStamp}ms`)
 }
