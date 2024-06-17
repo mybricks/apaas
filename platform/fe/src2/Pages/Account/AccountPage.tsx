@@ -1,39 +1,21 @@
-import React, { FC, useState } from "react";
+import React, { FC } from "react";
 import { message } from "antd";
 import axios from "axios";
+import { Formik } from "formik";
 
-import { Button, Input } from "@/components";
+import { Button, Input, Form } from "@/components";
 import { useUserContext } from "@/context";
 
 import css from "./AccountPage.less";
+
+interface AccountFormValues {
+  name: string;
+}
+
+const FormFiled = Form.Field;
+
 const AccountPage: FC = () => {
   const { user: { id, avatar, name }, setUser } = useUserContext();
-  const [nameSpinning, setNameSpinning] = useState(false);
-  const [nameValue, setNameValue] = useState(name);
-  const trimmedName = nameValue.trim();
-
-  const handleNameSave = async () => {
-    setNameSpinning(true);
-
-    const response = (await axios.post("/paas/api/user/setUserInfo", {
-      userId: id,
-      name: trimmedName
-    })).data;
-
-    if (response.code === 1) {
-      setUser({name: trimmedName});
-      message.success("个人设置已更新");
-      setNameValue(trimmedName);
-    } else {
-      message.error(response.msg);
-    }
-
-    setNameSpinning(false);
-  }
-
-  const handleNameChange = (value: string) => {
-    setNameValue(value);
-  }
 
   return (
     <div className={css.account}>
@@ -42,21 +24,61 @@ const AccountPage: FC = () => {
           <div className={css.avatar}>
             <img src={avatar}/>
           </div>
-          <Input
-            className={css.input}
-            label="用户名"
-            placeholder="请输入用户名"
-            value={nameValue}
-            onChange={handleNameChange}
-            error={!trimmedName}
-          />
-          <Button
-            onClick={handleNameSave}
-            disabled={trimmedName === name || !trimmedName}
-            loading={nameSpinning}
+          <Formik<AccountFormValues>
+            initialValues={{ name }}
+            validate={values => {
+              let errors = {} as AccountFormValues;
+              if (!values.name.trim()) {
+                errors.name = "用户名不允许为空";
+              }
+              return errors;
+            }}
+            onSubmit={async (values) => {
+              const { name } = values;
+              const response = (await axios.post("/paas/api/user/setUserInfo", {
+                userId: id,
+                name
+              })).data;
+
+              if (response.code === 1) {
+                setUser({name});
+                message.success("个人设置已更新");
+              } else {
+                message.error(response.msg);
+              }
+            }}
+            enableReinitialize
           >
-            保 存
-          </Button>
+            {({
+              values,
+              dirty,
+              isValid,
+              isSubmitting,
+              submitForm,
+              handleChange
+            }) => {
+              return (
+                <>
+                  <FormFiled label="用户名" className={css.input}>
+                    <Input
+                      name="name"
+                      placeholder="请输入用户名"
+                      value={values.name}
+                      onChange={handleChange}
+                      error={!isValid}
+                    />
+                  </FormFiled>
+                  <Button
+                    onClick={submitForm}
+                    disabled={!dirty || !isValid}
+                    loading={isSubmitting}
+                  >
+                    保 存
+                  </Button>
+                </>
+              )
+            }}
+          </Formik>
         </div>
       </div>
     </div>

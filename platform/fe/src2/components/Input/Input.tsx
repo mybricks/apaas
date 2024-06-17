@@ -4,8 +4,9 @@ import classNames from "classnames";
 import css from "./Input.less";
 
 interface InputProps {
+  name: string;
   value: string;
-  onChange: (value: string) => void;
+  onChange: React.ChangeEventHandler<HTMLInputElement>;
   error?: boolean;
   className?: string;
   label?: string;
@@ -13,7 +14,16 @@ interface InputProps {
   autoFocus?: boolean;
 }
 
-const Input: FC<InputProps> = ({ value, onChange, error, className, label, placeholder, autoFocus }) => {
+const Input: FC<InputProps> = ({
+  name,
+  value,
+  onChange,
+  error,
+  className,
+  label,
+  placeholder,
+  autoFocus
+}) => {
   return (
     <div className={classNames(css.input, className)}>
       {label && (
@@ -22,10 +32,11 @@ const Input: FC<InputProps> = ({ value, onChange, error, className, label, place
         </label>
       )}
       <input
+        name={name}
         className={classNames({[css.error]: error})}
         placeholder={placeholder}
         value={value}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={onChange}
         autoFocus={autoFocus}
       />
     </div>
