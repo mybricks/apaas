@@ -209,12 +209,17 @@ export default class SystemController {
 
 function getAppNameById(pm_id) {
   try {
-    const stdout = childProcess.execSync(`npx pm2 describe ${pm_id}`).toString();
+    const stdout = childProcess.execSync(`npx pm2 info ${pm_id}`).toString();
     const nameMatch = stdout.match(/Describing process with id \d+ - name (\S+)/);
-    if (nameMatch && nameMatch[1]) {
+    if (!nameMatch?.[1]) {
+      const nameMatch2 = stdout.match(/monitor CPU and Memory usage (\S+)/);
+      if (!nameMatch2?.[1]) {
+        return nameMatch2[1].trim()
+      }
+    } else {
       return nameMatch[1].trim()
     }
   } catch (error) {
-    
+
   }
 }
