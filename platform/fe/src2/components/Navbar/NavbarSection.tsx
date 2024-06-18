@@ -1,12 +1,14 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import classNames from "classnames";
+import { Tooltip } from "antd";
 
 import css from "./NavbarSection.less";
 
 interface NavbarSectionProps<T> {
   value: T;
   options: {
-    label: string;
+    tip?: string;
+    label: string | ReactNode;
     value: T;
   }[];
   onChange?: (value: T) => void;
@@ -19,8 +21,8 @@ function NavbarSection<T extends string>({
 }: NavbarSectionProps<T>) {
   return (
     <div className={css.navbarSection}>
-      {options.map(({ label, value: optionValue }) => {
-        return (
+      {options.map(({ label, value: optionValue, tip }) => {
+        const segment = (
           <div
             className={classNames(css.segment, {
               [css.active]: value === optionValue, 
@@ -31,6 +33,16 @@ function NavbarSection<T extends string>({
             <span>{label}</span>
           </div>
         )
+
+        if (tip) {
+          return (
+            <Tooltip placement="bottomRight" title={tip} arrow={false}>
+              {segment}
+            </Tooltip>
+          )
+        }
+
+        return segment;
       })}
     </div>
   )

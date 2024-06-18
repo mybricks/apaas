@@ -8,18 +8,17 @@
   font-size: 13px;
   color: rgba(0, 0, 0, 0.85);
   cursor: pointer;
-  padding: 8px 12px;
+  padding: 8px 12px 8px 20px;
   height: 32px;
 
-  // .icon {
-  //   margin-right: 12px;
-  // }
-
   svg {
+    opacity: 0.55;
+  }
+
+  .icon {
     width: 16px;
     height: 16px;
-    opacity: 0.55;
-    margin-right: 12px;
+    margin-right: 8px;
   }
 
   &:hover {
@@ -35,10 +34,7 @@
   }
 
   img {
-    width: 16px;
-    height: 16px;
     opacity: 0.55;
-    margin-right: 12px;
     transform: scale(1.25); // TODO: 原先icon设置为宽高20px，暂时兼容，后续应用重新设计icon
   }
 }
