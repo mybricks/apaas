@@ -1,14 +1,12 @@
 import React, { FC, ReactNode, useState, useEffect, memo } from "react";
 import { NavigateFunction } from "react-router-dom";
 
-import { MenuButton, Link } from "@/components";
+import { MenuButton } from "@/components";
 import { TreeNode } from ".";
 import { Files } from "../..";
-import { CaretRight, Loading, Folder, UserGroup } from "@/components/icon";
+import { Folder, UserGroup } from "@/components/icon";
 import { useToggle } from "@/hooks";
 import NodeSwitch from "../NodeSwitch";
-
-import css from "./FilesMenuTree.less";
 
 interface FilesMenuTreeProps {
   id?: string;
@@ -19,27 +17,27 @@ interface FilesMenuTreeProps {
   name: string;
   node: TreeNode;
   navigate: NavigateFunction;
-  getFiles: (id: string) => Promise<Files>; // 返回文件列表
+  getFiles: (id: string) => Promise<Files>;
 }
 
 const FilesMenuTree: FC<FilesMenuTreeProps> = memo(({
   id,
   depth = 0,
   icon,
-  search, // 有search就是可被选中的
+  search,
   activeSearch,
   name,
   node,
   navigate,
   getFiles
 }) => {
-  const [open, toggleOpen] = useToggle(node.open); // 展开
-  const [loading, setLoading] = useState(open && search ? true : false); // 展开加载
-  const [files, setFiles] = useState<Files>([]); // 文件列表
+  const [open, toggleOpen] = useToggle(node.open);
+  const [loading, setLoading] = useState(open && search ? true : false);
+  const [files, setFiles] = useState<Files>([]);
   
   useEffect(() => {
     node.open = open;
-    if (open && search) {
+    if (open) {
       setLoading(true);
       getFiles(id).then((files) => {
         setFiles(files);
@@ -52,7 +50,9 @@ const FilesMenuTree: FC<FilesMenuTreeProps> = memo(({
     if (!open) {
       toggleOpen();
     }
-    navigate(search);
+    if (search) {
+      navigate(search);
+    }
   }
 
   return (

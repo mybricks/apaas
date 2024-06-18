@@ -1,12 +1,12 @@
 import page from "./FilesPage";
 import header from "./FilesHeader";
-import { id, FilesMenuButton as button } from "./FilesMenuButton";
+import button from "./FilesMenuButton";
 import { FilesProvider } from "./FilesProvider";
 
 export { button };
 
 export default {
-  id,
+  id: "files",
   page,
   header,
   provider: FilesProvider

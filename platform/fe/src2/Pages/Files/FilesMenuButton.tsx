@@ -1,70 +1,51 @@
-import React, { FC, useEffect, useRef } from "react";
-import axios from "axios";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import React, { FC, useRef } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
-import { useUserContext, useLocationConetxt } from "@/context";
-import { MenuButton, Link } from "@/components";
-import { Account, CaretRight, Loading } from "@/components/icon";
-import FilesMenuTree, { TreeNode } from "./components/FilesMenuTree";
+import { useUserContext } from "@/context";
+import { TreeNode } from "./components/FilesMenuTree";
 import { storage } from "@/utils/local";
 import { isObject } from "@/utils/type";
-import { MYBRICKS_WORKSPACE_DEFAULT_MY_FILETREE } from "@/const";
+import { MYBRICKS_WORKSPACE_DEFAULT_MY_FILETREE, MYBRICKS_WORKSPACE_DEFAULT_GROUP_FILETREE } from "@/const";
+import MyMenuButton from "./components/MyMenuButton";
+import GroupMenuButton from "./components/GroupMenuButton";
 
-import css from "./FilesMenuButton.less";
-
-const id = "files";
-const search = `?appId=${id}`;
 
 const FilesMenuButton: FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { search: activeSearch } = location;
   const { user: { id: userId } } = useUserContext();
-  const ref = useRef<TreeNode>();
+  const ref = useRef<{my: TreeNode, group: TreeNode}>();
 
   if (!ref.current) {
-    ref.current = getProxyTreeNode(MYBRICKS_WORKSPACE_DEFAULT_MY_FILETREE);
+    ref.current = {
+      my: getProxyTreeNode(MYBRICKS_WORKSPACE_DEFAULT_MY_FILETREE),
+      group: getProxyTreeNode(MYBRICKS_WORKSPACE_DEFAULT_GROUP_FILETREE),
+    };
   }
+
+  const isMy = activeSearch === "?appId=files" || activeSearch.startsWith("?appId=files&parentId")
+  const isGroup = activeSearch.startsWith("?appId=files&groupId");
   
   return (
-    <FilesMenuTree
-      icon={<Account />}
-      search={`?appId=files`}
-      activeSearch={activeSearch.startsWith("?appId=files") ? activeSearch : null}
-      name={"我的"}
-      node={ref.current}
-      navigate={navigate}
-      getFiles={async (id) => {
-        const parentId = id ? id.split('-')[1] : null;
-        const files = (await axios.get("/paas/api/file/getMyFiles", {
-          params: {
-            userId,
-            extNames: "folder",
-            parentId
-          }
-        })).data.data;
-
-        return files;
-      }}
-    />
-    // <Link to={search}>
-    //   <MenuButton
-    //     icon={<Account />}
-    //     search={search}
-    //     prefix={<span className={css.icon}><CaretRight /></span>}
-    //     className={css.filesMenuButton}
-    //   >
-    //     我的
-    //   </MenuButton>
-    // </Link>
+    <>
+      <MyMenuButton
+        userId={userId}
+        activeSearch={isMy ? activeSearch : null}
+        node={ref.current.my}
+        navigate={navigate}
+      />
+      <GroupMenuButton
+        userId={userId}
+        activeSearch={isGroup ? activeSearch : null}
+        node={ref.current.group}
+        navigate={navigate}
+      />
+    </>
   )
 }
 
-export {
-  id,
-  FilesMenuButton
-};
-
+export default FilesMenuButton;
 
 const getProxyTreeNode = (key: string) => {
   const node = storage.get(key) || {
