@@ -279,3 +279,13 @@ export const Icon: FC<{ icon: string | ReactNode }> = ({ icon }) => {
     <img src={icon}/>
   ) : icon
 }
+
+export const Plus: FC = () => {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+      <g id="16x16/Filled/Plus" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <path d="M8.25 2a.75.75 0 01.75.75V7.5h4.75a.75.75 0 110 1.5H9v4.75a.75.75 0 11-1.5 0V8.999L2.75 9a.75.75 0 010-1.5l4.75-.001V2.75A.75.75 0 018.25 2z" id="plus" fill="currentColor" fill-rule="nonzero"></path>
+      </g>
+    </svg>
+  )
+}

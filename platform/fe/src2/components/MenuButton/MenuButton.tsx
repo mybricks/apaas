@@ -3,13 +3,13 @@ import classNames from "classnames";
 
 import { Icon } from "@/components/icon";
 import { useLocationConetxt } from "@/context";
-import { LocationContext } from "@/types";
 
 import css from "./MenuButton.less";
 
 interface MenuButtonProps extends PropsWithChildren {
   icon: string | ReactNode;
-  style: CSSProperties;
+  style?: CSSProperties;
+  clickable?: boolean;
   className?: string;
   search?: string;
   prefix?: ReactNode;
@@ -25,19 +25,20 @@ const MenuButton: FC<MenuButtonProps> = ({
   active,
   onClick,
   prefix,
-  children
+  children,
+  clickable = true
 }) => {
   const isactive = active || (search ? useLocationConetxt().search === search : false);
 
   return (
     <button
-      className={classNames(css.menuButton, className, { [css.active]: isactive })}
+      className={classNames(css.menuButton, { [css.clickable]: clickable, [css.active]: isactive }, className)}
       style={style}
       onClick={onClick}
     >
       {prefix}
       {icon && <span className={css.icon}><Icon icon={icon}/></span>}
-      <span>
+      <span className={css.children}>
         {children}
       </span>
     </button>

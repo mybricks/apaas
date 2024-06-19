@@ -1,0 +1,31 @@
+.addGroupButton {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+
+  button {
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+    display: inline-flex;
+    color: hsla(0, 0%, 0%, 0.55);
+    justify-content: center;
+    margin-left: auto;
+    padding: 4px;
+    margin-right: -12px;
+    position: relative;
+    border-radius: 6px;
+    transition: color 100ms cubic-bezier(0.4, 0.0, 0.2, 1);
+    opacity: 1;
+
+    &:hover {
+      background-color: hsla(0, 0%, 0%, 0.04);
+    }
+
+    svg {
+      width: 16px;
+      height: 16px;
+    }
+  }
+}

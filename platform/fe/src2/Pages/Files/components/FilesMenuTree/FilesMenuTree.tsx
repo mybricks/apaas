@@ -10,11 +10,12 @@ import NodeSwitch from "../NodeSwitch";
 
 interface FilesMenuTreeProps {
   id?: string;
+  clickable?: boolean;
   depth?: number;
   icon: ReactNode;
   search?: string;
   activeSearch?: string;
-  name: string;
+  name: string | ReactNode;
   node: TreeNode;
   navigate: NavigateFunction;
   getFiles: (id: string) => Promise<Files>;
@@ -22,7 +23,8 @@ interface FilesMenuTreeProps {
 
 const FilesMenuTree: FC<FilesMenuTreeProps> = memo(({
   id,
-  depth = 0,
+  clickable = true,
+  depth = 1,
   icon,
   search,
   activeSearch,
@@ -59,37 +61,42 @@ const FilesMenuTree: FC<FilesMenuTreeProps> = memo(({
     <>
       <MenuButton
         icon={icon}
+        clickable={clickable}
         active={search === activeSearch}
-        style={{paddingLeft: 4 + depth * 12}}
+        style={{ paddingLeft: 4 }}
         prefix={<NodeSwitch loading={loading} open={open} onClick={toggleOpen}/>}
         onClick={handleMenuButtonClick}
       >
         {name}
       </MenuButton>
-      {open && !loading && files.map((file) => {
-        const { id, name, extName, groupId } = file;
-        const isGroup = !!!extName && !!id;
-        const nextNode = node.node;
+      {open && !loading && (
+        <div style={{ marginLeft: depth * 16 }}>
+          {files.map((file) => {
+            const { id, name, extName, groupId } = file;
+            const isGroup = !!!extName && !!id;
+            const nextNode = node.node;
 
-        if (!nextNode[id]) {
-          nextNode[id] = { open: false, node: {} };
-        }
+            if (!nextNode[id]) {
+              nextNode[id] = { open: false, node: {} };
+            }
 
-        return (
-          <FilesMenuTree
-            key={id}
-            id={isGroup ? String(id) : `${groupId}-${id}`}
-            search={`?appId=files${isGroup ? `&groupId=${id}` : `${groupId ? `&groupId=${groupId}` : ''}${id ? `&parentId=${id}` : ''}`}`}
-            name={name}
-            depth={depth + 1}
-            icon={isGroup ? <UserGroup /> : <Folder />} // TODO
-            node={nextNode[id]}
-            activeSearch={activeSearch}
-            navigate={navigate}
-            getFiles={getFiles}
-          />
-        )
-      })}
+            return (
+              <FilesMenuTree
+                key={id}
+                id={isGroup ? String(id) : `${groupId}-${id}`}
+                search={`?appId=files${isGroup ? `&groupId=${id}` : `${groupId ? `&groupId=${groupId}` : ''}${id ? `&parentId=${id}` : ''}`}`}
+                name={name}
+                depth={depth + 1}
+                icon={isGroup ? <UserGroup /> : <Folder />} // TODO
+                node={nextNode[id]}
+                activeSearch={activeSearch}
+                navigate={navigate}
+                getFiles={getFiles}
+              />
+            )
+          })}
+        </div>
+      )}
     </>
   )
 }, (p, c) => {

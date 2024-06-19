@@ -21,15 +21,22 @@
     margin-right: 8px;
   }
 
-  &:hover {
-    background-color: rgba(0, 0, 0, 0.04);
+  .children {
+    flex: 1;
+    text-align: left;
+  }
 
-    svg {
-      opacity: 1;
-    }
-
-    img {
-      opacity: 1;
+  &.clickable {
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.04);
+  
+      svg {
+        opacity: 1;
+      }
+  
+      img {
+        opacity: 1;
+      }
     }
   }
 

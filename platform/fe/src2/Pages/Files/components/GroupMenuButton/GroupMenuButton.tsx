@@ -5,6 +5,7 @@ import axios from "axios";
 import FilesMenuTree from "../FilesMenuTree";
 import { UserGroup } from "@/components/icon";
 import { TreeNode } from "../FilesMenuTree";
+import AddGroupButton from "../AddGroupButton";
 
 interface GroupMenuButtonProps {
   userId: number;
@@ -22,8 +23,9 @@ const GroupMenuButton: FC<GroupMenuButtonProps> = ({
   return (
     <FilesMenuTree
       icon={<UserGroup />}
+      clickable={false}
       activeSearch={activeSearch}
-      name={"我加入的协作组"}
+      name={<AddGroupButton />}
       node={node}
       navigate={navigate}
       getFiles={async (id) => {
@@ -50,6 +52,5 @@ const GroupMenuButton: FC<GroupMenuButtonProps> = ({
     />
   )
 }
-
 
 export default GroupMenuButton;
