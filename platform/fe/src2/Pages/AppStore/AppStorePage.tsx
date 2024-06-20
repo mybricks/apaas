@@ -1,11 +1,11 @@
 // TODO: Next
 import React from 'react'
 
-import { useAppConetxt, useUserContext } from '@/context';
+import { useWorkspaceConetxt, useUserContext } from '@/context';
 import AppList from "./appList";
 
 const AppStorePage = () => {
-  const { apps: { installedApps}, system } = useAppConetxt();
+  const { apps: { installedApps}, system } = useWorkspaceConetxt();
   const { user } = useUserContext();
 	
 	return (

@@ -10,7 +10,7 @@ import axios from 'axios'
 import moment from 'moment'
 import {message} from 'antd'
 
-import { useAppConetxt, useUserContext } from '@/context'
+import { useWorkspaceConetxt, useUserContext } from '@/context'
 
 import styles from './TrashPage.less'
 
@@ -51,7 +51,7 @@ const TrashPage: FC = () => {
 }
 
 const ProjectItem = ({ item, user, refresh }) => {
-  const { apps: { getAppByNamespace } } = useAppConetxt();
+  const { apps: { getAppByNamespace } } = useWorkspaceConetxt();
 
 	const appReg = getAppByNamespace(item.extName)
 	const recover = useCallback((event) => {

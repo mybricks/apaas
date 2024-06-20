@@ -13,7 +13,7 @@ import UserManagement from "@/Pages/UserManagement";
 import StaticFiles from "@/Pages/StaticFiles";
 import Settings from "@/Pages/Settings";
 
-import css from "./index.less";
+import css from "./Content.less";
 
 const CONTENT_MAP: {[key: string]: {
   header: FC,

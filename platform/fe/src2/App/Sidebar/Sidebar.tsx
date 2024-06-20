@@ -4,7 +4,7 @@ import Header from "./components/Header";
 import Content from "./components/Content";
 import Footer from "./components/Footer";
 
-import css from "./index.less";
+import css from "./Sidebar.less";
 
 const Sidebar: FC = () => {
   return (

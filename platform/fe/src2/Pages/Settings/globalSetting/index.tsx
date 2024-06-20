@@ -15,7 +15,7 @@ import {SettingOutlined, LeftOutlined, EllipsisOutlined } from '@ant-design/icon
 // import AppCtx, { T_App } from '../../AppCtx'
 
 import { InstalledApp } from "@/types"
-import { useAppConetxt, useUserContext } from "@/context";
+import { useWorkspaceConetxt, useUserContext } from "@/context";
 
 import SchemaSetting, {SettingItem} from './schemaSetting'
 import { DiagnosticsIcon, LogIcon, MonitorIcon, OssIcon } from './icon'
@@ -96,7 +96,7 @@ export default () => {
   // const appCtx = observe(AppCtx, {from: 'parents'})
   // const user = appCtx.user
 
-  const { apps: { installedApps } } = useAppConetxt();
+  const { apps: { installedApps } } = useWorkspaceConetxt();
 
   const user = useUserContext();
 

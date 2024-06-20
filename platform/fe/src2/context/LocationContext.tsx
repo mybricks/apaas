@@ -1,9 +1,9 @@
-import React, { FC, useMemo, PropsWithChildren, createContext, useContext, useRef, ReactNode, useEffect } from "react";
-import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
+import React, { FC, PropsWithChildren, createContext, useContext, useRef } from "react";
+import { useSearchParams } from "react-router-dom";
 
 import Files from "@/Pages/Files";
 
-export interface LocationContext {
+export interface LocationContextValue {
   size: number;
   search: string;
   params: {
@@ -13,15 +13,15 @@ export interface LocationContext {
   }
 }
 
-const locationContext = createContext<LocationContext>({} as LocationContext);
+const LocationContext = createContext<LocationContextValue>({} as LocationContextValue);
 
 interface LocationProviderProps extends PropsWithChildren {}
 
 const DEFAULT_APPID = Files.id;
 
-export const LocationProvider: FC<LocationProviderProps> = ({ children }) => {
+const LocationProvider: FC<LocationProviderProps> = ({ children }) => {
   const [searchParams] = useSearchParams();
-  const ref = useRef<LocationContext>();
+  const ref = useRef<LocationContextValue>();
   const { current } = ref;
   const appId = searchParams.get("appId");
   const paramsSize = searchParams.size;
@@ -49,12 +49,17 @@ export const LocationProvider: FC<LocationProviderProps> = ({ children }) => {
   }
 
   return (
-    <locationContext.Provider value={ref.current}>
+    <LocationContext.Provider value={ref.current}>
       {children}
-    </locationContext.Provider>
+    </LocationContext.Provider>
   );
 }
 
-export const useLocationConetxt = () => {
-  return useContext(locationContext);
+const useLocationConetxt = () => {
+  return useContext(LocationContext);
+}
+
+export {
+  LocationProvider,
+  useLocationConetxt
 }

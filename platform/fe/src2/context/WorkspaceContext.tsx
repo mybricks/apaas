@@ -1,14 +1,12 @@
 import React, { FC, createContext, useContext, PropsWithChildren } from "react";
 
-import { initUser, User, UserProvider, useUserContext } from "./user";
+import { initUser, User, UserProvider } from "./UserContext";
 import { initSystem, System } from "./system";
 import { initApps, Apps } from "./app";
-import { LocationProvider, useLocationConetxt } from "./location";
-import { ModalProvider, useModalConetxt} from "./model";
+import { LocationProvider } from "./LocationContext";
+import { ModalProvider } from "./ModelContext";
 
-export { useLocationConetxt, useUserContext, useModalConetxt };
-
-export class App {
+class Workspace {
   user: User;
   system: System;
   apps: Apps;
@@ -35,23 +33,22 @@ export class App {
   }
 }
 
-interface AppContext {
-  system: App["system"];
-  apps: App["apps"]
-  getUserSystemConfig: App["getUserSystemConfig"];
+interface WorkspaceContextValue {
+  system: Workspace["system"];
+  apps: Workspace["apps"]
+  getUserSystemConfig: Workspace["getUserSystemConfig"];
 }
 
-const appContext = createContext<AppContext>({} as AppContext);
+const WorkspaceContext = createContext<WorkspaceContextValue>({} as WorkspaceContextValue);
 
-interface AppContextProviderProps extends PropsWithChildren {
-  value: App;
+interface WorkspaceContextProviderProps extends PropsWithChildren {
+  value: Workspace;
 }
 
-export const AppContextProvider: FC<AppContextProviderProps> = ({ value, children }) => {
-  console.log("AppContextProvider 接受 value: ", value)
+const AppContextProvider: FC<WorkspaceContextProviderProps> = ({ value, children }) => {
   const { user, system, apps, getUserSystemConfig } = value;
   return (
-    <appContext.Provider value={{ apps, system, getUserSystemConfig: getUserSystemConfig.bind(value) }}>
+    <WorkspaceContext.Provider value={{ apps, system, getUserSystemConfig: getUserSystemConfig.bind(value) }}>
       <ModalProvider>
         <UserProvider value={user}>
           <LocationProvider>
@@ -59,16 +56,16 @@ export const AppContextProvider: FC<AppContextProviderProps> = ({ value, childre
           </LocationProvider>
         </UserProvider>
       </ModalProvider>
-    </appContext.Provider>
+    </WorkspaceContext.Provider>
   )
 };
 
-export const useAppConetxt = () => {
-  return useContext(appContext);
+const useWorkspaceConetxt = () => {
+  return useContext(WorkspaceContext);
 }
 
 /** 数据初始化 */
-export async function initContext() {
+const initContext = async () => {
   console.log("开始初始化信息")
 
   const [user, system, apps] = await Promise.all([
@@ -81,5 +78,12 @@ export async function initContext() {
   console.log("系统信息: ", system);
   console.log('安装应用: ', apps)
 
-  return new App({ user, system, apps });
+  return new Workspace({ user, system, apps });
 }
+
+export {
+  WorkspaceContextValue,
+  AppContextProvider,
+  initContext,
+  useWorkspaceConetxt,
+};

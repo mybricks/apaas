@@ -10,7 +10,7 @@ import {
   Switch,
 } from 'antd'
 // import AppCtx from '../../../AppCtx'
-import { useAppConetxt } from "@/context";
+import { useWorkspaceConetxt } from "@/context";
 import {observe} from '@mybricks/rxui'
 import styles from '../index.less'
 
@@ -24,7 +24,7 @@ const GlobalForm = ({ initialValues, onSubmit, style }) => {
   const [interfaceAuth, setInterfaceAuth] = useState(initialValues?.interfaceAuth)
   const [isPureIntranet, setIsPureIntranet] = useState(initialValues?.isPureIntranet)
   // const appCtx = observe(AppCtx, {from: 'parents'})
-  const { apps: { designApps } } = useAppConetxt();
+  const { apps: { designApps } } = useWorkspaceConetxt();
   const [appOptions, setAppOptions] = useState([])
   useEffect(() => {
     if (!initialValues) {

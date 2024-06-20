@@ -1,4 +1,4 @@
-export { LocationContext } from "@/context/location";
-export { App } from "@/context";
+export { LocationContextValue } from "@/context/LocationContext";
+export { WorkspaceContextValue } from "@/context/WorkspaceContext";
 export { InstalledApp, InstalledApps } from "@/context/app";
-export { ModalInjectedProps } from "@/context/model";
+export { ModalInjectedProps } from "@/context/ModelContext";

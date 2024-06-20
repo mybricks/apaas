@@ -1,13 +1,13 @@
 import React, { FC } from "react";
 
-import { useAppConetxt } from "@/context";
+import { useWorkspaceConetxt } from "@/context";
 import { Link } from "@/components";
 import Files from "@/Pages/Files";
 
 import css from "./Header.less";
 
 const Header: FC = () => {
-  const { system } = useAppConetxt();
+  const { system } = useWorkspaceConetxt();
 
   return (
     <div className={css.header}>

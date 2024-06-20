@@ -1,4 +1,4 @@
-import React, { FC, createContext, ReactNode, useState, useContext, PropsWithChildren } from "react";
+import React, { FC, createContext, useState, useContext, PropsWithChildren } from "react";
 import axios from "axios";
 import { message } from "antd";
 
@@ -45,12 +45,12 @@ export function initUser(): Promise<User> {
   })
 }
 
-interface UserContext {
+interface UserContextValue {
   user: User;
   setUser: ({ name }: { name: string }) => void;
 }
 
-const userContext = createContext<UserContext>({} as UserContext);
+const UserContext = createContext<UserContextValue>({} as UserContextValue);
 
 interface UserProviderProps extends PropsWithChildren {
   value: User;
@@ -67,12 +67,12 @@ export const UserProvider: FC<UserProviderProps> = ({ value, children }) => {
   }
 
   return (
-    <userContext.Provider value={{ user, setUser: handleSetUser }}>
+    <UserContext.Provider value={{ user, setUser: handleSetUser }}>
       {children}
-    </userContext.Provider>
+    </UserContext.Provider>
   );
 }
 
 export const useUserContext = () => {
-  return useContext(userContext);
+  return useContext(UserContext);
 }

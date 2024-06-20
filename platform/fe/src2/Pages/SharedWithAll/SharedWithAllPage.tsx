@@ -10,7 +10,7 @@ import React, {
 import axios from 'axios'
 import {message} from 'antd'
 
-import { useAppConetxt } from '@/context'
+import { useWorkspaceConetxt } from '@/context'
 import { unifiedTime } from "@/utils/time";
 
 import css from './SharedWithAllPage.less'
@@ -18,7 +18,7 @@ import css from './SharedWithAllPage.less'
 const pageSize = 50
 
 const SharedWithAllPage: FC = () => {
-  const { apps: { getAppByNamespace } } = useAppConetxt();
+  const { apps: { getAppByNamespace } } = useWorkspaceConetxt();
 
 	const scrollRef = useRef<HTMLDivElement>()
 	const [fileList, setFileList] = useState([])
