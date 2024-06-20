@@ -136,16 +136,9 @@ npm run start
 > 启动后服务将使用 npx pm2 来管理服务，可以使用 npx pm2 的各类命令
 
 ## 关于我们
-<div style="display: flex">
-  <div style="display: flex; flex-direction: column; align-items: center; margin-right: 40px">
-    <img style="width: 100; padding-bottom: 10px" src="https://assets.mybricks.world/files/534065092341829/oPEpNIoyu0nJCyCP7p7vxZsMgertvWIz-1708313472738.png" />
-    合作咨询
-  </div>
-  <div style="display: flex; flex-direction: column; align-items: center">
-    <img style="width: 100; padding-bottom: 10px" src="https://assets.mybricks.world/files/534065092341829/YDbNRhFeeyeMorgGiODjgNFTYMhnivh2-1708313464390.jpeg" />
-    关注我们
-  </div>
-</div>
+<img style="width: 100px; margin-bottom: 10px" src="https://assets.mybricks.world/files/534065092341829/YDbNRhFeeyeMorgGiODjgNFTYMhnivh2-1708313464390.jpeg" />
+
+关注我们，获取更多专业信息
 
 ## 了解更多
 - [MyBricks 文档](https://docs.mybricks.world/)
