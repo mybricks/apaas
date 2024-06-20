@@ -1,8 +1,9 @@
 import { Logger } from '@mybricks/rocker-commons';
-import { Inject, Injectable, Request } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import UserSessionDao from './../../dao/UserSessionDao';
 import FileDao from './../../dao/FileDao';
 import * as jwt from 'jsonwebtoken';
+import { Request } from 'express'
 const userConfig = require('./../../../../../scripts/shared/read-user-config.js')();
 
 @Injectable()
