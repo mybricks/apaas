@@ -18,7 +18,6 @@ const App: FC = () => {
   }, [])
 
   const render = () => {
-    console.log(9999)
     if (!appContextValue) {
       // TODO: 初始化等待时展示骨架屏，后续去除
       return <Skeleton active/>

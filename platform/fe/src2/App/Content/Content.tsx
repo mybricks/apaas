@@ -1,6 +1,6 @@
 import React, { FC, Fragment } from "react";
 
-import { useLocationConetxt } from "@/context";
+import { useWorkspaceConetxt, useLocationConetxt } from "@/context";
 import Header from "./components/Header";
 import Page from "./components/Page";
 import SharedWithAll from "@/Pages/SharedWithAll";
@@ -12,6 +12,7 @@ import OperationLog from "@/Pages/OperationLog";
 import UserManagement from "@/Pages/UserManagement";
 import StaticFiles from "@/Pages/StaticFiles";
 import Settings from "@/Pages/Settings";
+import InstalledApp from "@/Pages/InstalledApp";
 
 import css from "./Content.less";
 
@@ -32,13 +33,23 @@ const CONTENT_MAP: {[key: string]: {
 }
 
 const Content: FC = () => {
-  const { params: { appId, parentId, groupId } } = useLocationConetxt();
+  const { apps: { getApp } } = useWorkspaceConetxt();
+  const { params: { appId } } = useLocationConetxt();
 
   const {
     header: HeaderView,
     page: PageView,
     provider: ProviderView = Fragment
-  } = CONTENT_MAP[appId] || {};
+  } = CONTENT_MAP[appId] || (() => {
+    const app = getApp(appId);
+    if (app) {
+      return {
+        header: () => <InstalledApp.header {...app}/>,
+        page: () => <InstalledApp.page {...app}/>
+      }
+    }
+    return {}
+  })() as typeof CONTENT_MAP[string];
 
   return (
     <div className={css.content}>

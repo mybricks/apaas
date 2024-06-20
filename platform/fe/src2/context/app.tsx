@@ -13,7 +13,7 @@ export interface Apps {
   /** 文件夹 */
   folderApps: InstalledApps;
 
-  getAppByNamespace: (key: string) => InstalledApp;
+  getApp: (key: string) => InstalledApp;
 }
 
 export interface InstalledApp {
@@ -47,26 +47,19 @@ export function initApps(): Promise<Apps> {
         icon: <Folder />,
       },
     ];
-    const menuApps: InstalledApps = [
-      {
-        title: "大家的分享",
-        version: "1.0.0",
-        namespace: "sharedWithAll",
-        icon: <SharedWithAll />
-      },
-    ];
+    const menuApps: InstalledApps = [];
     const designApps: InstalledApps = [];
-    const namespaceToAppMap: {[key: string]: InstalledApp} = {};
+    const appMap: {[key: string]: InstalledApp} = {};
 
     folderApps.forEach((app) => {
       const { extName, namespace } = app;
-      namespaceToAppMap[namespace] = app;
-      namespaceToAppMap[extName] = app;
+      appMap[namespace] = app;
+      appMap[extName] = app;
     })
     menuApps.forEach((app) => {
       const { extName, namespace } = app;
-      namespaceToAppMap[namespace] = app;
-      namespaceToAppMap[extName] = app;
+      appMap[namespace] = app;
+      appMap[extName] = app;
     })
     apps.forEach((app) => {
       const { extName, namespace } = app;
@@ -79,8 +72,8 @@ export function initApps(): Promise<Apps> {
         }
       }
 
-      namespaceToAppMap[namespace] = app;
-      namespaceToAppMap[extName] = app;
+      appMap[namespace] = app;
+      appMap[extName] = app;
     })
 
     
@@ -90,8 +83,8 @@ export function initApps(): Promise<Apps> {
       installedApps: apps,
       designApps,
       folderApps,
-      getAppByNamespace(key: string) {
-        return namespaceToAppMap[key];
+      getApp(key: string) {
+        return appMap[key];
       }
     });
   })

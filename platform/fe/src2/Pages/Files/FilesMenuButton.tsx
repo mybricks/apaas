@@ -9,7 +9,6 @@ import { MYBRICKS_WORKSPACE_DEFAULT_MY_FILETREE, MYBRICKS_WORKSPACE_DEFAULT_GROU
 import MyMenuButton from "./components/MyMenuButton";
 import GroupMenuButton from "./components/GroupMenuButton";
 
-
 const FilesMenuButton: FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -24,7 +23,7 @@ const FilesMenuButton: FC = () => {
     };
   }
 
-  const isMy = activeSearch === "?appId=files" || activeSearch.startsWith("?appId=files&parentId")
+  const isMy = activeSearch === "?appId=files" || activeSearch.startsWith("?appId=files&parentId");
   const isGroup = activeSearch.startsWith("?appId=files&groupId");
   
   return (
