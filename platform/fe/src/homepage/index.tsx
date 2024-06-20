@@ -9,13 +9,14 @@ import AppCtx from './AppCtx'
 import Sideber from './sidebar'
 import Content from './content'
 
-import { NoAccess } from './../components'
+import { NoAccess, FixedTip } from './../components'
 
 import {
   storage,
   getApiUrl,
   getUrlQuery,
-  removeCookie
+  removeCookie,
+  isInBricksEnv
 } from '../utils'
 
 import { MYBRICKS_WORKSPACE_DEFAULT_PATH } from '../const'
@@ -169,6 +170,7 @@ export default function App() {
               <Content />
             </div>
           </div>
+          { isInBricksEnv && <FixedTip /> }
         </ConfigProvider>
       ) : (
         <NoAccess />

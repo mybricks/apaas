@@ -13,7 +13,7 @@ import {observe} from '@mybricks/rxui'
 import {SettingOutlined, LeftOutlined, EllipsisOutlined } from '@ant-design/icons'
 
 
-import {getApiUrl} from '../../../utils'
+import {getApiUrl, isInBricksEnv} from '../../../utils'
 import AppCtx, { T_App } from '../../AppCtx'
 import SchemaSetting, {SettingItem} from './schemaSetting'
 import { DiagnosticsIcon, LogIcon, MonitorIcon, OssIcon } from './icon'
@@ -28,7 +28,7 @@ interface MenuItem extends T_App {
 
 import styles from './index.less'
 import Term from './term'
-import Monitor from './items/monitor'
+import Monitor2 from './items/monitor2'
 import Diagnostics from './items/diagnostics'
 
 interface TabsProps {
@@ -50,7 +50,7 @@ const SystemConfigItems = [
   { title: '系统诊断', namespace: 'mybricks-diagnostics', icon: <DiagnosticsIcon /> },
   // { title: '更多', namespace: 'about', icon: <EllipsisOutlined /> }
 ]
-if(location.href.indexOf('mybricks.world') !== -1 || location.href.indexOf('localhost') !== -1) {
+if(isInBricksEnv) {
   SystemConfigItems.splice(SystemConfigItems.length - 1, 0, { title: '监控与统计', namespace: 'mybricks-monitor', icon: <MonitorIcon />})
 }
 
@@ -213,7 +213,8 @@ export default () => {
       }
       case activeKey === 'mybricks-monitor': {
         return (
-          <Monitor />
+
+          <Monitor2 />
         )
       }
       case activeKey === 'mybricks-diagnostics': {
