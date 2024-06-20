@@ -5,6 +5,7 @@ import { initSystem, System } from "./system";
 import { initApps, Apps } from "./app";
 import { LocationProvider } from "./LocationContext";
 import { ModalProvider } from "./ModelContext";
+import { FilesProvider } from "./FilesContext";
 
 class Workspace {
   user: User;
@@ -52,7 +53,9 @@ const AppContextProvider: FC<WorkspaceContextProviderProps> = ({ value, children
       <ModalProvider>
         <UserProvider value={user}>
           <LocationProvider>
-            {children}
+            <FilesProvider>
+              {children}
+            </FilesProvider>
           </LocationProvider>
         </UserProvider>
       </ModalProvider>
