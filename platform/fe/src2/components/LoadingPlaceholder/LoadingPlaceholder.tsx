@@ -5,7 +5,7 @@ import css from "./LoadingPlaceholder.less";
 
 interface LoadingPlaceholderProps {
   className?: string;
-  size?: number;
+  size?: 16 | 24 | 64;
   primary?: boolean;
 }
 
@@ -34,7 +34,7 @@ const LoadingPlaceholder: FC<LoadingPlaceholderProps> = ({
     <span
       style={{
         width: size,
-        fontSize: `${BAR_HEIGHT[size]}px`,
+        fontSize: `${BAR_HEIGHT[size] || 6}px`,
         color: primary ? "rgb(255, 255, 255)" : "rgba(0, 0, 0, 0.55)",
         "--loading-inner-bar-width": `${INNER_BAR_WIDTH[size]}px`,
         "--loading-mountDelay": `${mountDelay}ms`,

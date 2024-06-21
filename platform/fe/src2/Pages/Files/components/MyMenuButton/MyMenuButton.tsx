@@ -5,19 +5,22 @@ import axios from "axios";
 import FilesMenuTree from "../FilesMenuTree";
 import { Account } from "@/components/icon";
 import { TreeNode } from "../FilesMenuTree";
+import { FilesMenuTreeContextValue } from "@/types";
 
 interface MyMenuButtonProps {
   userId: number;
   node: TreeNode;
   activeSearch?: string;
   navigate: NavigateFunction;
+  filesMenuTreeContext: FilesMenuTreeContextValue;
 }
 
 const MyMenuButton: FC<MyMenuButtonProps> = ({
   node,
   userId,
   activeSearch,
-  navigate
+  navigate,
+  filesMenuTreeContext
 }) => {
   return (
     <FilesMenuTree
@@ -27,6 +30,7 @@ const MyMenuButton: FC<MyMenuButtonProps> = ({
       name={"我的"}
       node={node}
       navigate={navigate}
+      filesMenuTreeContext={filesMenuTreeContext}
       getFiles={async (id) => {
         const parentId = id ? id.split('-')[1] : null;
         const files = (await axios.get("/paas/api/file/getMyFiles", {

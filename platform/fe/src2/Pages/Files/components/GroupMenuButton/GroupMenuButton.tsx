@@ -6,19 +6,22 @@ import FilesMenuTree from "../FilesMenuTree";
 import { UserGroup } from "@/components/icon";
 import { TreeNode } from "../FilesMenuTree";
 import AddGroupButton from "../AddGroupButton";
+import { FilesMenuTreeContextValue } from "@/types";
 
 interface GroupMenuButtonProps {
   userId: number;
   node: TreeNode;
   activeSearch?: string;
   navigate: NavigateFunction;
+  filesMenuTreeContext: FilesMenuTreeContextValue;
 }
 
 const GroupMenuButton: FC<GroupMenuButtonProps> = ({
   node,
   userId,
   activeSearch,
-  navigate
+  navigate,
+  filesMenuTreeContext
 }) => {
   return (
     <FilesMenuTree
@@ -28,6 +31,7 @@ const GroupMenuButton: FC<GroupMenuButtonProps> = ({
       name={<AddGroupButton />}
       node={node}
       navigate={navigate}
+      filesMenuTreeContext={filesMenuTreeContext}
       getFiles={async (id) => {
         const [groupId, parentId] = id?.split('-') || [];
         if (groupId) {

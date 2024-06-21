@@ -19,7 +19,7 @@ export interface File {
   name: string;
   icon: string;
   description?: string;
-  creatorId: string;
+  creatorId: number;
   creatorName: string;
   _createTime: number;
   _updateTime: number;
@@ -30,4 +30,17 @@ export interface File {
   updateTime: string;
 }
 
+
 export type Files = File[];
+
+export interface FilePath {
+  id?: number;
+  name: string;
+  parentId?: number;
+  groupId?: number;
+  extName?: string;
+}
+
+export type FilePaths = FilePath[];
+
+export type ViewType = "grid" | "list";

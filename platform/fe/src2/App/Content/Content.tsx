@@ -1,6 +1,6 @@
 import React, { FC, Fragment } from "react";
 
-import { useWorkspaceConetxt, useLocationConetxt } from "@/context";
+import { useWorkspaceConetxt, useAppRouterContext } from "@/context";
 import Header from "./components/Header";
 import Page from "./components/Page";
 import SharedWithAll from "@/Pages/SharedWithAll";
@@ -34,7 +34,7 @@ const CONTENT_MAP: {[key: string]: {
 
 const Content: FC = () => {
   const { apps: { getApp } } = useWorkspaceConetxt();
-  const { params: { appId } } = useLocationConetxt();
+  const appId = useAppRouterContext();
 
   const {
     header: HeaderView,

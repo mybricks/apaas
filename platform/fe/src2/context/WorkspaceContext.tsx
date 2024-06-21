@@ -3,9 +3,9 @@ import React, { FC, createContext, useContext, PropsWithChildren } from "react";
 import { initUser, User, UserProvider } from "./UserContext";
 import { initSystem, System } from "./system";
 import { initApps, Apps } from "./app";
-import { LocationProvider } from "./LocationContext";
 import { ModalProvider } from "./ModelContext";
-import { FilesProvider } from "./FilesContext";
+import { FilesMenuTreeProvider } from "./FilesMenuTreeContext";
+import { AppRouterContextProvider } from "./AppRouterContext";
 
 class Workspace {
   user: User;
@@ -52,11 +52,11 @@ const AppContextProvider: FC<WorkspaceContextProviderProps> = ({ value, children
     <WorkspaceContext.Provider value={{ apps, system, getUserSystemConfig: getUserSystemConfig.bind(value) }}>
       <ModalProvider>
         <UserProvider value={user}>
-          <LocationProvider>
-            <FilesProvider>
+          <AppRouterContextProvider>
+            <FilesMenuTreeProvider>
               {children}
-            </FilesProvider>
-          </LocationProvider>
+            </FilesMenuTreeProvider>
+          </AppRouterContextProvider>
         </UserProvider>
       </ModalProvider>
     </WorkspaceContext.Provider>

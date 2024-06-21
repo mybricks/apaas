@@ -442,7 +442,7 @@ function ConfigFormModal({
   okText = '确认',
   cancelText = '取消',
   bodyStyle = {
-    minHeight: 104
+    // minHeight: 104
   },
   defaultValues = {}
 }) {

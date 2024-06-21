@@ -1,7 +1,7 @@
 import React, { FC, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import { useUserContext } from "@/context";
+import { useUserContext, useFilesMenuTreeContext } from "@/context";
 import { TreeNode } from "./components/FilesMenuTree";
 import { storage } from "@/utils/local";
 import { isObject } from "@/utils/type";
@@ -10,6 +10,7 @@ import MyMenuButton from "./components/MyMenuButton";
 import GroupMenuButton from "./components/GroupMenuButton";
 
 const FilesMenuButton: FC = () => {
+  const filesMenuTreeContext = useFilesMenuTreeContext();
   const location = useLocation();
   const navigate = useNavigate();
   const { search: activeSearch } = location;
@@ -33,12 +34,14 @@ const FilesMenuButton: FC = () => {
         activeSearch={isMy ? activeSearch : null}
         node={ref.current.my}
         navigate={navigate}
+        filesMenuTreeContext={filesMenuTreeContext}
       />
       <GroupMenuButton
         userId={userId}
         activeSearch={isGroup ? activeSearch : null}
         node={ref.current.group}
         navigate={navigate}
+        filesMenuTreeContext={filesMenuTreeContext}
       />
     </>
   )

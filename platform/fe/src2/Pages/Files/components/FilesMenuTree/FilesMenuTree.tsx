@@ -7,11 +7,13 @@ import { Files } from "../..";
 import { Folder, UserGroup } from "@/components/icon";
 import { useToggle } from "@/hooks";
 import NodeSwitch from "../NodeSwitch";
+import { FilesMenuTreeContextValue } from "@/types";
+
+import css from "./FilesMenuTree.less";
 
 interface FilesMenuTreeProps {
   id?: string;
   clickable?: boolean;
-  depth?: number;
   icon: ReactNode;
   search?: string;
   activeSearch?: string;
@@ -19,23 +21,39 @@ interface FilesMenuTreeProps {
   node: TreeNode;
   navigate: NavigateFunction;
   getFiles: (id: string) => Promise<Files>;
+  filesMenuTreeContext: FilesMenuTreeContextValue;
 }
 
 const FilesMenuTree: FC<FilesMenuTreeProps> = memo(({
   id,
   clickable = true,
-  depth = 1,
   icon,
   search,
   activeSearch,
   name,
   node,
   navigate,
-  getFiles
+  getFiles,
+  filesMenuTreeContext
 }) => {
   const [open, toggleOpen] = useToggle(node.open);
   const [loading, setLoading] = useState(open && search ? true : false);
   const [files, setFiles] = useState<Files>([]);
+
+  useEffect(() => {
+    if (search) {
+      filesMenuTreeContext.registerNode(search, async () => {
+        if (node.open) {
+          getFiles(id).then((files) => {
+            setFiles(files);
+          });
+        }
+      })
+      return () => {
+        filesMenuTreeContext.unregisterNode(search);
+      }
+    }
+  }, [])
   
   useEffect(() => {
     node.open = open;
@@ -70,7 +88,7 @@ const FilesMenuTree: FC<FilesMenuTreeProps> = memo(({
         {name}
       </MenuButton>
       {open && !loading && (
-        <div style={{ marginLeft: depth * 16 }}>
+        <div className={css.nextFiles}>
           {files.map((file) => {
             const { id, name, extName, groupId } = file;
             const isGroup = !!!extName && !!id;
@@ -86,12 +104,12 @@ const FilesMenuTree: FC<FilesMenuTreeProps> = memo(({
                 id={isGroup ? String(id) : `${groupId}-${id}`}
                 search={`?appId=files${isGroup ? `&groupId=${id}` : `${groupId ? `&groupId=${groupId}` : ''}${id ? `&parentId=${id}` : ''}`}`}
                 name={name}
-                depth={depth + 1}
                 icon={isGroup ? <UserGroup /> : <Folder />} // TODO
                 node={nextNode[id]}
                 activeSearch={activeSearch}
                 navigate={navigate}
                 getFiles={getFiles}
+                filesMenuTreeContext={filesMenuTreeContext}
               />
             )
           })}

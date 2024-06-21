@@ -4,9 +4,9 @@ import classNames from "classnames";
 
 import css from "./Popover.less";
 
-const Popover: FC<PopoverProps> = (props) => {
+const Popover: FC<PopoverProps> = ({ overlayClassName, ...props }) => {
   return (
-    <Popover$1 {...props} overlayClassName={classNames(css.popover, props.overlayClassName)}/>
+    <Popover$1 {...props} overlayClassName={classNames(css.popover, overlayClassName)}/>
   );
 }
 

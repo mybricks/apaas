@@ -2,7 +2,7 @@ import React, { FC, ReactNode, PropsWithChildren, CSSProperties } from "react";
 import classNames from "classnames";
 
 import { Icon } from "@/components/icon";
-import { useLocationConetxt } from "@/context";
+import { useAppRouterContext } from "@/context";
 
 import css from "./MenuButton.less";
 
@@ -28,7 +28,7 @@ const MenuButton: FC<MenuButtonProps> = ({
   children,
   clickable = true
 }) => {
-  const isactive = active || (search ? useLocationConetxt().search === search : false);
+  const isactive = active || (search ? `?appId=${useAppRouterContext()}` === search : false);
 
   return (
     <button

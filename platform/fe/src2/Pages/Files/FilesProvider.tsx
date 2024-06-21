@@ -1,17 +1,147 @@
-import React, { FC, PropsWithChildren, useState, useContext } from "react";
+import React, { FC, PropsWithChildren, useState, useMemo, useContext, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
+import axios from "axios";
 
-interface FilesContext {
-  viewType: "grid" | "list";
-  setViewType: React.Dispatch<React.SetStateAction<FilesContext["viewType"]>>;
+import { Files, FilePaths, ViewType } from ".";
+import { useUserContext } from "@/context";
+import { storage } from "@/utils/local";
+import { MYBRICKS_WORKSPACE_DEFAULT_FILES_VIEWTYPE } from "@/const";
+
+interface FilesContextValue {
+  viewType: ViewType;
+  setViewType: React.Dispatch<React.SetStateAction<FilesContextValue["viewType"]>>;
+  loading: boolean;
+  filesInfo: {
+    roleDescription: number;
+    filePaths: FilePaths;
+    files: Files;
+    params: {
+      groupId?: string;
+      parentId?: string;
+    }
+  }
+  refreshFilesInfo: () => void
 }
 export interface FilesProviderProps extends PropsWithChildren {};
 
-const FilesContext = React.createContext<FilesContext>({} as FilesContext);
+const FilesContext = React.createContext<FilesContextValue>({} as FilesContextValue);
+
+/** 获取当前groupId下权限 */
+const fetchRoleDescription = async ({ groupId, userId }) => {
+  if (!groupId) {
+    return 1
+  }
+
+  const response = (await axios.get("/paas/api/userGroup/getUserGroupRelation", {
+    params: {
+      id: groupId,
+      userId,
+    }
+  })).data.data;
+
+  return response ? response.roleDescription : 3;
+}
+
+/** 获取文件路径 */
+const fetchFilePaths = async ({ groupId, parentId }) => {
+  return (await axios.get("/paas/api/file/getFilePath", {
+    params: {
+      fileId: parentId,
+      groupId
+    }
+  })).data.data;
+}
+
+/** 获取文件列表 */
+const fetchFiles = async ({ groupId, parentId, userId }) => {
+  // 区分”协作组“和“我的”
+  return filesSort((await axios.get(`/paas/api/file/${groupId ? "getGroupFiles" : "getMyFiles"}`, {
+    params: {
+      userId,
+      parentId,
+      groupId
+    }
+  })).data.data);
+}
+
+/** 文件列表排序，将文件夹排在前面 */
+const filesSort = (files: Files) => {
+  // 参与排序替换位置，数字越大越靠前
+  const orderMap = {
+    'folder': 1
+  }
+  return files.sort((c, s) => {
+    const cNum = orderMap[c.extName] || -1
+    const sNum = orderMap[s.extName] || -1
+
+    return sNum - cNum
+  })
+}
+// TODO: Next
+const fetchFilesInfo = ({ userId, groupId, parentId }: any, next) => {
+  Promise.all([
+    fetchRoleDescription({ groupId, userId }),
+    fetchFilePaths({ groupId, parentId }),
+    fetchFiles({ groupId, userId, parentId })
+  ]).then(([roleDescription, filePaths, files]) => {
+    next({
+      roleDescription,
+      filePaths: (!groupId ? [{id: null, name: '我的', parentId: null, groupId: null, extName: null}] : [] as FilePaths).concat(filePaths),
+      files,
+      params: {
+        groupId,
+        parentId
+      }
+    });
+  })
+}
+
+const DEFAULT_VIEWTYPE = storage.get(MYBRICKS_WORKSPACE_DEFAULT_FILES_VIEWTYPE) || "grid";
 
 export const FilesProvider: FC<FilesProviderProps> = ({ children }) => {
-  const [viewType, setViewType] = useState<FilesContext["viewType"]>("grid"); 
+  const { user: { id: userId } } = useUserContext();
+  const [searchParams] = useSearchParams();
+  const [viewType, setViewType] = useState<FilesContextValue["viewType"]>(DEFAULT_VIEWTYPE);
+  const [loading, setLoading] = useState(true);
+  const [filesInfo, setFilesInfo] = useState<FilesContextValue["filesInfo"]>({
+    roleDescription: 3,
+    filePaths: [],
+    files: [],
+    params: {}
+  })
+
+  useEffect(() => {
+    setLoading(true);
+
+    const groupId = searchParams.get("groupId");
+    const parentId = searchParams.get("parentId");
+
+    fetchFilesInfo({ userId, groupId, parentId }, (filesInfo) => {
+      setLoading(false);
+      setFilesInfo(filesInfo);
+    });
+  }, [searchParams])
+
+  const value = useMemo(() => {
+    storage.set(MYBRICKS_WORKSPACE_DEFAULT_FILES_VIEWTYPE, viewType);
+    return {
+      viewType,
+      loading,
+      filesInfo,
+      setViewType,
+      refreshFilesInfo: () => {
+        const { params } = filesInfo;
+        fetchFilesInfo({ userId, ...params }, (filesInfo) => {
+          setFilesInfo(filesInfo);
+        });
+      }
+    }
+  }, [viewType, loading, filesInfo])
+
   return (
-    <FilesContext.Provider value={{ viewType, setViewType }}>
+    <FilesContext.Provider
+      value={value}
+    >
       {children}
     </FilesContext.Provider>
   )
