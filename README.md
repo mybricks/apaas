@@ -4,7 +4,7 @@
   <a href="https://mybricks.world" target="blank"><img src="https://docs.mybricks.world/img/logo.png" width="90" alt="MyBricks APaaS Logo" /></a>
 </p>
 
-<h1 align="center">MyBricks APaaS</h1>
+<h1 align="center">MyBricks aPaaS</h1>
 
 <p align="center">
   专业、开源的低代码开发平台 · <a href="https://mybricks.world/" target="_blank">官网</a>
