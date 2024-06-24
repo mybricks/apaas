@@ -3,11 +3,10 @@ import { NavigateFunction } from "react-router-dom";
 
 import { MenuButton } from "@/components";
 import { TreeNode } from ".";
-import { Files } from "../..";
 import { Folder, UserGroup } from "@/components/icon";
 import { useToggle } from "@/hooks";
 import NodeSwitch from "../NodeSwitch";
-import { FilesMenuTreeContextValue } from "@/types";
+import { FilesMenuTreeContextValue, FileData } from "@/types";
 
 import css from "./FilesMenuTree.less";
 
@@ -20,7 +19,7 @@ interface FilesMenuTreeProps {
   name: string | ReactNode;
   node: TreeNode;
   navigate: NavigateFunction;
-  getFiles: (id: string) => Promise<Files>;
+  getFiles: (id: string) => Promise<FileData[]>;
   filesMenuTreeContext: FilesMenuTreeContextValue;
 }
 
@@ -38,15 +37,21 @@ const FilesMenuTree: FC<FilesMenuTreeProps> = memo(({
 }) => {
   const [open, toggleOpen] = useToggle(node.open);
   const [loading, setLoading] = useState(open && search ? true : false);
-  const [files, setFiles] = useState<Files>([]);
+  const [files, setFiles] = useState<FileData[]>([]);
 
   useEffect(() => {
     if (search) {
-      filesMenuTreeContext.registerNode(search, async () => {
+      filesMenuTreeContext.registerNode(search, async ({ file } = { file: null }) => {
         if (node.open) {
-          getFiles(id).then((files) => {
-            setFiles(files);
-          });
+          if (file) {
+            setFiles((files) => {
+              return [file].concat(files);
+            })
+          } else {
+            getFiles(id).then((files) => {
+              setFiles(files);
+            });
+          }
         }
       })
       return () => {

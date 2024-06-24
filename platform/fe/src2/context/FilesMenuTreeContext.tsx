@@ -1,8 +1,14 @@
 import React, { FC, createContext, PropsWithChildren, useContext } from "react";
 
+import { FileData } from "@/types";
+
+interface RefreshParams {
+  file?: FileData
+}
+
 export interface FilesMenuTreeContextValue {
-  registerNode: (namespace: string, refresh: () => Promise<any>) => void;
-  refreshNode: (namespace: string) => void;
+  registerNode: (namespace: string, refresh: (params?: RefreshParams) => Promise<any>) => void;
+  refreshNode: (namespace: string, params?: RefreshParams) => void;
   unregisterNode: (namespace: string) => void;
 }
 
@@ -12,25 +18,25 @@ interface FilesMenuTreeProviderProps extends PropsWithChildren {};
 
 const FilesMenuTreeProvider: FC<FilesMenuTreeProviderProps> = ({ children }) => {
   const namespaceToFilesTreeNode = {}
-  const registerNode = (namespace: string, refresh: () => Promise<any>) => {
+  const registerNode: FilesMenuTreeContextValue["registerNode"] = (namespace, refresh) => {
     namespaceToFilesTreeNode[namespace] = {
       loading: false,
       refresh
     }
   }
-  const refreshNode = async (namespace: string) => {
+  const refreshNode: FilesMenuTreeContextValue["refreshNode"] = async (namespace, params) => {
     const node = namespaceToFilesTreeNode[namespace];
     if (!node.loading) {
       node.loading = true;
-      await node.refresh();
+      await node.refresh(params);
       node.loading = false;
     }
   }
-  const unregisterNode = (namespace: string) => {
+  const unregisterNode: FilesMenuTreeContextValue["unregisterNode"] = (namespace) => {
     Reflect.deleteProperty(namespaceToFilesTreeNode, namespace);
   }
   return (
-    <FilesMenuTreeContext.Provider value={{ registerNode, refreshNode, unregisterNode }}>
+    <FilesMenuTreeContext.Provider value={{ refreshNode, registerNode, unregisterNode }}>
       {children}
     </FilesMenuTreeContext.Provider>
   )

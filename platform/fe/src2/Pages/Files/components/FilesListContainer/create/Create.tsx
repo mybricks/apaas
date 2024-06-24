@@ -20,6 +20,7 @@ import PageChooseModal from './PageChooseModal'
 import { InstalledApp } from "@/types";
 import { FilePaths } from "../../.."
 import { useFilesContext } from "../../../FilesProvider"
+import { mergrFileData } from "@/utils/file";
 
 const folderExtnames = ["folder"]
 
@@ -149,7 +150,6 @@ export function Create({
 
   const modalOk = useCallback((values, app) => {
     return new Promise(async (resolve, reject) => {
-      console.log("filePaths: ", filePaths)
       const item = filePaths[filePaths.length - 1];
       const isGroup = !!!item.extName && !!item.id
       const { fileName, componentType, type } = values
@@ -181,6 +181,7 @@ export function Create({
       const check = { data: { data: { next: true } } }
 
       if (check.data?.data?.next) {
+        const { groupId, parentId } = params;
         if (isSystem) {
           params.type = 'system'
         }
@@ -196,11 +197,22 @@ export function Create({
               // const { homepage } = appReg
               const app = getApp(extName)
               const { homepage } = app;
+              const fileId = data.data.id;
 
-              // debugger
-              console.log("TODO FIRE: 这里处理一下，刷新文件列表，打开对应应用")
+              const basicFileInfo = {
+                id: fileId,
+                name: fileName,
+                extName,
+                createTime: new Date().getTime(),
+                groupId,
+                parentId,
+                creatorId: userId,
+                creatorName: userName,
+              }
 
-              refreshFilesInfo()
+              refreshFilesInfo({
+                file: mergrFileData(basicFileInfo)
+              })
 
               // ctx.getAll(getUrlQuery())
 
@@ -213,7 +225,9 @@ export function Create({
               if (folderExtnames.includes(extName)) {
                 // await appCtx.refreshSidebar()
                 const { groupId, parentId } = params;
-                refreshNode(`?appId=files${groupId ? `&groupId${groupId}` : ""}${parentId ? `&parentId=${parentId}` : ""}`)
+                refreshNode(`?appId=files${groupId ? `&groupId${groupId}` : ""}${parentId ? `&parentId=${parentId}` : ""}`, {
+                  file: mergrFileData(basicFileInfo)
+                })
               }
 
               resolve('创建成功！')
@@ -234,14 +248,26 @@ export function Create({
               const app = getApp(extName)
               const { homepage } = app;
 
-              console.log("TODO FIRE: 这里处理一下，刷新文件列表，打开对应应用")
-
               // ctx.getAll(getUrlQuery())
 
-              refreshFilesInfo()
+              const { id: fileId } = data.data
+
+              const basicFileInfo = {
+                id: fileId,
+                name: fileName,
+                extName,
+                createTime: new Date().getTime(),
+                groupId,
+                parentId,
+                creatorId: userId,
+                creatorName: userName,
+              }
+
+              refreshFilesInfo({
+                file: mergrFileData(basicFileInfo)
+              })
 
               if (typeof homepage === 'string') {
-                const { id: fileId } = data.data
                 if (app.extName === 'pc-template') {
                   setTimeout(() => {
                     window.open(`${homepage}?id=${fileId}&targetPageId=${targetPageId}`);
@@ -254,8 +280,9 @@ export function Create({
               }
 
               if (folderExtnames.includes(extName)) {
-                const { groupId, parentId } = params;
-                refreshNode(`?appId=files${groupId ? `&groupId${groupId}` : ""}${parentId ? `&parentId=${parentId}` : ""}`)
+                refreshNode(`?appId=files${groupId ? `&groupId${groupId}` : ""}${parentId ? `&parentId=${parentId}` : ""}`, {
+                  file: mergrFileData(basicFileInfo)
+                })
               }
 
               resolve('新建成功')

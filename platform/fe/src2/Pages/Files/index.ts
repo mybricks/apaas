@@ -12,27 +12,6 @@ export default {
   provider: FilesProvider
 };
 
-export interface File {
-  id: number;
-  groupId?: number;
-  parentId?: number;
-  name: string;
-  icon: string;
-  description?: string;
-  creatorId: number;
-  creatorName: string;
-  _createTime: number;
-  _updateTime: number;
-  extName: string;
-  status: number; // 1
-  shareType?: number;
-  createTime: string;
-  updateTime: string;
-}
-
-
-export type Files = File[];
-
 export interface FilePath {
   id?: number;
   name: string;

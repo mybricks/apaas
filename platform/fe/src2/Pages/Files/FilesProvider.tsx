@@ -2,10 +2,11 @@ import React, { FC, PropsWithChildren, useState, useMemo, useContext, useEffect 
 import { useSearchParams } from "react-router-dom";
 import axios from "axios";
 
-import { Files, FilePaths, ViewType } from ".";
+import { FilePaths, ViewType } from ".";
 import { useUserContext } from "@/context";
 import { storage } from "@/utils/local";
 import { MYBRICKS_WORKSPACE_DEFAULT_FILES_VIEWTYPE } from "@/const";
+import { FileData } from "@/types";
 
 interface FilesContextValue {
   viewType: ViewType;
@@ -14,13 +15,15 @@ interface FilesContextValue {
   filesInfo: {
     roleDescription: number;
     filePaths: FilePaths;
-    files: Files;
+    files: FileData[];
     params: {
       groupId?: string;
       parentId?: string;
     }
   }
-  refreshFilesInfo: () => void
+  refreshFilesInfo: (params?: {
+    file?: FileData
+  }) => void
 }
 export interface FilesProviderProps extends PropsWithChildren {};
 
@@ -65,7 +68,7 @@ const fetchFiles = async ({ groupId, parentId, userId }) => {
 }
 
 /** 文件列表排序，将文件夹排在前面 */
-const filesSort = (files: Files) => {
+const filesSort = (files: FileData[]) => {
   // 参与排序替换位置，数字越大越靠前
   const orderMap = {
     'folder': 1
@@ -99,7 +102,7 @@ const fetchFilesInfo = ({ userId, groupId, parentId }: any, next) => {
 const DEFAULT_VIEWTYPE = storage.get(MYBRICKS_WORKSPACE_DEFAULT_FILES_VIEWTYPE) || "grid";
 
 export const FilesProvider: FC<FilesProviderProps> = ({ children }) => {
-  const { user: { id: userId } } = useUserContext();
+  const { user: { id: userId, name: userName } } = useUserContext();
   const [searchParams] = useSearchParams();
   const [viewType, setViewType] = useState<FilesContextValue["viewType"]>(DEFAULT_VIEWTYPE);
   const [loading, setLoading] = useState(true);
@@ -122,18 +125,36 @@ export const FilesProvider: FC<FilesProviderProps> = ({ children }) => {
     });
   }, [searchParams])
 
-  const value = useMemo(() => {
+  const value: FilesContextValue = useMemo(() => {
     storage.set(MYBRICKS_WORKSPACE_DEFAULT_FILES_VIEWTYPE, viewType);
     return {
       viewType,
       loading,
       filesInfo,
       setViewType,
-      refreshFilesInfo: () => {
+      refreshFilesInfo: ({ file } = { file: null }) => {
         const { params } = filesInfo;
-        fetchFilesInfo({ userId, ...params }, (filesInfo) => {
-          setFilesInfo(filesInfo);
-        });
+        if (file) {
+          setFilesInfo((filesInfo) => {
+            const { files, ...otherInfo } = filesInfo;
+            if (file.extName === "folder") {
+              files.unshift(file);
+            } else {
+              const index = files.findIndex((file) => file.extName !== "folder");
+              files.splice(index, 0, file);
+            }
+            return {
+              files,
+              ...otherInfo
+            };
+          })
+        } else {
+          setLoading(true);
+          fetchFilesInfo({ userId, ...params }, (filesInfo) => {
+            setLoading(false);
+            setFilesInfo(filesInfo);
+          });
+        }
       }
     }
   }, [viewType, loading, filesInfo])
