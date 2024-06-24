@@ -1,13 +1,13 @@
 import React, { FC } from "react";
 
-import { Files, ViewType } from "../..";
-import { User } from "@/types";
+import { ViewType } from "../..";
+import { User, FileData } from "@/types";
 import ViewAsTable from "./ViewAsTable";
 import ViewAsGrid from "./ViewAsGrid";
 
 interface FilesListContainerProps {
   user: User;
-  files: Files;
+  files: FileData[];
   loading: boolean;
   viewType: ViewType;
   roleDescription: number;

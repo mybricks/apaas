@@ -1,16 +1,16 @@
 import React, { FC } from "react";
 
-import { Files } from "../..";
-import { User } from "@/types";
+import { User, FileData } from "@/types";
 import { useWorkspaceConetxt } from "@/context";
 import { Icon } from "@/components/icon";
 import { Dropdown } from "./dropdown";
 import classNames from "classnames";
+import FileLink from "../FileLink";
 
 import css from "./ViewAsGrid.less";
 
 interface ViewAsGridProps {
-  files: Files;
+  files: FileData[];
   user: User;
   roleDescription: number;
 }
@@ -47,43 +47,38 @@ const ViewAsGrid: FC<ViewAsGridProps> = ({
         /** 是否支持游客直接访问 */
         const touristVisit = [10, 11].includes(shareType);
         return (
-          <div
-            key={id}
-            className={css.file}
-            onClick={() => {
-              console.log("打开")
-            }}
-            // onClick={() => operate('open', {project})}
-          >
-            {
-              alreadyShared || touristVisit ? (
-                <div className={css.share}>
-                  <SharerdIcon width={16} height={16} />
-                </div>
-              ) : null
-            }
-            <div className={classNames(css.snap)}>
-              <span className={snapLargeIcon ? css.largeIcon : css.icon}>
-                <Icon icon={fileIcon || appIcon} />
-              </span>
-            </div>
-            <div className={css.tt}>
-              <div className={css.typeIcon}>
-                <Icon icon={appIcon}/>
+          <FileLink key={id} file={file} app={app}>
+             <div className={css.file}>
+              {
+                alreadyShared || touristVisit ? (
+                  <div className={css.share}>
+                    <SharerdIcon width={16} height={16} />
+                  </div>
+                ) : null
+              }
+              <div className={classNames(css.snap)}>
+                <span className={snapLargeIcon ? css.largeIcon : css.icon}>
+                  <Icon icon={fileIcon || appIcon} />
+                </span>
               </div>
-              <div className={css.detail}>
-                <div className={css.name}>
-                  {name}
+              <div className={css.tt}>
+                <div className={css.typeIcon}>
+                  <Icon icon={appIcon}/>
                 </div>
-                <div className={css.path}>
-                  {creatorName}
+                <div className={css.detail}>
+                  <div className={css.name}>
+                    {name}
+                  </div>
+                  <div className={css.path}>
+                    {creatorName}
+                  </div>
                 </div>
+                {showOperate && <RenderOperate project={file} operate={() => {
+                  console.log("实现各种操作");
+                }} appMeta={app} />}
               </div>
-              {showOperate && <RenderOperate project={file} operate={() => {
-                console.log("实现各种操作");
-              }} appMeta={app} />}
             </div>
-          </div>
+          </FileLink>
         )
       })}
     </div>

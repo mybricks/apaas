@@ -1,17 +1,17 @@
 import React, { FC, useCallback } from "react";
 import { Table } from "antd";
 
-import { Files } from "../..";
-import { User } from "@/types";
+import { User, FileData } from "@/types";
 import { useWorkspaceConetxt } from "@/context";
 import { Icon } from "@/components/icon";
 import { unifiedTime } from "@/utils/time";
 import { RenderOperate } from "./ViewAsGrid";
+import FileLink from "../FileLink";
 
 import css from "./ViewAsTable.less";
 
 interface ViewAsTableProps {
-  files: Files;
+  files: FileData[];
   user: User;
   loading: boolean;
   roleDescription: number;
@@ -35,16 +35,16 @@ const ViewAsTable: FC<ViewAsTableProps> = ({
           showTitle: false,
         },
         render: (name, record) => {
+          const app = getApp(record.extName)
           return (
-            <div className={css.tableName} onClick={() => {
-              console.log("打开")
-              // operate('open', { project: record })
-            }}>
-              <div className={css.tableNameIcon}>
-                <Icon icon={getApp(record.extName).icon}/>
+            <FileLink app={app} file={record}>
+              <div className={css.tableName}>
+                <div className={css.tableNameIcon}>
+                  <Icon icon={app.icon}/>
+                </div>
+                {name}
               </div>
-              {name}
-            </div>
+            </FileLink>
           )
         }
       },
