@@ -6,6 +6,7 @@ import { Icon } from "@/components/icon";
 import { Dropdown } from "./dropdown";
 import classNames from "classnames";
 import FileLink from "../FileLink";
+import { Handle } from "./FilesListContainer";
 
 import css from "./ViewAsGrid.less";
 
@@ -13,6 +14,7 @@ interface ViewAsGridProps {
   files: FileData[];
   user: User;
   roleDescription: number;
+  handle: Handle;
 }
 
 const ViewAsGrid: FC<ViewAsGridProps> = ({
@@ -20,6 +22,7 @@ const ViewAsGrid: FC<ViewAsGridProps> = ({
     id: userId
   },
   files,
+  handle,
   roleDescription
 }) => {
   const { apps: { getApp } } = useWorkspaceConetxt();
@@ -73,9 +76,7 @@ const ViewAsGrid: FC<ViewAsGridProps> = ({
                     {creatorName}
                   </div>
                 </div>
-                {showOperate && <RenderOperate project={file} operate={() => {
-                  console.log("实现各种操作");
-                }} appMeta={app} />}
+                {showOperate && <RenderOperate project={file} operate={handle} appMeta={app} />}
               </div>
             </div>
           </FileLink>
@@ -118,9 +119,11 @@ export function RenderOperate({project, operate, size = 28, iconSize = 18, appMe
       label: (
         <div className={css.operateItem} onClick={() => {
           if(alreadyShared) {
-            operate('unshare', {project})
+            // operate('unshare', {project})
+            operate.unShare({ file: project })
           } else {
-            operate('share', {project})
+            // operate('share', {project})
+            operate.share({ file: project })
           }
         }}>
           {/* @ts-ignore */}
@@ -134,9 +137,11 @@ export function RenderOperate({project, operate, size = 28, iconSize = 18, appMe
       label: (
         <div className={css.operateItem} onClick={() => {
           if(touristVisit) {
-            operate('unTouristVisit', { project })
+            // operate('unTouristVisit', { project })
+            operate.unTouristVisit({ file: project })
           } else {
-            operate('touristVisit', { project })
+            // operate('touristVisit', { project })
+            operate.touristVisit({ file: project })
           }
         }}>
           {/* @ts-ignore */}
@@ -148,7 +153,7 @@ export function RenderOperate({project, operate, size = 28, iconSize = 18, appMe
     {
       key: 'rename',
       label: (
-        <div className={css.operateItem} onClick={() => operate('rename', {project})}>
+        <div className={css.operateItem} onClick={() => operate.rename({ file: project })}>
           {/* @ts-ignore */}
           <EditOutlined width={16} height={16}/>
           <div className={css.label}>重命名</div>
@@ -168,7 +173,7 @@ export function RenderOperate({project, operate, size = 28, iconSize = 18, appMe
    !isFolder ? {
       key: 'copy',
       label: (
-        <div className={css.operateItem} onClick={() => operate('copy', {project})}>
+        <div className={css.operateItem} onClick={() => operate.copy({ file: project })}>
           {/* @ts-ignore */}
           <CopyOutlined width={16} height={16}/>
           <div className={css.label}>创建副本</div>
@@ -194,7 +199,7 @@ export function RenderOperate({project, operate, size = 28, iconSize = 18, appMe
     {
       key: 'delete',
       label: (
-        <div className={css.operateItem} onClick={() => operate('delete', {project})}>
+        <div className={css.operateItem} onClick={() => operate.delete({ file: project })}>
           <Trash width={16} height={16}/>
           <div className={css.label}>删除</div>
         </div>

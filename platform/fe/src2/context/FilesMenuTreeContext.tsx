@@ -3,7 +3,8 @@ import React, { FC, createContext, PropsWithChildren, useContext } from "react";
 import { FileData } from "@/types";
 
 interface RefreshParams {
-  file?: FileData
+  file?: FileData;
+  type: "create" | "delete" | "update";
 }
 
 export interface FilesMenuTreeContextValue {

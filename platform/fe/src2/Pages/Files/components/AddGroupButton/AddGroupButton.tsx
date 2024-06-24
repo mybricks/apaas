@@ -4,15 +4,20 @@ import { Tooltip } from "antd";
 import { Plus } from "@/components/icon";
 import { useModalConetxt, useUserContext } from "@/context";
 import AddNewGroupModal from "../AddNewGroupModal";
+import { FilesMenuTreeContextValue } from "@/types";
 
 import css from "./AddGroupButton.less";
 
-const AddGroupButton: FC = () => {
+interface AddGroupButtonProps {
+  filesMenuTreeContext: FilesMenuTreeContextValue;
+}
+
+const AddGroupButton: FC<AddGroupButtonProps> = ({ filesMenuTreeContext }) => {
   const { user: { id: userId } } = useUserContext();
   const { showModal } = useModalConetxt();
   
   const handlePlusClick = () => {
-    showModal(AddNewGroupModal, { userId });
+    showModal(AddNewGroupModal, { userId, filesMenuTreeContext });
   }
 
   return (

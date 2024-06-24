@@ -6,9 +6,9 @@ import { FilePaths, ViewType } from ".";
 import { useUserContext } from "@/context";
 import { storage } from "@/utils/local";
 import { MYBRICKS_WORKSPACE_DEFAULT_FILES_VIEWTYPE } from "@/const";
-import { FileData } from "@/types";
+import { FileData, InstalledApp } from "@/types";
 
-interface FilesContextValue {
+export interface FilesContextValue {
   viewType: ViewType;
   setViewType: React.Dispatch<React.SetStateAction<FilesContextValue["viewType"]>>;
   loading: boolean;
@@ -22,10 +22,11 @@ interface FilesContextValue {
     }
   }
   refreshFilesInfo: (params?: {
-    file?: FileData
-  }) => void
+    file?: FileData;
+    type: "create" | "delete" | "update"
+  }) => void;
 }
-export interface FilesProviderProps extends PropsWithChildren {};
+interface FilesProviderProps extends PropsWithChildren {};
 
 const FilesContext = React.createContext<FilesContextValue>({} as FilesContextValue);
 
@@ -132,19 +133,21 @@ export const FilesProvider: FC<FilesProviderProps> = ({ children }) => {
       loading,
       filesInfo,
       setViewType,
-      refreshFilesInfo: ({ file } = { file: null }) => {
+      refreshFilesInfo: ({ file, type } = { file: null, type: null }) => {
         const { params } = filesInfo;
         if (file) {
           setFilesInfo((filesInfo) => {
             const { files, ...otherInfo } = filesInfo;
-            if (file.extName === "folder") {
-              files.unshift(file);
-            } else {
-              const index = files.findIndex((file) => file.extName !== "folder");
-              files.splice(index, 0, file);
+            if (type === "create") {
+              handleCreateFile(files, file);
+            } else if (type === "delete") {
+              handleDeleteFile(files, file);
+            } else if (type === "update") {
+              handleUpdateFile(files, file);
             }
+           
             return {
-              files,
+              files: files.concat(),
               ...otherInfo
             };
           })
@@ -160,9 +163,7 @@ export const FilesProvider: FC<FilesProviderProps> = ({ children }) => {
   }, [viewType, loading, filesInfo])
 
   return (
-    <FilesContext.Provider
-      value={value}
-    >
+    <FilesContext.Provider value={value}>
       {children}
     </FilesContext.Provider>
   )
@@ -170,4 +171,33 @@ export const FilesProvider: FC<FilesProviderProps> = ({ children }) => {
 
 export const useFilesContext = () => {
   return useContext(FilesContext);
+}
+
+const handleCreateFile = (files: FileData[], file: FileData) => {
+  if (file.extName === "folder") {
+    files.unshift(file);
+  } else {
+    const index = files.findIndex((file) => file.extName !== "folder");
+    if (index === -1) {
+      files.push(file)
+    } else {
+      files.splice(index, 0, file);
+    }
+  }
+
+  return files;
+}
+
+const handleDeleteFile = (files: FileData[], file: FileData) => {
+  const index = files.findIndex((f) => f.id === file.id);
+  files.splice(index, 1);
+
+  return files;
+}
+
+const handleUpdateFile = (files: FileData[], file: FileData) => {
+  const index = files.findIndex((f) => f.id === file.id);
+  files.splice(index, 1, file);
+
+  return files;
 }

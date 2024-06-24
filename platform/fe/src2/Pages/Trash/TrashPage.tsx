@@ -7,10 +7,11 @@ import React, {
 } from 'react'
 
 import axios from 'axios'
-import moment from 'moment'
+import moment from 'dayjs'
 import {message} from 'antd'
 
 import { useWorkspaceConetxt, useUserContext } from '@/context'
+import { Icon } from "@/components/icon";
 
 import styles from './TrashPage.less'
 
@@ -51,9 +52,9 @@ const TrashPage: FC = () => {
 }
 
 const ProjectItem = ({ item, user, refresh }) => {
-  const { apps: { getAppByNamespace } } = useWorkspaceConetxt();
+  const { apps: { getApp } } = useWorkspaceConetxt();
 
-	const appReg = getAppByNamespace(item.extName)
+	const appReg = getApp(item.extName)
 	const recover = useCallback((event) => {
 		event.stopPropagation()
 		
@@ -73,16 +74,19 @@ const ProjectItem = ({ item, user, refresh }) => {
 		})
 	}, [item, user])
 
-	const bigIcon = folderExtnames.includes(item.extName) || item.icon
+	const snapLargeIcon = ["folder"].includes(item.extName) || item.icon;
 
 	return (
 		<div className={styles.file}>
 			<div className={styles.snap}>
-				<Icon icon={item.icon || appReg?.icon} width={bigIcon ? 140 : 32} height={bigIcon ? '100%' : 32}/>
+				<span className={snapLargeIcon ? styles.largeIcon : styles.icon}>
+					<Icon icon={item.icon || appReg?.icon} />
+				</span>
+				{/* <Icon icon={item.icon || appReg?.icon} width={bigIcon ? 140 : 32} height={bigIcon ? '100%' : 32}/> */}
 			</div>
 			<div className={styles.tt}>
 				<div className={styles.typeIcon}>
-					<Icon icon={appReg?.icon} width={18} height={18}/>
+					<Icon icon={appReg?.icon}/>
 				</div>
 				<div className={styles.detail}>
 					<div className={styles.name}>
@@ -119,17 +123,17 @@ export function IconRecover ({width, height}) {
   );
 }
 
-function Icon({icon, onClick, className, width = '100%', height = '100%', style = {}}): JSX.Element {
-  const iconType = typeof icon
+// function Icon({icon, onClick, className, width = '100%', height = '100%', style = {}}): JSX.Element {
+//   const iconType = typeof icon
 
-  if (iconType === 'string') {
-    const src = icon;
-    return <img draggable={false} className={className} src={src} onClick={onClick} width={width} height={height} style={style}/>
-  }
+//   if (iconType === 'string') {
+//     const src = icon;
+//     return <img draggable={false} className={className} src={src} onClick={onClick} width={width} height={height} style={style}/>
+//   }
 
-  if (iconType === 'function') {
-    return (icon as ((...args: any) => JSX.Element))({onClick, className, width, height, style})
-  }
+//   if (iconType === 'function') {
+//     return (icon as ((...args: any) => JSX.Element))({onClick, className, width, height, style})
+//   }
 
-  return icon as JSX.Element
-}
+//   return icon as JSX.Element
+// }

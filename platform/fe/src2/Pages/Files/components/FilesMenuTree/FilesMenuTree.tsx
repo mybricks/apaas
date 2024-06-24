@@ -41,11 +41,17 @@ const FilesMenuTree: FC<FilesMenuTreeProps> = memo(({
 
   useEffect(() => {
     if (search) {
-      filesMenuTreeContext.registerNode(search, async ({ file } = { file: null }) => {
+      filesMenuTreeContext.registerNode(search, async ({ file, type } = { file: null, type: null }) => {
         if (node.open) {
           if (file) {
             setFiles((files) => {
-              return [file].concat(files);
+              if (type === "create") {
+                return handleCreateFile(files, file);
+              } else if (type === "delete") {
+                return handleDeleteFile(files, file);
+              } else if (type === "update") {
+                return handleUpdateFile(files, file);
+              }
             })
           } else {
             getFiles(id).then((files) => {
@@ -75,7 +81,7 @@ const FilesMenuTree: FC<FilesMenuTreeProps> = memo(({
     if (!open) {
       toggleOpen();
     }
-    if (search) {
+    if (search && clickable) {
       navigate(search);
     }
   }
@@ -123,7 +129,25 @@ const FilesMenuTree: FC<FilesMenuTreeProps> = memo(({
     </>
   )
 }, (p, c) => {
-  return p.activeSearch === c.activeSearch;
+  return p.activeSearch === c.activeSearch && p.name === c.name;
 })
+
+const handleCreateFile = (files: FileData[], file: FileData) => {
+  return [file].concat(files);
+}
+
+const handleDeleteFile = (files: FileData[], file: FileData) => {
+  const index = files.findIndex((f) => f.id === file.id);
+  files.splice(index, 1);
+
+  return [].concat(files);
+}
+
+const handleUpdateFile = (files: FileData[], file: FileData) => {
+  const index = files.findIndex((f) => f.id === file.id);
+  files.splice(index, 1, file);
+
+  return [].concat(files);
+}
 
 export default FilesMenuTree;

@@ -7,6 +7,7 @@ import { Icon } from "@/components/icon";
 import { unifiedTime } from "@/utils/time";
 import { RenderOperate } from "./ViewAsGrid";
 import FileLink from "../FileLink";
+import { Handle } from "./FilesListContainer";
 
 import css from "./ViewAsTable.less";
 
@@ -15,17 +16,18 @@ interface ViewAsTableProps {
   user: User;
   loading: boolean;
   roleDescription: number;
+  handle: Handle;
 }
 
 const ViewAsTable: FC<ViewAsTableProps> = ({
   user: { id: userId },
   loading,
   files,
+  handle,
   roleDescription
 }) => {
   const { apps: { getApp } } = useWorkspaceConetxt();
   const columns = useCallback(() => {
-
     return [
       {
         title: '名称',
@@ -73,35 +75,26 @@ const ViewAsTable: FC<ViewAsTableProps> = ({
           const showOperate = (record.creatorId == userId) || [1, 2].includes(roleDescription)
           return showOperate && <RenderOperate
           project={record}
-          operate={() => {
-            console.log("实现各种操作");
-          }}
+          operate={handle}
           size={24}
           iconSize={14}
           />
         }
       }
     ]
-  }, [])
+  }, []);
 
   return (
-    <div>
-        <Table
-          loading={loading}
-          columns={columns()}
-          dataSource={files}
-          size='small'
-          pagination={false}
-          locale={{
-            emptyText: '暂无内容，请添加...'
-          }}
-        />
-      </div>
-  )
-  return (
-    <div>
-      格子
-    </div>
+    <Table
+      loading={loading}
+      columns={columns()}
+      dataSource={files}
+      size='small'
+      pagination={false}
+      locale={{
+        emptyText: '暂无内容，请添加...'
+      }}
+    />
   )
 }
 

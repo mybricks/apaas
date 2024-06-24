@@ -1,4 +1,4 @@
-import React, { FC, ReactNode } from "react";
+import React, { FC, ReactNode, useState } from "react";
 
 import { Modal, Button } from "@/components";
 import { ModalInjectedProps } from "@/types";
@@ -8,7 +8,7 @@ interface ModalConfirmationProps extends ModalInjectedProps {
   content?: string | ReactNode;
   okText?: string;
   cancelText?: string;
-  onOk?: () => void;
+  onOk?: () => void | Promise<any>;
   onCancel?: () => void;
 }
 
@@ -21,9 +21,18 @@ const ModalConfirmation: FC<ModalConfirmationProps> = ({
   onCancel,
   hideModal
 }) => {
+  const [loading, setLoading] = useState(false);
   const handleOkClick = () => {
     if (onOk) {
-      onOk();
+      const res = onOk();
+      if (res instanceof Promise) {
+        setLoading(true);
+        res.then(() => {
+          handleCancelClick();
+        }).catch(() => {
+          setLoading(false);
+        });
+      }
     } else {
       handleCancelClick();
     }
@@ -49,6 +58,7 @@ const ModalConfirmation: FC<ModalConfirmationProps> = ({
         <Button
           type="primary"
           onClick={handleOkClick}
+          loading={loading}
         >
           {okText}
         </Button>

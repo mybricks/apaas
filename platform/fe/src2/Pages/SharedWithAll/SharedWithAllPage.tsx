@@ -18,7 +18,7 @@ import css from './SharedWithAllPage.less'
 const pageSize = 50
 
 const SharedWithAllPage: FC = () => {
-  const { apps: { getAppByNamespace } } = useWorkspaceConetxt();
+  const { apps: { getApp } } = useWorkspaceConetxt();
 
 	const scrollRef = useRef<HTMLDivElement>()
 	const [fileList, setFileList] = useState([])
@@ -83,7 +83,7 @@ const SharedWithAllPage: FC = () => {
 				createTime
 			} = file
 			// const appReg = APPSMap[extName]
-      const appReg = getAppByNamespace(extName)
+      const appReg = getApp(extName)
 			
 			return (
 				<div key={id} className={css.file} onClick={() => onClick({id, homepage: appReg.homepage})}>

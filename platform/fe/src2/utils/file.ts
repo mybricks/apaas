@@ -49,7 +49,12 @@ const mergrFileData = (fileData: MergrFileDataParams): FileData => {
   }
 }
 
+const spellFileSearch = ({ groupId, parentId }: FileData) => {
+  return `?appId=files${groupId ? `&groupId=${groupId}` : ""}${parentId ? `&parentId=${parentId}` : ""}`;
+}
+
 export {
   FileData,
-  mergrFileData
+  mergrFileData,
+  spellFileSearch
 }

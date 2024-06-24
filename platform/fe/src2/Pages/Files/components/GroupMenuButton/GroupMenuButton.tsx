@@ -27,8 +27,9 @@ const GroupMenuButton: FC<GroupMenuButtonProps> = ({
     <FilesMenuTree
       icon={<UserGroup />}
       clickable={false}
+      search={"group"}
       activeSearch={activeSearch}
-      name={<AddGroupButton />}
+      name={<AddGroupButton filesMenuTreeContext={filesMenuTreeContext}/>}
       node={node}
       navigate={navigate}
       filesMenuTreeContext={filesMenuTreeContext}

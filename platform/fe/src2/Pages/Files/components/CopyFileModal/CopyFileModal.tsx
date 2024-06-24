@@ -4,71 +4,59 @@ import axios from "axios";
 import { message } from "antd";
 
 import { Modal, Form, Input, Button } from "@/components";
-import { ModalInjectedProps, FilesMenuTreeContextValue } from "@/types";
+import { ModalInjectedProps, User, FileData } from "@/types";
 
-import css from "./AddNewGroupModal.less";
+import css from "./CopyFileModal.less";
 
-interface AddNewGroupModalProps extends ModalInjectedProps {
-  userId: number;
-  filesMenuTreeContext: FilesMenuTreeContextValue;
+interface CopyFileModalProps extends ModalInjectedProps {
+  user: User;
+  file: FileData;
+  next: (file: FileData) => void;
 }
 
-interface AddGroupValues {
+interface RenameFileValues {
   name: string;
 }
 
-const AddNewGroupModal: FC<AddNewGroupModalProps> = ({
-  userId,
-  filesMenuTreeContext,
+const CopyFileModal: FC<CopyFileModalProps> = ({
+  user,
+  file,
+  next,
   hideModal
 }) => {
   return (
-    <Modal title="建立新的协作组">
-      <Formik<AddGroupValues>
-        initialValues={{ name: "" }}
+    <Modal title="重命名">
+      <Formik<RenameFileValues>
+        initialValues={{ name: `${file.name}(副本)` }}
         validate={values => {
-          let errors = {} as AddGroupValues;
+          let errors = {} as RenameFileValues;
           if (!values.name.trim()) {
-            errors.name = "协作组名称不允许为空";
+            errors.name = "名称不允许为空";
           }
           return errors;
         }}
         onSubmit={async (values) => {
           const { name } = values;
-          const response = (await axios.post("/paas/api/userGroup/create", {
-            userId,
+          const response = (await axios.post("/paas/api/file/copy", {
+            id: file.id,
+            userId: user.id,
             name
           })).data;
 
           if (response.code === 1) {
-            filesMenuTreeContext.refreshNode("group", {
-              file: {
-                id: response.data.id,
-                name,
-                extName: null,
-                icon: null,
-                status: 1,
-                creatorName: "",
-                createTime: "",
-                creatorId: userId,
-                updateTime: "",
-                _createTime: 1,
-                _updateTime: 1,
-                groupId: null,
-                parentId: null
-              },
-              type: "create"
+            message.success("创建副本成功");
+            next({
+              ...file,
+              name
             });
             hideModal();
-            message.success("建立协作组成功");
           } else {
-            message.error(response.message);
+            message.error(`创建副本失败(${response.msg})`);
           }
         }}  
       >
         {({
           values,
-          dirty,
           isValid,
           isSubmitting,
           submitForm,
@@ -80,7 +68,7 @@ const AddNewGroupModal: FC<AddNewGroupModalProps> = ({
                 <Form.Field label="名称" className={css.formField}>
                   <Input
                     name="name"
-                    placeholder="请输入协作组名称"
+                    placeholder="请输入新的名称"
                     value={values.name}
                     onChange={handleChange}
                     error={!isValid}
@@ -95,7 +83,7 @@ const AddNewGroupModal: FC<AddNewGroupModalProps> = ({
                 <Button
                   type="primary"
                   onClick={submitForm}
-                  disabled={!dirty || !isValid}
+                  disabled={!isValid}
                   loading={isSubmitting}
                 >
                   确 认
@@ -109,4 +97,4 @@ const AddNewGroupModal: FC<AddNewGroupModalProps> = ({
   )
 }
 
-export default AddNewGroupModal;
+export default CopyFileModal;

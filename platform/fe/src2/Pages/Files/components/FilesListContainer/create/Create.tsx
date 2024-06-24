@@ -36,7 +36,7 @@ export function Create({
   // show,
 }: CreateProps): JSX.Element {
   const { refreshNode } = useFilesMenuTreeContext();
-  const { filesInfo: { filePaths, params }, refreshFilesInfo  } = useFilesContext();
+  const { filesInfo: { filePaths }, refreshFilesInfo } = useFilesContext();
   // const ctx = observe(Ctx, { from: 'parents' })
   // const appCtx = observe(AppCtx, { from: 'parents' })
   const { system, getUserSystemConfig, apps: { folderApps, designApps, getApp } } = useWorkspaceConetxt();
@@ -211,7 +211,8 @@ export function Create({
               }
 
               refreshFilesInfo({
-                file: mergrFileData(basicFileInfo)
+                file: mergrFileData(basicFileInfo),
+                type: "create"
               })
 
               // ctx.getAll(getUrlQuery())
@@ -225,8 +226,9 @@ export function Create({
               if (folderExtnames.includes(extName)) {
                 // await appCtx.refreshSidebar()
                 const { groupId, parentId } = params;
-                refreshNode(`?appId=files${groupId ? `&groupId${groupId}` : ""}${parentId ? `&parentId=${parentId}` : ""}`, {
-                  file: mergrFileData(basicFileInfo)
+                refreshNode(`?appId=files${groupId ? `&groupId=${groupId}` : ""}${parentId ? `&parentId=${parentId}` : ""}`, {
+                  file: mergrFileData(basicFileInfo),
+                  type: "create"
                 })
               }
 
@@ -264,7 +266,8 @@ export function Create({
               }
 
               refreshFilesInfo({
-                file: mergrFileData(basicFileInfo)
+                file: mergrFileData(basicFileInfo),
+                type: "create"
               })
 
               if (typeof homepage === 'string') {
@@ -280,8 +283,9 @@ export function Create({
               }
 
               if (folderExtnames.includes(extName)) {
-                refreshNode(`?appId=files${groupId ? `&groupId${groupId}` : ""}${parentId ? `&parentId=${parentId}` : ""}`, {
-                  file: mergrFileData(basicFileInfo)
+                refreshNode(`?appId=files${groupId ? `&groupId=${groupId}` : ""}${parentId ? `&parentId=${parentId}` : ""}`, {
+                  file: mergrFileData(basicFileInfo),
+                  type: "create"
                 })
               }
 
