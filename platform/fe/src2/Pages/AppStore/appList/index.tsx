@@ -16,6 +16,7 @@ import {
 	message,
 	Upload,
 	Popover,
+	Modal,
 } from 'antd'
 import { InboxOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { chunk } from 'lodash-es'
@@ -39,36 +40,38 @@ interface AppListProps {
 const AppList: FC<AppListProps> = props => {
 	const { type } = useAppStoreContext();
 	const { installedApps, userId, systemConfig } = props
-	// const [type, setType] = useState<'installed' | 'all'>('installed')
 	const [currentUpgrade, setCurrentUpgrade] = useState('')
 
 	const [allApps, setAllApps] = useState<InstalledApp[]>([])
 	const [loading, setLoading] = useState(true)
 
+	const [processApp, setProcessApp] = useState(null)
+
+	const queryProcess = useCallback(async () => {
+		const res = await axios('/paas/api/apps/isProcessing')
+		const processResult = res?.data ?? {};
+		if (processResult?.code === 1 && processResult?.data) {
+			setProcessApp(processResult.data);
+		} else {
+			setProcessApp(null)
+		}
+	}, [])
+
 	useEffect(() => {
 		setLoading(true);
 
-		if (type === 'all') {
-			axios('/paas/api/apps/getLatestAllAppFromSource').then((res) => {
-				if (res.data.code === 1) {
-					setAllApps(res.data.data);
-				} else {
-					message.error(`获取数据发生错误：${res.data.message}`);
-				}
-			}).finally(() => {
-				setLoading(false);
-			});
-		} else {
-			axios('/paas/api/apps/getLatestInstalledAppFromSource').then((res) => {
-				if (res.data.code === 1) {
-					setAllApps(res.data.data);
-				} else {
-					message.error(`获取数据发生错误：${res.data.message}`);
-				}
-			}).finally(() => {
-				setLoading(false);
-			});
-		}
+		;(async() => {
+			await queryProcess();
+
+			const res1 = await axios(type === 'all' ? '/paas/api/apps/getLatestAllAppFromSource' : '/paas/api/apps/getLatestInstalledAppFromSource')
+			if (res1.data.code === 1) {
+				setAllApps(res1.data.data);
+			} else {
+				message.error(`获取数据发生错误：${res1.data.message}`);
+			}
+		})().finally(() => {
+			setLoading(false);
+		})
 	}, [type]);
 
 	const appList = useMemo(() => {
@@ -132,9 +135,36 @@ const AppList: FC<AppListProps> = props => {
 			console.log('Dropped files', e.dataTransfer.files);
 		},
 	};
+
+	const handleUnlock = useCallback(() => {
+		Modal.confirm({
+			title: '当前操作是高危操作，请确认您已知悉操作会导致的后果',
+			content: '解锁后进行应用操作，可能会导致当前正在安装的应用以及准备操作的应用出错',
+			cancelText: '再想想',
+			okText: '确认，我已知晓',
+			onOk() {
+				return axios.post('/paas/api/apps/forceUnlock').then(() => {
+					setProcessApp(null)
+				}).catch(() => message.error('解锁失败'));
+			},
+			onCancel() {
+				
+			},
+		});
+	}, [])
+
+	const processTip = useMemo(() => {
+		return `当前平台正在执行操作，${processApp?.actionMessage} ${processApp?.startAt ? `，已进行${(new Date().getTime() - processApp?.startAt) / 1000} 秒` : ''}`;
+	}, [processApp])
 	
 	return (
 		<div className={`${styles.viewContainer} fangzhou-theme`}>
+			{
+				processApp && <div className={styles.process}>
+					<div className={styles.tip}>{processTip}</div>
+					<div className={styles.btn} onClick={handleUnlock}>我要更新，强制解锁</div>
+				</div>
+			}
 			{/* <div className={styles.header}>
 				<div className={styles.title}>
 					{type === 'all' && (
@@ -160,6 +190,7 @@ const AppList: FC<AppListProps> = props => {
 					content={'需要能够访问公网环境，点击下面更新按钮，即可在线更新'}
 					trigger="hover"
 				>
+					{/* @ts-ignore */}
 					<QuestionCircleOutlined />
 				</Popover>
 				{/* 已安装的 */}
@@ -220,6 +251,7 @@ const AppList: FC<AppListProps> = props => {
 								content={'不需要能够访问公网环境，拖入应用安装包即可上传进行应用更新'}
 								trigger="hover"
 							>
+								{/* @ts-ignore */}
 								<QuestionCircleOutlined />
 							</Popover>
 							{/* 添加 / 更新应用 */}
@@ -228,6 +260,7 @@ const AppList: FC<AppListProps> = props => {
 							{...uploadProps}
 						>
 							<p className="ant-upload-drag-icon">
+								{/* @ts-ignore */}
 								<InboxOutlined />
 							</p>
 							<p className="ant-upload-text">拖拽 应用安装包 至此</p>

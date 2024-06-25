@@ -14,6 +14,7 @@ import {SettingOutlined, LeftOutlined, EllipsisOutlined } from '@ant-design/icon
 
 // import AppCtx, { T_App } from '../../AppCtx'
 
+import { IS_IN_BRICKS_ENV } from '@/const'
 import { InstalledApp } from "@/types"
 import { useWorkspaceConetxt, useUserContext } from "@/context";
 
@@ -30,7 +31,7 @@ interface MenuItem extends InstalledApp {
 
 import styles from './index.less'
 import Term from './term'
-import Monitor from './items/monitor'
+import Monitor2 from './items/monitor2'
 import Diagnostics from './items/diagnostics'
 
 interface TabsProps {
@@ -52,7 +53,7 @@ const SystemConfigItems = [
   { title: '系统诊断', namespace: 'mybricks-diagnostics', icon: <DiagnosticsIcon /> },
   // { title: '更多', namespace: 'about', icon: <EllipsisOutlined /> }
 ]
-if(location.href.indexOf('mybricks.world') !== -1 || location.href.indexOf('localhost') !== -1) {
+if(IS_IN_BRICKS_ENV) {
   SystemConfigItems.splice(SystemConfigItems.length - 1, 0, { title: '监控与统计', namespace: 'mybricks-monitor', icon: <MonitorIcon />})
 }
 
@@ -220,7 +221,8 @@ export default () => {
       }
       case activeKey === 'mybricks-monitor': {
         return (
-          <Monitor />
+
+          <Monitor2 />
         )
       }
       case activeKey === 'mybricks-diagnostics': {

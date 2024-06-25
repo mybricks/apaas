@@ -6,6 +6,8 @@ import { BrowserRouter } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import Content from "./Content";
 import { AppContextProvider, initContext } from "@/context";
+import { IS_IN_BRICKS_ENV } from "@/const";
+import { FixedTip } from "@/components";
 
 import css from "./App.less";
 
@@ -39,6 +41,7 @@ const App: FC = () => {
                 <Sidebar />
                 <Content />
               </AppContextProvider>
+              {IS_IN_BRICKS_ENV && <FixedTip />}
             </ConfigProvider>
           </BrowserRouter>
         )
