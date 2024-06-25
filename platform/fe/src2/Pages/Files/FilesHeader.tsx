@@ -6,6 +6,7 @@ import { useFilesContext } from "./FilesProvider";
 import FilePathNavigation from "./components/FilePathNavigation";
 // TODO: Next
 import { Create } from "./components/FilesListContainer/create/Create";
+import FilesSearchButton from "./components/FilesSearchButton";
 
 import css from "./FilesHeader.less";
 
@@ -32,6 +33,7 @@ const FilesHeader: FC = () => {
             },
           ]}
         />
+        <FilesSearchButton />
         <Popover
           arrow={false}
           content={<Create />}

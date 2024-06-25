@@ -290,3 +290,19 @@ export const Plus: FC = () => {
     </svg>
   )
 }
+
+/** 搜索 */
+// export const Search: FC = () => {
+//   return (
+//     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" role="img" >
+//       <defs>
+//         <clipPath id="magnifying-glass-24_svg__a">
+//           <path d="M6 0a6 6 0 014.74 9.68l3.04 3.04a.75.75 0 01-1.06 1.06l-3.04-3.04A6 6 0 116 0zm0 1.5a4.5 4.5 0 100 9 4.5 4.5 0 000-9z"></path>
+//         </clipPath>
+//       </defs>
+//       <g clip-path="url(#magnifying-glass-24_svg__a)" transform="translate(5 5)">
+//         <path d="M0 0h14v14H0V0z" fill="currentColor"></path>
+//       </g>
+//     </svg>
+//   )
+// }
