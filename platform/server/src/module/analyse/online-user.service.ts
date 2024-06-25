@@ -68,7 +68,7 @@ export default class OnlineUserService {
     const topOnlineUsers = Array.from(userOnlineTimeMap.entries()).map(([userId, record]) => ({
       userId,
       accOnlineTime: record.accOnlineTime,
-    })).sort((a, b) => b.accOnlineTime - a.accOnlineTime).slice(0, 30);;
+    })).sort((a, b) => b.accOnlineTime - a.accOnlineTime).slice(0, 30);
 
     return {
       activeUsers,

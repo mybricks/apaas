@@ -14,6 +14,8 @@ export class ChildLogger {
   private cache: Buffer;
   private flushInterval: number;
 
+  private expireDay: number = 7;
+
   constructor(options: LoggerOptions = {}) {
     this.logDir = options.logDir;
     this.cacheSize = options.cacheSize || 10 * 1024; // 10KB
@@ -35,8 +37,27 @@ export class ChildLogger {
     });
   }
 
-  private getLogFileName(time: number | string) {
-    return path.join(this.logDir, `${dayjs(Number(time)).format('YYYY-MM-DD')}.log`);
+  private async getExpiredLogFiles() {
+    if (!this.expireDay || !await fse.pathExists(this.logDir)) {
+      return []
+    }
+
+    const logFiles = await fse.readdir(this.logDir);
+    const expiredFiles = [];
+    for (let index = 0; index < logFiles.length; index++) {
+      const logFile = logFiles[index];
+      const logFileName = logFile.replace(path.extname(logFile), '');
+
+      if (dayjs(logFileName).isBefore(dayjs().subtract(this.expireDay, 'day'))) {
+        expiredFiles.push(path.resolve(this.logDir, logFile));
+      }
+    }
+
+    return expiredFiles
+  }
+
+  private getLogFileName(time) {
+    return path.join(this.logDir, `${dayjs(parseInt(time)).format('YYYY-MM-DD')}.log`);
   }
 
   private log(level, values: { [keyname: string]: string }) {
@@ -106,10 +127,15 @@ export class ChildLogger {
     }, {});
   }
 
-  startFlushInterval() {
+  private startFlushInterval() {
     setInterval(() => {
       this.flush();
     }, this.flushInterval);
+  }
+
+  public async clearExpiredFiles () {
+    const files = await this.getExpiredLogFiles();
+    await Promise.all(files.map(filePath => fse.remove(filePath)))
   }
 }
 
