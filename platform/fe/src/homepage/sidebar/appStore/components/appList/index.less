@@ -24,6 +24,42 @@
   }
 }
 
+.process {
+  position: absolute;
+  top: 10px;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+  background-color: rgba(255, 255, 255, 0.85);
+  z-index: 99;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+
+  .tip {
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .btn {
+    font-size: 15px;
+    font-weight: 500;
+    color: #fa6400;
+    cursor: pointer;
+    margin-top: 30px;
+    opacity: 1;
+
+    transition: 0.3s opacity ease-in-out;
+
+    &:hover {
+      color: #fa6400;
+      opacity: 0.7;
+    }
+  }
+}
+
 .appList {
   min-width: 500px;
   overflow: auto;

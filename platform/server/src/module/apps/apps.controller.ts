@@ -10,12 +10,12 @@ import * as axios from 'axios';
 import { ErrorExceptionFilter } from "./../../filter/exception.filter";
 import env from '../../utils/env'
 import UserLogDao from '../../dao/UserLogDao';
-import { lockUpgrade, unLockUpgrade } from '../../utils/lock';
 import ConfigService from '../config/config.service';
 import AppService from './apps.service';
 import { USER_LOG_TYPE } from '../../constants'
 import { installAppFromFolder } from './../../utils/install-apps'
 import { pick } from './../../utils'
+import LockService from '../global/lock.service';
 const userConfig = require('./../../../../../scripts/shared/read-user-config.js')()
 
 /** 临时解压app，安装依赖的地方 */
@@ -39,7 +39,7 @@ export default class AppsController {
 
   appService: AppService;
 
-  constructor() {
+  constructor(private readonly lockService: LockService) {
     // this.appDao = new AppDao();
     this.userLogDao = new UserLogDao();
     this.isReloading = false;
@@ -98,26 +98,60 @@ export default class AppsController {
     }
   }
 
+  @Get("/isProcessing")
+  async isLock() {
+    try {
+      return {
+        code: 1,
+        data: this.lockService.query()
+      }
+    } catch (error) {
+      return {
+        code: -1,
+        message: error?.message ?? '未知错误'
+      }
+    }
+  }
+
+  @Post("/forceUnlock")
+  async unlock() {
+    try {
+      this.lockService.unlock();
+      return {
+        code: 1,
+      }
+    } catch (error) {
+      return {
+        code: -1,
+        message: error?.message ?? '未知错误'
+      }
+    }
+  }
+
   @Post("/update")
   async appUpdate(@Body() body, @Req() req, @Res() res: Response) {
     const { namespace, version, isFromCentral, userId } = body;
     const logPrefix = `[安装应用]：${namespace}@${version} `;
 
     const response200 = async (content) => {
-      await unLockUpgrade({ force: true })
+      this.lockService.unlock();
       Logger.info(`${logPrefix} 解锁成功，可继续升级应用`);
       res.status(200).send(content);
     }
 
     try {
-      Logger.info(logPrefix + '开启了冲突检测')
-      await lockUpgrade()
+      this.lockService.lock({
+        appName: namespace,
+        appVersion: version,
+        type: 'install',
+        actionMessage: `安装应用 ${namespace}@${version}`
+      });
     } catch(e) {
       Logger.info(logPrefix + e.message)
       Logger.info(logPrefix + e?.stack?.toString())
       res.status(200).send({
         code: -1,
-        msg: '当前已有升级任务，请稍后重试'
+        msg: e?.message ?? '当前已有升级任务，请稍后重试'
       });
       return
     }
@@ -209,9 +243,6 @@ export default class AppsController {
       Logger.info(logPrefix + '更新版本')
     }
 
-    Logger.info(logPrefix + "开始下载应用");
-    const downloadStartTime = Date.now();
-
     if (installedApp?.serverModuleDirectory && needServiceUpdate && logInfo) {
       logInfo.content += ', 服务已更新'
     }
@@ -222,26 +253,60 @@ export default class AppsController {
 
       await fse.ensureDir(TEMP_FOLDER_PATH);
       await fse.emptydir(TEMP_FOLDER_PATH);
-      const res = (await (axios as any).post(
-        'https://my.mybricks.world/central/api/channel/gateway',
-        {
-          action: 'app_downloadByVersion',
-          payload: JSON.stringify({
-            namespace: namespace,
-            version: version
-          })
-        })).data
-      if (res.code !== 1) {
-        Logger.error(`${logPrefix} 应用 ${namespace} 安装失败，跳过...`)
-        Logger.error(`${logPrefix} 错误是 ${res.msg}`)
+
+      // 开始下载 应用安装包
+      let appPkgBuffer = null;
+      let downloadErrMsg = null;
+
+      Logger.info(logPrefix + "开始下载应用");
+      const downloadStartTime = Date.now();
+
+      // 尝试使用CDN下载，如果下载失败，再从中心化服务下载
+      try {
+        if (remoteApp?.installType === 'oss') {
+          const remoAppInfo = JSON.parse(remoteApp.installInfo);
+          if (remoAppInfo?.cdnUrl) {
+            Logger.info(logPrefix + "发现CDN资源，尝试从CDN开始下载");
+            appPkgBuffer = (await (axios as any).get(remoAppInfo.cdnUrl, { responseType: 'arraybuffer' })).data
+          }
+        }
+      } catch (error) {
+        Logger.info(logPrefix + "CDN下载资源失败");
+      }
+
+      // 从中心化服务下载
+      if (!appPkgBuffer) {
+        try {
+          Logger.info(logPrefix + "开始从中心化服务下载");
+          const res = (await (axios as any).post(
+            'https://my.mybricks.world/central/api/channel/gateway',
+            {
+              action: 'app_downloadByVersion',
+              payload: JSON.stringify({
+                namespace: namespace,
+                version: version
+              })
+            })).data
+          if (res.code === 1) {
+            appPkgBuffer = res.data.data
+          } else {
+            downloadErrMsg = res?.msg
+          }
+        } catch (error) {
+          downloadErrMsg = error?.message
+          Logger.error(logPrefix + '从中心化服务下载应用失败', error)
+        }
+      }
+
+      if (!appPkgBuffer) {
         await fse.remove(TEMP_FOLDER_PATH)
-        await response200({ code: 0, message: '下载应用失败，请重试' })
+        await response200({ code: 0, message: `下载应用失败 ${downloadErrMsg ?? '未知错误'}`})
         return
       }
 
-      Logger.info(`${logPrefix} 资源包下载成功 ${zipFilePath}}，耗时${Date.now() - downloadStartTime}ms，开始持久化`)
+      Logger.info(`${logPrefix} 资源包下载成功，耗时${Date.now() - downloadStartTime}ms，开始持久化至 ${zipFilePath}`)
 
-      await fse.writeFile(zipFilePath, Buffer.from(res.data.data));
+      await fse.writeFile(zipFilePath, Buffer.from(appPkgBuffer));
 
       Logger.info(`${logPrefix} 开始解压文件`)
       const zipStartTime = Date.now();
@@ -310,25 +375,29 @@ export default class AppsController {
     const logPrefix = `[卸载应用 ${namespace}]：`;
 
     const response200 = async (content) => {
-      await unLockUpgrade({ force: true })
+      this.lockService.unlock();
       Logger.info(`${logPrefix} 解锁成功，可继续操作应用`);
       res.status(200).send(content);
     }
 
+    const uninstallApp = await this.appService.getInstalledApp({ namespace })
+
     try {
-      Logger.info(logPrefix + '开启了冲突检测')
-      await lockUpgrade()
+      this.lockService.lock({
+        appName: uninstallApp.namespace,
+        appVersion: uninstallApp.version,
+        type: 'install',
+        actionMessage: `卸载应用 ${namespace}`
+      });
     } catch(e) {
       Logger.info(logPrefix + e.message)
       Logger.info(logPrefix + e?.stack?.toString())
       res.status(200).send({
         code: -1,
-        msg: '当前已有系统任务，请稍后重试'
+        msg: e?.message ?? '当前已有升级任务，请稍后重试'
       });
       return
     }
-
-    const uninstallApp = await this.appService.getInstalledApp({ namespace })
 
     /** 不存在返回错误 */
     if (!uninstallApp) {
@@ -393,20 +462,23 @@ export default class AppsController {
     const logPrefix = `[离线安装应用]：${file.originalname} `;
 
     const response200 = async (content) => {
-      await unLockUpgrade({ force: true })
+      this.lockService.unlock();
       Logger.info(`${logPrefix} 解锁成功，可继续升级应用`);
       res.status(200).send(content);
     }
 
     try {
-      Logger.info(logPrefix + '开启了冲突检测')
-      await lockUpgrade()
+      this.lockService.lock({
+        filename: file.originalname,
+        type: 'install',
+        actionMessage: `通过应用安装包 ${file.originalname} 安装应用`
+      });
     } catch(e) {
       Logger.info(logPrefix + e.message)
       Logger.info(logPrefix + e?.stack?.toString())
       res.status(200).send({
         code: -1,
-        msg: '当前已有升级任务，请稍后重试'
+        msg: e?.message ?? '当前已有任务，请稍后重试'
       });
       return
     }
