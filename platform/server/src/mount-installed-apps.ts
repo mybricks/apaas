@@ -8,6 +8,11 @@ const loadApps = require('./../../../scripts/shared/load-apps.js')
 export function installedAppMount(app: any, installedAppsMeta: any[]) {
   installedAppsMeta?.forEach(appMeta => {
     const ns = appMeta.namespace;
+
+    if (!appMeta?.assetsDirectory) {
+      return
+    }
+    
     // ns切割
     app.useStaticAssets(appMeta.assetsDirectory, {
       prefix: `/${ns}`,
