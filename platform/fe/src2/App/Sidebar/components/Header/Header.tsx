@@ -17,7 +17,7 @@ const Header: FC = () => {
             <img src={system.logo || "./image/icon.png"}/>
           </div>
           <span className={css.name}>
-            {system.title}
+            {system.title || "MyBricks"}
           </span>
         </div>
       </Link>

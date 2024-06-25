@@ -9,7 +9,7 @@ const search = `?appId=${id}`;
 const AccountMenuButton: FC = () => {
   return (
     <Link to={search}>
-      <MenuButton icon={<Account />}>
+      <MenuButton icon={"./image/icon_myproject.png"}>
         个人设置
       </MenuButton>
     </Link>

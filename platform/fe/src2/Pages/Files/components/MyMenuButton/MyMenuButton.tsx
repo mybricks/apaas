@@ -24,7 +24,7 @@ const MyMenuButton: FC<MyMenuButtonProps> = ({
 }) => {
   return (
     <FilesMenuTree
-      icon={<Account />}
+      icon={"./image/icon_myproject.png"}
       search={`?appId=files`}
       activeSearch={activeSearch}
       name={"我的"}

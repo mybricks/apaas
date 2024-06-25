@@ -10,7 +10,7 @@ const SharedWithAllMenuButton: FC = () => {
   return (
     <Link to={search}>
       <MenuButton
-        icon={<SharedWithAll />}
+        icon={"./image/icon_share.png"}
         search={search}
       >
         大家的分享

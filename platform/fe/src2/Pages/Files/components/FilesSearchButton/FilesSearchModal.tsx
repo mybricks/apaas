@@ -249,7 +249,8 @@ function Path({path, onClick, getApp}) {
       return <></>
     }
 
-    const icon = <Icon icon={isMy ? <Account /> : (isGroup ? (itemIcon || <UserGroup />) : appReg.icon)}/>
+    // (itemIcon || <UserGroup />)
+    const icon = <Icon icon={isMy ? "./image/icon_myproject.png" : (isGroup ? <UserGroup /> : appReg.icon)}/>
 
     return (
       <div className={css.path}>

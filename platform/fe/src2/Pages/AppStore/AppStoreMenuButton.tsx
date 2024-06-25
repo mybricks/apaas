@@ -10,7 +10,7 @@ const AppStoreMenuButton: FC = () => {
   return (
     <Link to={search}>
       <MenuButton
-        icon={<AppStore />}
+        icon={"./image/icon_myapp.png"}
         search={search}
       >
         我的应用

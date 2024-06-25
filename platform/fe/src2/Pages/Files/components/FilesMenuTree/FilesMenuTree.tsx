@@ -74,6 +74,8 @@ const FilesMenuTree: FC<FilesMenuTreeProps> = memo(({
         setFiles(files);
         setLoading(false);
       });
+    } else {
+      setFiles([]);
     }
   }, [open])
 

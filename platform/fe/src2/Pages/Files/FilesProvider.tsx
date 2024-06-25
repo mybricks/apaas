@@ -3,10 +3,10 @@ import { useSearchParams } from "react-router-dom";
 import axios from "axios";
 
 import { FilePaths, ViewType } from ".";
-import { useUserContext } from "@/context";
+import { useUserContext, useWorkspaceConetxt } from "@/context";
 import { storage } from "@/utils/local";
 import { MYBRICKS_WORKSPACE_DEFAULT_FILES_VIEWTYPE } from "@/const";
-import { FileData, InstalledApp } from "@/types";
+import { FileData } from "@/types";
 
 export interface FilesContextValue {
   viewType: ViewType;
@@ -82,7 +82,7 @@ const filesSort = (files: FileData[]) => {
   })
 }
 // TODO: Next
-const fetchFilesInfo = ({ userId, groupId, parentId }: any, next) => {
+const fetchFilesInfo = ({ userId, groupId, parentId, getApp }: any, next) => {
   Promise.all([
     fetchRoleDescription({ groupId, userId }),
     fetchFilePaths({ groupId, parentId }),
@@ -91,7 +91,7 @@ const fetchFilesInfo = ({ userId, groupId, parentId }: any, next) => {
     next({
       roleDescription,
       filePaths: (!groupId ? [{id: null, name: '我的', parentId: null, groupId: null, extName: null}] : [] as FilePaths).concat(filePaths),
-      files,
+      files: files.filter((file) => getApp(file.extName)),
       params: {
         groupId,
         parentId
@@ -103,6 +103,7 @@ const fetchFilesInfo = ({ userId, groupId, parentId }: any, next) => {
 const DEFAULT_VIEWTYPE = storage.get(MYBRICKS_WORKSPACE_DEFAULT_FILES_VIEWTYPE) || "grid";
 
 export const FilesProvider: FC<FilesProviderProps> = ({ children }) => {
+  const { apps: { getApp } } = useWorkspaceConetxt();
   const { user: { id: userId } } = useUserContext();
   const [searchParams] = useSearchParams();
   const [viewType, setViewType] = useState<FilesContextValue["viewType"]>(DEFAULT_VIEWTYPE);
@@ -120,7 +121,7 @@ export const FilesProvider: FC<FilesProviderProps> = ({ children }) => {
     const groupId = searchParams.get("groupId");
     const parentId = searchParams.get("parentId");
 
-    fetchFilesInfo({ userId, groupId, parentId }, (filesInfo) => {
+    fetchFilesInfo({ userId, groupId, parentId, getApp }, (filesInfo) => {
       setLoading(false);
       setFilesInfo(filesInfo);
     });

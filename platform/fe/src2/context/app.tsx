@@ -1,7 +1,7 @@
 import React, { ReactNode } from "react";
 import axios from "axios";
 
-import { SharedWithAll, Folder } from "@/components/icon";
+import { Folder } from "@/components/icon";
 
 export interface Apps {
   /** 侧边栏应用 */

@@ -13,13 +13,17 @@ export default function Content() {
 
   return (
     <div className={css.content}>
-      <SharedWithAllMenuButton />
-      <TrashMenuButton />
-      {menuApps.map((app) => {
-        return <InstalledAppMenuButton {...app}/>;
-      })}
-      <div className={css.split}></div>
-      <FilesMenuButton />
+      <div>
+        <SharedWithAllMenuButton />
+        {menuApps.map((app) => {
+          return <InstalledAppMenuButton {...app}/>;
+        })}
+        <TrashMenuButton />
+        <div className={css.split}></div>
+      </div>
+      <div className={css.filesMenuContainer}>
+        <FilesMenuButton />
+      </div>
     </div>
   )
 }
