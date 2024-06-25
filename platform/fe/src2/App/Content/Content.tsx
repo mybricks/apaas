@@ -13,6 +13,7 @@ import UserManagement from "@/Pages/UserManagement";
 import StaticFiles from "@/Pages/StaticFiles";
 import Settings from "@/Pages/Settings";
 import InstalledApp from "@/Pages/InstalledApp";
+import PageNotFound from "@/Pages/PageNotFound";
 
 import css from "./Content.less";
 
@@ -38,7 +39,7 @@ const Content: FC = () => {
 
   const {
     header: HeaderView,
-    page: PageView,
+    page: PageView = PageNotFound,
     provider: ProviderView = Fragment
   } = CONTENT_MAP[appId] || (() => {
     const app = getApp(appId);

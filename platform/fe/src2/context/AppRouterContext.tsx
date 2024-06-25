@@ -12,7 +12,7 @@ const AppRouterContextProvider: FC<AppRouterContextProviderProps> = ({ children 
   const appId = searchParams.get("appId");
 
   return (
-    <AppRouterContext.Provider value={appId || "files"}>
+    <AppRouterContext.Provider value={appId}>
       {children}
     </AppRouterContext.Provider>
   )
