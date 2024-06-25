@@ -135,6 +135,38 @@ npm run start
 
 > 启动后服务将使用 npx pm2 来管理服务，可以使用 npx pm2 的各类命令
 
+### 可供参考的NG配置
+下面主要列出一些需要关注的配置项
+
+```nginx
+client_max_body_size 200m; # 限制上传大小为 200MB
+
+location / {
+  #... 以上省略通用配置信息
+
+  # 缓存相关，将信息带到原始服务器，用于协商缓存
+  proxy_pass_header Cache-Control;
+  proxy_pass_header Expires;
+  proxy_pass_header ETag;
+  proxy_pass_header Last-Modified;
+  proxy_set_header If-Modified-Since $http_if_modified_since;
+  proxy_set_header If-None-Match $http_if_none_match;
+
+  # Gzip相关配置
+  gzip on;
+  # 启用 Gzip 压缩的最小文件大小。对所有大于 1k 的文件启用压缩，文件太小压缩后反而可能变大
+  gzip_min_length 1k;
+  gzip_http_version 1.1;
+  # 压缩等级，1 表示最快速（但压缩比最低），9 表示最慢（但压缩比最高）
+  gzip_comp_level 2;
+  gzip_types text/css application/javascript text/javascript text/plain application/json application/xml;
+  # 是否在 HTTP 响应头中添加 Vary: Accept-Encoding
+  gzip_vary on;
+  gzip_proxied   expired no-cache no-store private auth;
+  gzip_disable   "MSIE [1-6]\.";
+}
+```
+
 ## 关于我们
 <img style="width: 100px; margin-bottom: 10px" src="https://assets.mybricks.world/files/534065092341829/YDbNRhFeeyeMorgGiODjgNFTYMhnivh2-1708313464390.jpeg" />
 
