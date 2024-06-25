@@ -21,12 +21,12 @@ export interface FilesContextValue {
       parentId?: string;
     }
   }
-  refreshFilesInfo: (params?: {
+  refreshFiles: (params?: {
     file?: FileData;
     type: "create" | "delete" | "update"
   }) => void;
 }
-interface FilesProviderProps extends PropsWithChildren {};
+export interface FilesProviderProps extends PropsWithChildren {};
 
 const FilesContext = React.createContext<FilesContextValue>({} as FilesContextValue);
 
@@ -103,7 +103,7 @@ const fetchFilesInfo = ({ userId, groupId, parentId }: any, next) => {
 const DEFAULT_VIEWTYPE = storage.get(MYBRICKS_WORKSPACE_DEFAULT_FILES_VIEWTYPE) || "grid";
 
 export const FilesProvider: FC<FilesProviderProps> = ({ children }) => {
-  const { user: { id: userId, name: userName } } = useUserContext();
+  const { user: { id: userId } } = useUserContext();
   const [searchParams] = useSearchParams();
   const [viewType, setViewType] = useState<FilesContextValue["viewType"]>(DEFAULT_VIEWTYPE);
   const [loading, setLoading] = useState(true);
@@ -133,7 +133,7 @@ export const FilesProvider: FC<FilesProviderProps> = ({ children }) => {
       loading,
       filesInfo,
       setViewType,
-      refreshFilesInfo: ({ file, type } = { file: null, type: null }) => {
+      refreshFiles: ({ file, type } = { file: null, type: null }) => {
         const { params } = filesInfo;
         if (file) {
           setFilesInfo((filesInfo) => {
@@ -158,6 +158,9 @@ export const FilesProvider: FC<FilesProviderProps> = ({ children }) => {
             setFilesInfo(filesInfo);
           });
         }
+      },
+      refreshFilePaths: ({ filePath, type } = { filePath: null, type: null }) => {
+
       }
     }
   }, [viewType, loading, filesInfo])

@@ -1,0 +1,106 @@
+.configModal {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  margin-top: 5px;
+
+  .title {
+    height: 32px;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 32px;
+    color: rgba(0, 0, 0, 0.85);
+    // margin-bottom: 11px;
+    margin-top: -16px;
+    flex-shrink: 0;
+  }
+
+  .configContainer {
+    .setting {
+      width: 100%;
+      height: 100%;
+    }
+
+    .globalForm {
+    }
+  }
+
+
+
+  .btnGroups {
+    min-height: 40px;
+    width: 100%;
+    position: relative;
+  }
+
+  :global {
+    .ant-modal-body {
+      padding: 10px;
+    }
+    .ant-form-item-with-help {
+      margin-bottom: 24px;
+    }
+  }
+}
+
+.userInfo {
+  padding: 20px 0px;
+  border-bottom: 1px solid #E4E4E4;
+}
+
+.tabs {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex-wrap: wrap;
+
+  margin: 0 -10px;
+  padding-top: 20px;
+  // border-bottom: 1px solid #E4E4E4;
+
+  .activeTab {
+    background-color: rgba(61, 92, 128, 0.1);;
+  }
+
+
+  .tab {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    margin: 0px 6px;
+    cursor: pointer;
+    width: 80px;
+    height: 80px;
+
+    &:hover {
+      .activeTab();
+    }
+
+    .icon {
+      font-size: 22px;
+      margin-bottom: 5px;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      img {
+        width: 100%;
+        height: 100%;
+      }
+    }
+
+    .label {
+      width: 100%;
+      text-align: center;
+      font-size: 13px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
+}

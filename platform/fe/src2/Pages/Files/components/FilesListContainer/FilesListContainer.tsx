@@ -1,12 +1,10 @@
 import React, { FC, useMemo } from "react";
-import axios from "axios";
-import { message } from "antd";
 
 import { User, FileData, InstalledApp } from "@/types";
 import ViewAsTable from "./ViewAsTable";
 import ViewAsGrid from "./ViewAsGrid";
 import { useFilesMenuTreeContext, useModalConetxt } from "@/context";
-import { Modal } from "@/components";
+import { Modal, LoadingPlaceholder } from "@/components";
 import { FilesContextValue } from "../../FilesProvider";
 import { spellFileSearch } from "@/utils/file";
 import RenameFileModal from "../RenameFileModal";
@@ -14,6 +12,8 @@ import ConfirmDeleteModal from "../ConfirmDeleteModal";
 import ConfirmShareModal from "../ConfirmShareModal";
 import ConfirmTouristVisitModal from "../ConfirmTouristVisitModal";
 import CopyFileModal from "../CopyFileModal";
+
+import css from "./FilesListContainer.less";
 
 interface FilesListContainerProps {
   user: User;
@@ -39,11 +39,11 @@ const FilesListContainer: FC<FilesListContainerProps> = ({
 }) => {
   const { refreshNode } = useFilesMenuTreeContext();
   const { showModal } = useModalConetxt();
-  const { loading, filesInfo: { files, roleDescription }, viewType, refreshFilesInfo } = filesContext;
+  const { loading, filesInfo: { files, roleDescription }, viewType, refreshFiles } = filesContext;
 
   const handle: Handle = useMemo(() => {
     const refresh = ({ file, type }: { file: FileData, type: "delete" | "create" | "update"}) => {
-      refreshFilesInfo({ file, type }) ;
+      refreshFiles({ file, type }) ;
 
       if (file.extName === "folder") {
         refreshNode(spellFileSearch(file), {
@@ -123,6 +123,18 @@ const FilesListContainer: FC<FilesListContainerProps> = ({
   }, []);
 
   if (viewType === "grid") {
+    if (filesContext.loading) {
+      return (
+        <div className={css.loading}>
+          <LoadingPlaceholder size={64}/>
+        </div>
+      )
+    }
+  
+    if (!filesContext.filesInfo.files.length) {
+      return "暂无内容，请添加...";
+    }
+
     return (
       <ViewAsGrid
         user={user}
@@ -141,10 +153,6 @@ const FilesListContainer: FC<FilesListContainerProps> = ({
       roleDescription={roleDescription}
     />
   )
-}
-
-const handleDelete = ({ file, user }: { file: FileData, user: User}) => {
-
 }
 
 export default FilesListContainer;

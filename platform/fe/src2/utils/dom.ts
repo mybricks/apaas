@@ -1,5 +1,5 @@
 /** 将文本复制到剪贴板 */
-export const copyText = (txt: string): boolean => {
+const copyText = (txt: string): boolean => {
   const input = document.createElement('input')
   document.body.appendChild(input)
   input.value = txt
@@ -7,4 +7,8 @@ export const copyText = (txt: string): boolean => {
   document.execCommand('copy')
   document.body.removeChild(input)
   return true
+}
+
+export {
+  copyText
 }

@@ -36,7 +36,7 @@ export function Create({
   // show,
 }: CreateProps): JSX.Element {
   const { refreshNode } = useFilesMenuTreeContext();
-  const { filesInfo: { filePaths }, refreshFilesInfo } = useFilesContext();
+  const { filesInfo: { filePaths }, refreshFiles } = useFilesContext();
   // const ctx = observe(Ctx, { from: 'parents' })
   // const appCtx = observe(AppCtx, { from: 'parents' })
   const { system, getUserSystemConfig, apps: { folderApps, designApps, getApp } } = useWorkspaceConetxt();
@@ -210,7 +210,7 @@ export function Create({
                 creatorName: userName,
               }
 
-              refreshFilesInfo({
+              refreshFiles({
                 file: mergrFileData(basicFileInfo),
                 type: "create"
               })
@@ -265,7 +265,7 @@ export function Create({
                 creatorName: userName,
               }
 
-              refreshFilesInfo({
+              refreshFiles({
                 file: mergrFileData(basicFileInfo),
                 type: "create"
               })
