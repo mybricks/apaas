@@ -7,6 +7,9 @@ const LOGS_BASE_FOLDER = path.join(FILE_LOCAL_STORAGE_BASE_FOLDER, './logs');
 /** 性能分析目录 */
 const FILE_ANALYSIS_PERFORMANCE_FOLDER = path.join(FILE_LOCAL_STORAGE_FOLDER, './__analyse__/performance')
 
+/** 在线用户分析目录 */
+const FILE_ANALYSIS_ONLINEUSERS_FOLDER = path.join(FILE_LOCAL_STORAGE_FOLDER, './__analyse__/online-users')
+
 /** 平台的静态资源 */
 const PLATFORM_ASSETS_FOLDER = path.join(PLATFORM_FE_PATH, './assets');
 
@@ -38,6 +41,7 @@ export default {
   LOGS_BASE_FOLDER,
 
   FILE_ANALYSIS_PERFORMANCE_FOLDER,
+  FILE_ANALYSIS_ONLINEUSERS_FOLDER,
 
   PLATFORM_ASSETS_FOLDER,
   FILE_LOCAL_STORAGE_FOLDER,

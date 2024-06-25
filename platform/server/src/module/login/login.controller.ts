@@ -8,6 +8,7 @@ import {
   Query,
   Request,
   Res,
+  Req,
 } from '@nestjs/common';
 import { Response } from 'express'
 import FileDao from '../../dao/FileDao';
@@ -191,6 +192,17 @@ export default class LoginController {
         msg: `用户名或密码错误.`,
       };
     }
+  }
+
+  @Post('/logout')
+  async logout (@Res() response: Response) {
+    // 清除 cookie
+    response.clearCookie('mybricks-login-user', { secure: true });
+    response.clearCookie('mybricks-login-user', { secure: false })
+    response.clearCookie('mybricks-login-user', { path: '/*', secure: true })
+    response.clearCookie('mybricks-login-user', { path: '/*', secure: false })
+    // 返回成功响应
+    return response.status(200).json({ message: '登出成功' });
   }
 
   @Post('/updateUser')

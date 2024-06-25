@@ -38,7 +38,7 @@ const scanAppDir = (dirFullPath, appName, callback) => {
     return
   }
 
-  const packageJson = require(packageJsonPath)
+  const packageJson = fse.readJsonSync(packageJsonPath, 'utf-8');
 
   // 规范一：按pages文件夹的规范来找
   const pagesFolderPath = path.join(dirFullPath, 'pages'); // 约定

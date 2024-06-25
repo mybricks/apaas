@@ -39,6 +39,10 @@ export default class UserService {
     return await this.userDao.queryById({ id });
   }
 
+  async queryByIds({ ids }) {
+    return await this.userDao.queryByIds({ ids })
+  }
+
 
   /** 获取用户 ID，传的是字符串则查找用户，数字则直接返回 */
   async getCurrentUserId(userId: any) {

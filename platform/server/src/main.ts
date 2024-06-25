@@ -9,6 +9,8 @@ import * as xmlparser from 'express-xml-bodyparser';
 import { apiProxy as apiProxyMiddleWare } from './middleware/api.proxy.middleware';
 import { timeout } from "./middleware/requestTimeout.middleware";
 import { checkHealthMiddleware } from './middleware/checkHealth.middleware';
+import { gzipMiddleware } from './middleware/gzip.middleware'
+
 
 import { runtimeLogger } from './middleware/log.middleware';
 import initDatabase from "./init-database";
@@ -79,7 +81,7 @@ async function bootstrap() {
     },
     etag: true,
   });
-  
+
   // 支持应用调试时的http代理
   app.use(apiProxyMiddleWare());
 
@@ -100,8 +102,10 @@ async function bootstrap() {
 
 
   app.use(cookieParser());
-	app.use(xmlparser());
+  app.use(xmlparser());
 
+  app.use(gzipMiddleware)
+  
   // 支持接口的超时时间设置
   app.use(timeout(TIMEOUT_TIME))
 

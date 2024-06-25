@@ -1,4 +1,5 @@
 export * from './icon'
 export * from './divider'
 export * from './dropdown'
+export * from './fixed-tip'
 export { default as NoAccess } from './noaccess'

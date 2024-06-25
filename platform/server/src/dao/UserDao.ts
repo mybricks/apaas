@@ -199,7 +199,7 @@ export default class UserDao extends DOBase {
   }
 
   @Mapping(UserDO)
-  public async queryByIds(params: { ids: number[] }): Promise<UserDO> {
+  public async queryByIds(params: { ids: number[] }): Promise<UserDO[]> {
     params = Object.assign({status: 1}, params)
 
     const result = await this.exe<any>(
