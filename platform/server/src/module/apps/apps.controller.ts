@@ -16,7 +16,7 @@ import { USER_LOG_TYPE } from '../../constants'
 import { installAppFromFolder } from './../../utils/install-apps'
 import { pick } from './../../utils'
 import LockService from '../global/lock.service';
-const userConfig = require('./../../../../../scripts/shared/read-user-config.js')()
+import { configuration } from './../../utils/shared'
 
 /** 临时解压app，安装依赖的地方 */
 const TEMP_FOLDER_PATH = path.join(__dirname, '../../../../../_tempapp_')
@@ -552,7 +552,7 @@ export default class AppsController {
     if (env.isProd()) {
       Logger.info('开始重启服务')
       setTimeout(() => {
-        const command = process.env?.pm_id !== undefined ? `npx pm2 reload ${process.env?.pm_id}` : `npx pm2 reload ${userConfig?.platformConfig?.appName}`;
+        const command = process.env?.pm_id !== undefined ? `npx pm2 reload ${process.env?.pm_id}` : `npx pm2 reload ${configuration?.platformConfig?.appName}`;
         // 重启服务
         childProcess.exec(
           command,

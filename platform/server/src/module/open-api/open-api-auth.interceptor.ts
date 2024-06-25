@@ -7,7 +7,8 @@ import {
 import { Logger } from '@mybricks/rocker-commons'
 import { Observable, of } from 'rxjs';
 import { OpenApiErrCode } from './types'
-const { verifyAccessToken } = require('./../../../../../scripts/shared/access-token.js')
+import { accessToken } from './../../utils/shared'
+
 
 @Injectable()
 export class OpenApiAuthInterceptor implements NestInterceptor {
@@ -33,7 +34,7 @@ export class OpenApiAuthInterceptor implements NestInterceptor {
     }
 
     try {
-      const { payload } = verifyAccessToken(query?.access_token, this.scecretKey)
+      const { payload } = accessToken.verifyAccessToken(query?.access_token, this.scecretKey)
       if (payload?.appId) {
         Logger.info(`[application: openapi] [appId: ${payload.appId}] [method: ${request.method}] [path: ${request.path}] [ip: ${request.ip}]`)
       }

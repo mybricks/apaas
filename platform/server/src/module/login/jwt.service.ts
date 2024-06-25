@@ -4,7 +4,7 @@ import UserSessionDao from './../../dao/UserSessionDao';
 import FileDao from './../../dao/FileDao';
 import * as jwt from 'jsonwebtoken';
 import { Request } from 'express'
-const userConfig = require('./../../../../../scripts/shared/read-user-config.js')();
+import { configuration } from './../../utils/shared'
 
 @Injectable()
 export default class JwtService {
@@ -13,7 +13,7 @@ export default class JwtService {
 
   fileDao: FileDao;
 
-  private loginSecret: string = userConfig?.platformConfig?.jwtSecretOrPrivateKey ?  userConfig?.platformConfig?.jwtSecretOrPrivateKey : 'login_mybricks_asdw21412asdds';
+  private loginSecret: string = configuration?.platformConfig?.jwtSecretOrPrivateKey ?  configuration?.platformConfig?.jwtSecretOrPrivateKey : 'login_mybricks_asdw21412asdds';
 
   constructor() {
     this.fileDao = new FileDao();

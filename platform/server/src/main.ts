@@ -25,7 +25,7 @@ import { TIMEOUT_TIME } from './constants';
 // Nestjs App 全局配置和入口 
 import { AppModule } from "./app.module";
 
-const userConfig = require('./../../../scripts/shared/read-user-config.js')()
+import { configuration } from './utils/shared'
 
 // 启动逻辑
 async function bootstrap() {
@@ -109,7 +109,7 @@ async function bootstrap() {
   // 支持接口的超时时间设置
   app.use(timeout(TIMEOUT_TIME))
 
-  await app.listen(userConfig?.platformConfig?.port || 3100);
+  await app.listen(configuration?.platformConfig?.port || 3100);
 }
 
 

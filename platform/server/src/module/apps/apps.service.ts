@@ -1,8 +1,7 @@
 import { Logger } from '@mybricks/rocker-commons';
 import { Inject, Injectable } from '@nestjs/common';
 import * as axios from 'axios';
-
-const loadApps = require('./../../../../../scripts/shared/load-apps.js')
+import { loadApps } from './../../utils/shared'
 
 interface T_InstalledApp {
   version: string,

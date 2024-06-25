@@ -1,8 +1,7 @@
 import * as path from "path";
 import { NextFunction, Request, Response } from "express";
 import { Logger } from "@mybricks/rocker-commons";
-
-const loadApps = require('./../../../scripts/shared/load-apps.js')
+import { loadApps, loadedApps } from './utils/shared'
 
 /** 将APP内静态资源挂载上来 */
 export function installedAppMount(app: any, installedAppsMeta: any[]) {
@@ -146,7 +145,7 @@ export function installedAppRouterMount(app: any, loadedApps: any) {
 
 
 export function loadInstalledAppMeta() {
-  return loadApps();
+  return loadedApps;
 }
 
 export function loadInstalledAppModules() {

@@ -2,7 +2,7 @@ import { Logger } from '@mybricks/rocker-commons';
 import { Inject, Injectable } from '@nestjs/common';
 import * as OSS from 'ali-oss';
 import ConfigDao from './../../dao/config.dao'
-const userConfig = require('./../../../../../scripts/shared/read-user-config.js')();
+import { configuration } from './../../utils/shared'
 
 interface OssConfig {
   [key: string]: string
@@ -17,9 +17,9 @@ export default class OssService {
   }
 
   async getOssConfig():Promise<OssConfig> {
-    if (userConfig?.oss) {
+    if (configuration?.oss) {
       return {
-        ...userConfig.oss,
+        ...configuration.oss,
         openOss: true,
       } as any as OssConfig
     }

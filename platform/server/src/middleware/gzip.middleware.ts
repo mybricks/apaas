@@ -2,11 +2,12 @@ import { Injectable, NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 import { Logger } from '@mybricks/rocker-commons';
 import * as compression from 'compression';
-const userConfig = require('./../../../../scripts/shared/read-user-config.js')()
+
+import { configuration } from './../utils/shared'
 
 const _compression = compression();
 
-const gzip = userConfig?.platformConfig?.gzip;
+const gzip = configuration?.platformConfig?.gzip;
 
 export function gzipMiddleware(req: Request, res: Response, next: NextFunction) {
   try {

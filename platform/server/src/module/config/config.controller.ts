@@ -2,7 +2,7 @@ import { Body, Controller, Get, Post, Query, UseFilters } from '@nestjs/common';
 import ConfigDao from '../../dao/config.dao';
 import UserService from '../user/user.service';
 import { ErrorExceptionFilter } from '../../filter/exception.filter';
-const userConfig = require('../../../../../scripts/shared/read-user-config.js')();
+import { configuration } from './../../utils/shared'
 
 @Controller("/paas/api")
 @UseFilters(ErrorExceptionFilter)
@@ -42,7 +42,29 @@ export default class ConfigController {
     });
 
     // scope 过滤 system 类型，system 统一走全局配置文件
-    mergePlatformConfigByUserConfig(result, userConfig);
+    Object.assign(result, {
+      system: {
+        appNamespace: 'system',
+        config: {
+          openLogout: configuration?.platformConfig?.openLogout ?? true,
+          openSystemWhiteList: false,
+          openUserInfoSetting: configuration?.platformConfig?.openUserInfoSetting ?? true,
+    
+          closeOfflineUpdate: "",
+    
+          createBasedOnTemplate: configuration?.platformConfig?.createBasedOnTemplate,
+    
+          appBlackList: "pc-cgn,pc-page-vue2,pc-website,cloud-com,domain,th5-page,pc-comgen,mybricks-cloud-com",
+    
+          isPureIntranet: false,
+    
+          title: configuration?.platformConfig?.title,
+          logo: configuration?.platformConfig?.logo,
+          favicon: configuration?.platformConfig?.favicon,
+        },
+        id: 1
+      }
+    })
 
     return {
       code: 1,
@@ -80,31 +102,4 @@ export default class ConfigController {
 
     return { code: 1 };
   }
-}
-
-
-function mergePlatformConfigByUserConfig (platformConfig, userConfig) {
-  Object.assign(platformConfig, {
-    system: {
-      appNamespace: 'system',
-      config: {
-        openLogout: userConfig?.platformConfig?.openLogout ?? true,
-        openSystemWhiteList: false,
-        openUserInfoSetting: userConfig?.platformConfig?.openUserInfoSetting ?? true,
-  
-        closeOfflineUpdate: "",
-  
-        createBasedOnTemplate: userConfig?.platformConfig?.createBasedOnTemplate,
-  
-        appBlackList: "pc-cgn,pc-page-vue2,pc-website,cloud-com,domain,th5-page,pc-comgen,mybricks-cloud-com",
-  
-        isPureIntranet: false,
-  
-        title: userConfig?.platformConfig?.title,
-        logo: userConfig?.platformConfig?.logo,
-        favicon: userConfig?.platformConfig?.favicon,
-      },
-      id: 1
-    }
-  })
 }

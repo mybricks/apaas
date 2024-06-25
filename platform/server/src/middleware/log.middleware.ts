@@ -4,7 +4,8 @@ import { formatBodyOrParamsData } from "../utils/traverse";
 import { ChildLogger } from '../utils/child-logger'
 import env from '../utils/env'
 import * as path from 'path'
-const userConfig = require('./../../../../scripts/shared/read-user-config.js')();
+
+import { configuration } from './../utils/shared'
 
 interface Option {
   appNamespaceList?: string[];
@@ -17,7 +18,7 @@ export function runtimeLogger(option: Option = {}) {
     logDir: path.join(env.FILE_ANALYSIS_ONLINEUSERS_FOLDER)
   })
 
-  const openMonitor = userConfig?.platformConfig?.openMonitor;
+  const openMonitor = configuration?.platformConfig?.openMonitor;
 
   return async (req: Request, res, next: NextFunction) => {
     let formattedParams = req.query;

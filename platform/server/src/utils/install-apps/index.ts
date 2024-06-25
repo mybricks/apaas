@@ -1,14 +1,13 @@
 import * as fse from 'fs-extra'
 import { Logger } from '@mybricks/rocker-commons';
 import * as childProcess from 'child_process';
+
+import { configuration, MySqlExecutor } from './../../utils/shared';
+
 const path = require('path')
 const parse5 = require('parse5');
 
-const MysqlExecutor = require('./../../../../../scripts/shared/mysql-executor.js')
-
-const userConfig = require('./../../../../../scripts/shared/read-user-config.js')();
-
-const mysqlExecutor = MysqlExecutor()
+const mysqlExecutor = MySqlExecutor()
 
 import { injectAjaxScript, travelDom, injectAppConfigScript } from './util'
 
@@ -116,7 +115,7 @@ async function installAppDeps (appDir: string, forceInstall = false) {
   let logStr
 
   if (shouldInstall && (await fse.pathExists(serverPath)) && packageJson.dependencies) {
-    const installCommand = userConfig?.platformConfig?.installCommand ?? `npm i --registry=https://registry.npmmirror.com --production`;
+    const installCommand = configuration?.platformConfig?.installCommand ?? `npm i --registry=https://registry.npmmirror.com --production`;
     Logger.info(`[install node_modules]: 开始安装 ${packageJson.name} 应用依赖，执行命令${installCommand}，请稍后`)
 
     // 目前安装失败时跳过安装吧，重启的时候可以通过检测检测出来

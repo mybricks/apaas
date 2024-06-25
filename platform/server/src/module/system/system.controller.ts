@@ -11,8 +11,8 @@ import { STATUS_CODE, USER_LOG_TYPE } from '../../constants'
 import ConfigService from '../config/config.service';
 import env from './../../utils/env'
 import * as fse from 'fs-extra'
+import { configuration } from './../../utils/shared';
 
-const readUserConfig = require('./../../../../../scripts/shared/read-user-config.js')
 const childProcess = require('child_process');
 const path = require('path')
 
@@ -172,14 +172,13 @@ export default class SystemController {
 
           try {
             msg += `\n[重启服务检测]：开始检测`
-            const uesrConfig = readUserConfig();
-            if (!uesrConfig?.platformConfig?.appName) {
+            if (!configuration?.platformConfig?.appName) {
               throw new Error('当前未配置 platformConfig 的 appName，请联系管理员配置')
             }
-            msg += `\n[重启服务检测]：当前平台配置 appName 为${uesrConfig.platformConfig.appName}`
+            msg += `\n[重启服务检测]：当前平台配置 appName 为${configuration.platformConfig.appName}`
             if (process.env.pm_id) {
               const appName = getAppNameById(process.env.pm_id);
-              if (appName && appName !== uesrConfig.platformConfig.appName) {
+              if (appName && appName !== configuration.platformConfig.appName) {
                 throw new Error(`当前启动的 appName 与配置的 appName 不相等\n 建议管理员 npx pm2 delete ${appName}，并使用 npm run reload 重启平台`)
               }
               msg += `\n[重启服务检测]：当前平台PM2 Id 为 ${process.env.pm_id}，name为 ${appName}`

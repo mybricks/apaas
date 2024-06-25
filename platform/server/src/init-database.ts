@@ -2,13 +2,13 @@ import { start as startDB } from "@mybricks/rocker-dao";
 import * as fse from 'fs-extra'
 import * as path from "path";
 
-const userConfig = require('./../../../scripts/shared/read-user-config.js')();
+import { configuration } from './utils/shared'
 
 const MYBATIS_SQL_FOLDER = path.join(__dirname, './../../../_mybatis');
 
 export default function initDatabase(mapperPaths: string[]) {
 
-  let dbConfig = userConfig.database;
+  let dbConfig = configuration.database;
 
   initMybatisSqls(mapperPaths);
 

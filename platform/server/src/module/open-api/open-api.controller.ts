@@ -5,10 +5,10 @@ import UserDao from "../../dao/UserDao";
 import { OpenApiErrCode } from './types'
 import { SetCookieWhenCode1AndResHasCookieInterceptor } from './../../interceptor/set-cookie'
 import { OpenApiAuthInterceptor } from './open-api-auth.interceptor'
-const userConfig = require('./../../../../../scripts/shared/read-user-config.js')();
+import { configuration } from './../../utils/shared'
 
 @Controller("/paas/api/open")
-@UseInterceptors(new OpenApiAuthInterceptor(userConfig?.openApi?.tokenSecretOrPrivateKey))
+@UseInterceptors(new OpenApiAuthInterceptor(configuration?.openApi?.tokenSecretOrPrivateKey))
 export default class OpenApiController {
 
   jwtService = new JwtService();

@@ -6,10 +6,14 @@
 const readUserConfig = require('./read-user-config');
 const loadApps = require('./load-apps');
 const MySqlExecutor = require('./mysql-executor');
+const { verifyAccessToken } = require('./access-token')
 
 
 module.exports = {
   MySqlExecutor,
   readUserConfig,
-  loadApps
+  loadApps,
+  accessToken: {
+    verifyAccessToken
+  },
 }
