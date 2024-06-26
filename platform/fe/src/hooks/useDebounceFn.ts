@@ -1,5 +1,4 @@
 import { useMemo } from 'react'
-
 import debounce from 'lodash/debounce';
 
 import { useLatest, useUnmount } from '.';
@@ -13,7 +12,7 @@ interface DebounceOptions {
 
 type noop = (...args: any[]) => any;
 
-export function useDebounceFn<T extends noop>(fn: T, options?: DebounceOptions) {
+const useDebounceFn = <T extends noop>(fn: T, options?: DebounceOptions) => {
 
   const fnRef = useLatest(fn);
 
@@ -41,3 +40,5 @@ export function useDebounceFn<T extends noop>(fn: T, options?: DebounceOptions) 
     flush: debounced.flush,
   };
 }
+
+export default useDebounceFn;

@@ -1,12 +1,7 @@
-// import {createRoot} from 'react-dom/client'
+import React from "react";
+import ReactDOM from "react-dom/client";
 
-import React from 'react'
+import App from "./App";
 
-import axios from 'axios'
-import {createRoot} from '@mybricks/rxui'
-import App from './homepage'
-
-axios.defaults.withCredentials = true
-const root = createRoot(document.querySelector('#root'))
-
-root.render(<App/>)
+const root = ReactDOM.createRoot(document.getElementById("root")!);
+root.render(<App />);
