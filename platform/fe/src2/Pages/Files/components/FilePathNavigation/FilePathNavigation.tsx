@@ -9,10 +9,14 @@ interface FilePathProps {
 }
 
 const transformPathToSearch = ({ id, groupId, extName }: FilePath) => {
-  return "?appId=files" +
-    (!extName && id ? `&groupId=${id}` : '') +
-    (groupId ? `&groupId=${groupId}` : '') +
-    (id ? `&parentId=${id}` : '');
+  return  "?appId=files" + 
+    ((!extName && id) ? 
+      `&groupId=${id}` : 
+      groupId ? 
+      `&groupId=${groupId}&parentId=${id}` : 
+      (id ? `&parentId=${id}` : 
+      ""
+    ));
 }
 
 const FilePathNavigation: FC<FilePathProps> = ({ paths }) => {
