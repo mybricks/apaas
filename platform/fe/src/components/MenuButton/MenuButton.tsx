@@ -36,7 +36,7 @@ const MenuButton: FC<MenuButtonProps> = ({
       style={style}
       onClick={onClick}
     >
-      {prefix}
+      {prefix && <span className={css.prefix}>{prefix}</span>}
       {icon && <span className={css.icon}><Icon icon={icon}/></span>}
       <span className={css.children}>
         {children}

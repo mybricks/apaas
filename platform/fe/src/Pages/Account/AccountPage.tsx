@@ -72,6 +72,7 @@ const AccountPage: FC = () => {
                     onClick={submitForm}
                     disabled={!dirty || !isValid}
                     loading={isSubmitting}
+                    size={40}
                   >
                     保 存
                   </Button>

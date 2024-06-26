@@ -27,8 +27,7 @@ const Button: FC<ButtonProps> = ({
   loading,
   className,
   type = "secondary",
-  size = 40,
-  // icon,
+  size = 32,
   contentWrapper: ContentWrapper = DefaultContentWrapper,
   disabled,
   children,
@@ -64,14 +63,6 @@ function DefaultContentWrapper({ children }: PropsWithChildren) {
     </span>
   )
 }
-
-// function IconWrapper({ children }: PropsWithChildren) {
-//   return (
-//     <span className={css.iconWrapper}>
-//       {children}
-//     </span>
-//   )
-// }
 
 function LoadingWrapper({ primary }) {
   return (
