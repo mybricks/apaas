@@ -1,4 +1,4 @@
-import React, { FC, PropsWithChildren, useState, useMemo, useContext, useEffect } from "react";
+import React, { FC, PropsWithChildren, useState, useMemo, useContext, useEffect, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
 import axios from "axios";
 
@@ -106,6 +106,7 @@ export const FilesProvider: FC<FilesProviderProps> = ({ children }) => {
   const { apps: { getApp } } = useWorkspaceConetxt();
   const { user: { id: userId } } = useUserContext();
   const [searchParams] = useSearchParams();
+  const previousFetch = useRef<unknown>();
   const [viewType, setViewType] = useState<FilesContextValue["viewType"]>(DEFAULT_VIEWTYPE);
   const [loading, setLoading] = useState(true);
   const [filesInfo, setFilesInfo] = useState<FilesContextValue["filesInfo"]>({
@@ -118,12 +119,17 @@ export const FilesProvider: FC<FilesProviderProps> = ({ children }) => {
   useEffect(() => {
     setLoading(true);
 
+    const currentFetch = {};
     const groupId = searchParams.get("groupId");
     const parentId = searchParams.get("parentId");
 
+    previousFetch.current = currentFetch;
+
     fetchFilesInfo({ userId, groupId, parentId, getApp }, (filesInfo) => {
-      setLoading(false);
-      setFilesInfo(filesInfo);
+      if (currentFetch === previousFetch.current) {
+        setLoading(false);
+        setFilesInfo(filesInfo);
+      }
     });
   }, [searchParams])
 
