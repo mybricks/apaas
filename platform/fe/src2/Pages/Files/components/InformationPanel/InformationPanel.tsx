@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React, { FC, useMemo } from "react";
 
 import { FilesContextValue } from "../../FilesProvider";
 import Group from "./group";
@@ -12,20 +12,21 @@ interface InformationPanelProps {
 const InformationPanel: FC<InformationPanelProps> = ({
   filesContext
 }) => {
-  const { filePathsInfo: { loading, filePaths } } = filesContext;
+  const { filePathsInfo: { params } } = filesContext;
 
-  if (filePaths.length === 1) {
-    const lastFilePath = filePaths[0];
-    if (lastFilePath.id) {
+  const render = useMemo(() => {
+    if (params.groupId && !params.parentId) {
       return (
         <div className={css.informationPanel}>
-          <Group {...lastFilePath} loading={loading}/>
+          <Group id={params.groupId}/>
         </div>
       )
     }
-  }
 
-  return null;
+    return null
+  }, [params])
+
+  return render
 }
 
 export default InformationPanel;

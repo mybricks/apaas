@@ -36,6 +36,8 @@ import type {UploadProps} from 'antd/es/upload/interface'
 import css from './index.less'
 import CustomDebounceSelect from './debounceSelect'
 import { useUserContext, useFilesMenuTreeContext, useWorkspaceConetxt } from '@/context'
+import { LoadingPlaceholder } from '@/components';
+import { useFilesContext } from '@/Pages/Files/FilesProvider';
 
 /** 协作用户信息 */
 interface GroupUser {
@@ -82,14 +84,23 @@ class Ctx {
 }
 
 export default function Group(props) {
+  const ref = useRef<any>();
   const { user } = useUserContext();
   const [ctx, setCtx] = useState<any>({
     getInfo(id) {
+      const currentFetch = {};
+      ref.current = currentFetch;
+      setCtx((ctx) => {
+        return {
+          getInfo: ctx.getInfo
+        }
+      })
       return new Promise((resolve) => {
         axios({
           method: "get",
           url: `/paas/api/userGroup/getGroupInfoByGroupId?id=${id}&userId=${user.id}&pageIndex=1&pageSize=5`
         }).then(({data: {data}}) => {
+          if (ref.current === currentFetch) {
           // ctx.info = data
           const { userGroupRelation } = data
           const roleDescription = userGroupRelation?.roleDescription
@@ -106,6 +117,8 @@ export default function Group(props) {
               isFounder: +data.creatorId === +user.id
             }
           })
+          }
+
 
           resolve(true)
         })
@@ -310,6 +323,7 @@ function GroupTitleConfig ({
   setCtx,
 }) {
   const { refreshNode } = useFilesMenuTreeContext();
+  const { refreshFilePaths } = useFilesContext();
   // const ctx = observe(Ctx, {from: 'parents'})
   // const parentCtx = observe(ParentCtx, {from: 'parents'})
   // const appCtx = observe(AppCtx, {from: 'parents'})
@@ -338,6 +352,10 @@ function GroupTitleConfig ({
         if (data.code === 1) {
           // appCtx.refreshSidebar('group')
           // parentCtx.path[parentCtx?.path?.length - 1].name = name
+          refreshFilePaths({
+            id: ctx.info.id,
+            name
+          })
           refreshNode("group", {
             file: {
               id: ctx.info.id,
@@ -1170,10 +1188,11 @@ function staticServer({content, folderPath, fileName, noHash}: any): Promise<{ur
 
 
 function Title({content, suffix = <></>}) {
+  // 这里会来看一下
   return (
     <div className={css.title}>
       <div className={css.content}>
-        <span>{content || '加载中...'}</span>
+        <span>{content || <LoadingPlaceholder size={24}/>}</span>
         {suffix}
       </div>
     </div>

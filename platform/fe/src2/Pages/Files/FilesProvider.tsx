@@ -2,11 +2,16 @@ import React, { FC, PropsWithChildren, useState, useMemo, useContext, useEffect,
 import { useSearchParams } from "react-router-dom";
 import axios from "axios";
 
-import { FilePaths, ViewType } from ".";
+import { FilePath, FilePaths, ViewType } from ".";
 import { useUserContext, useWorkspaceConetxt } from "@/context";
 import { storage } from "@/utils/local";
 import { MYBRICKS_WORKSPACE_DEFAULT_FILES_VIEWTYPE } from "@/const";
 import { FileData } from "@/types";
+
+interface BasicParams {
+  groupId?: string;
+  parentId?: string;
+}
 
 export interface FilesContextValue {
   viewType: ViewType;
@@ -15,15 +20,18 @@ export interface FilesContextValue {
     roleDescription: number;
     loading: boolean;
     files: FileData[];
+    params: BasicParams;
   };
   filePathsInfo: {
     filePaths: FilePaths;
     loading: boolean;
+    params: BasicParams;
   }
   refreshFiles: (params?: {
     file?: FileData;
     type: "create" | "delete" | "update"
   }) => void;
+  refreshFilePaths: (filePath: FilePath) => void;
 }
 export interface FilesProviderProps extends PropsWithChildren {};
 
@@ -39,7 +47,7 @@ const fetchFilePaths = async ({ groupId, parentId }, next) => {
   }).then(({ data }) => {
     next({
       filePaths: (!groupId ? [{id: null, name: '我的', parentId: null, groupId: null, extName: null}] : [] as FilePaths).concat(data.data),
-      loading: false
+      loading: false,
     })
   })
 }
@@ -100,97 +108,12 @@ const fetchFilesInfo = ({ userId, groupId, parentId, getApp }: any, next) => {
   })
 }
 
-const DEFAULT_VIEWTYPE = storage.get(MYBRICKS_WORKSPACE_DEFAULT_FILES_VIEWTYPE) || "grid";
-
-export const FilesProvider: FC<FilesProviderProps> = ({ children }) => {
-  const { apps: { getApp } } = useWorkspaceConetxt();
-  const { user: { id: userId } } = useUserContext();
-  const [searchParams] = useSearchParams();
-  const previousFetch = useRef<unknown>();
-  const [viewType, setViewType] = useState<FilesContextValue["viewType"]>(DEFAULT_VIEWTYPE);
-  const [filePathsInfo, setFilePathsInfo] = useState({
-    loading: true,
-    filePaths: []
-  })
-  const [filesInfo, setFilesInfo] = useState({
-    loading: true,
-    files: [],
-    roleDescription: 3
-  })
-
-  useEffect(() => {
-    const currentFetch = {};
-    const groupId = searchParams.get("groupId");
-    const parentId = searchParams.get("parentId");
-
-    previousFetch.current = currentFetch;
-
-    setFilePathsInfo((filePathsInfo) => {
-      return {
-        ...filePathsInfo,
-        loading: true
-      }
-    })
-    setFilesInfo((filesInfo) => {
-      return {
-        ...filesInfo,
-        loading: true
-      }
-    })
-    fetchFilesInfo({ userId, groupId, parentId, getApp }, (filesInfo) => {
-      if (currentFetch === previousFetch.current) {
-        setFilesInfo(filesInfo);
-      }
-    });
-    fetchFilePaths({ groupId, parentId }, (filePathsInfo) => {
-      if (currentFetch === previousFetch.current) {
-        setFilePathsInfo(filePathsInfo);
-      }
-    })
-  }, [searchParams])
-
-  const value: FilesContextValue = useMemo(() => {
-    storage.set(MYBRICKS_WORKSPACE_DEFAULT_FILES_VIEWTYPE, viewType);
-    return {
-      viewType,
-      filesInfo,
-      filePathsInfo,
-      setViewType,
-      refreshFiles: ({ file, type }) => {
-        setFilesInfo((filesInfo) => {
-        const { files, ...otherInfo } = filesInfo;
-        if (type === "create") {
-          handleCreateFile(files, file);
-        } else if (type === "delete") {
-          handleDeleteFile(files, file);
-        } else if (type === "update") {
-          handleUpdateFile(files, file);
-        }
-        
-        return {
-          files: files.concat(),
-          ...otherInfo
-        };
-      })
-      },
-      refreshFilePaths: ({ filePath, type } = { filePath: null, type: null }) => {
-
-      }
-    }
-  }, [viewType, filesInfo, filePathsInfo])
-
-  return (
-    <FilesContext.Provider value={value}>
-      {children}
-    </FilesContext.Provider>
-  )
+interface HandleFileParams {
+  files: FileData[];
+  file: FileData;
 }
 
-export const useFilesContext = () => {
-  return useContext(FilesContext);
-}
-
-const handleCreateFile = (files: FileData[], file: FileData) => {
+const handleCreateFile = ({ files, file }: HandleFileParams) => {
   if (file.extName === "folder") {
     files.unshift(file);
   } else {
@@ -205,16 +128,142 @@ const handleCreateFile = (files: FileData[], file: FileData) => {
   return files;
 }
 
-const handleDeleteFile = (files: FileData[], file: FileData) => {
+const handleDeleteFile = ({ files, file }: HandleFileParams) => {
   const index = files.findIndex((f) => f.id === file.id);
   files.splice(index, 1);
 
   return files;
 }
 
-const handleUpdateFile = (files: FileData[], file: FileData) => {
+const handleUpdateFile = ({ files, file }: HandleFileParams) => {
   const index = files.findIndex((f) => f.id === file.id);
   files.splice(index, 1, file);
 
   return files;
+}
+
+interface HandleFilePathParams {
+  filePaths: FilePaths;
+  filePath: FilePath;
+}
+
+const handleUpdateFilePath = ({ filePaths, filePath }: HandleFilePathParams) => {
+  const index = filePaths.findIndex((f) => f.id === filePath.id);
+  filePaths.splice(index, 1, filePath);
+
+  return filePaths;
+}
+
+
+const DEFAULT_VIEWTYPE = storage.get(MYBRICKS_WORKSPACE_DEFAULT_FILES_VIEWTYPE) || "grid";
+
+export const FilesProvider: FC<FilesProviderProps> = ({ children }) => {
+  const { apps: { getApp } } = useWorkspaceConetxt();
+  const { user: { id: userId } } = useUserContext();
+  const [searchParams] = useSearchParams();
+  const previousFetch = useRef<unknown>();
+  const [viewType, setViewType] = useState<FilesContextValue["viewType"]>(DEFAULT_VIEWTYPE);
+  const [filePathsInfo, setFilePathsInfo] = useState({
+    loading: true,
+    filePaths: [],
+    params: {}
+  })
+  const [filesInfo, setFilesInfo] = useState({
+    loading: true,
+    files: [],
+    roleDescription: 3,
+    params: {}
+  })
+
+  useEffect(() => {
+    const currentFetch = {};
+    const params = {
+      groupId: searchParams.get("groupId"),
+      parentId: searchParams.get("parentId")
+    }
+
+    previousFetch.current = currentFetch;
+
+    setFilePathsInfo((filePathsInfo) => {
+      return {
+        ...filePathsInfo,
+        loading: true,
+        params
+      }
+    })
+    setFilesInfo((filesInfo) => {
+      return {
+        ...filesInfo,
+        loading: true,
+        params
+      }
+    })
+    fetchFilesInfo({ ...params, userId, getApp }, (filesInfo) => {
+      if (currentFetch === previousFetch.current) {
+        setFilesInfo((previousFilesInfo) => {
+          return {
+            ...previousFilesInfo,
+            ...filesInfo,
+          }
+        });
+      }
+    });
+    fetchFilePaths(params, (filePathsInfo) => {
+      if (currentFetch === previousFetch.current) {
+        setFilePathsInfo((previousFilePathsInfo) => {
+          return {
+            ...previousFilePathsInfo,
+            ...filePathsInfo
+          }
+        });
+      }
+    })
+  }, [searchParams])
+
+  const value: FilesContextValue = useMemo(() => {
+    storage.set(MYBRICKS_WORKSPACE_DEFAULT_FILES_VIEWTYPE, viewType);
+    return {
+      viewType,
+      filesInfo,
+      filePathsInfo,
+      setViewType,
+      refreshFiles: ({ file, type }) => {
+        setFilesInfo((previousFilesInfo) => {
+          const { files, ...other } = previousFilesInfo;
+          if (type === "create") {
+            handleCreateFile({ files, file });
+          } else if (type === "delete") {
+            handleDeleteFile({ files, file });
+          } else if (type === "update") {
+            handleUpdateFile({ files, file });
+          }
+          
+          return {
+            files,
+            ...other
+          };
+        })
+      },
+      refreshFilePaths: (filePath) => {
+        setFilePathsInfo((previousFilePathsInfo) => {
+          const { filePaths, ...other } = previousFilePathsInfo;
+          handleUpdateFilePath({ filePaths, filePath })
+          return {
+            filePaths,
+            ...other
+          }
+        })
+      }
+    }
+  }, [viewType, filesInfo, filePathsInfo])
+
+  return (
+    <FilesContext.Provider value={value}>
+      {children}
+    </FilesContext.Provider>
+  )
+}
+
+export const useFilesContext = () => {
+  return useContext(FilesContext);
 }
