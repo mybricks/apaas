@@ -3,6 +3,8 @@ import axios from "axios";
 
 import { Folder } from "@/components/icon";
 
+export type GetAppFunction = (key: string) => InstalledApp;
+
 export interface Apps {
   /** 侧边栏应用 */
   menuApps: InstalledApps;
@@ -13,7 +15,7 @@ export interface Apps {
   /** 文件夹 */
   folderApps: InstalledApps;
 
-  getApp: (key: string) => InstalledApp;
+  getApp: GetAppFunction;
 }
 
 export interface InstalledApp {

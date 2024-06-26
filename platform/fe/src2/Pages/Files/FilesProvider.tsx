@@ -11,15 +11,14 @@ import { FileData } from "@/types";
 export interface FilesContextValue {
   viewType: ViewType;
   setViewType: React.Dispatch<React.SetStateAction<FilesContextValue["viewType"]>>;
-  loading: boolean;
   filesInfo: {
     roleDescription: number;
-    filePaths: FilePaths;
+    loading: boolean;
     files: FileData[];
-    params: {
-      groupId?: string;
-      parentId?: string;
-    }
+  };
+  filePathsInfo: {
+    filePaths: FilePaths;
+    loading: boolean;
   }
   refreshFiles: (params?: {
     file?: FileData;
@@ -29,6 +28,21 @@ export interface FilesContextValue {
 export interface FilesProviderProps extends PropsWithChildren {};
 
 const FilesContext = React.createContext<FilesContextValue>({} as FilesContextValue);
+
+/** 获取文件路径 */
+const fetchFilePaths = async ({ groupId, parentId }, next) => {
+  axios.get("/paas/api/file/getFilePath", {
+    params: {
+      fileId: parentId,
+      groupId
+    }
+  }).then(({ data }) => {
+    next({
+      filePaths: (!groupId ? [{id: null, name: '我的', parentId: null, groupId: null, extName: null}] : [] as FilePaths).concat(data.data),
+      loading: false
+    })
+  })
+}
 
 /** 获取当前groupId下权限 */
 const fetchRoleDescription = async ({ groupId, userId }) => {
@@ -44,16 +58,6 @@ const fetchRoleDescription = async ({ groupId, userId }) => {
   })).data.data;
 
   return response ? response.roleDescription : 3;
-}
-
-/** 获取文件路径 */
-const fetchFilePaths = async ({ groupId, parentId }) => {
-  return (await axios.get("/paas/api/file/getFilePath", {
-    params: {
-      fileId: parentId,
-      groupId
-    }
-  })).data.data;
 }
 
 /** 获取文件列表 */
@@ -81,21 +85,17 @@ const filesSort = (files: FileData[]) => {
     return sNum - cNum
   })
 }
-// TODO: Next
+
+/** 获取文件列表信息 */
 const fetchFilesInfo = ({ userId, groupId, parentId, getApp }: any, next) => {
   Promise.all([
     fetchRoleDescription({ groupId, userId }),
-    fetchFilePaths({ groupId, parentId }),
     fetchFiles({ groupId, userId, parentId })
-  ]).then(([roleDescription, filePaths, files]) => {
+  ]).then(([roleDescription, files]) => {
     next({
       roleDescription,
-      filePaths: (!groupId ? [{id: null, name: '我的', parentId: null, groupId: null, extName: null}] : [] as FilePaths).concat(filePaths),
       files: files.filter((file) => getApp(file.extName)),
-      params: {
-        groupId,
-        parentId
-      }
+      loading: false,
     });
   })
 }
@@ -108,69 +108,76 @@ export const FilesProvider: FC<FilesProviderProps> = ({ children }) => {
   const [searchParams] = useSearchParams();
   const previousFetch = useRef<unknown>();
   const [viewType, setViewType] = useState<FilesContextValue["viewType"]>(DEFAULT_VIEWTYPE);
-  const [loading, setLoading] = useState(true);
-  const [filesInfo, setFilesInfo] = useState<FilesContextValue["filesInfo"]>({
-    roleDescription: 3,
-    filePaths: [],
+  const [filePathsInfo, setFilePathsInfo] = useState({
+    loading: true,
+    filePaths: []
+  })
+  const [filesInfo, setFilesInfo] = useState({
+    loading: true,
     files: [],
-    params: {}
+    roleDescription: 3
   })
 
   useEffect(() => {
-    setLoading(true);
-
     const currentFetch = {};
     const groupId = searchParams.get("groupId");
     const parentId = searchParams.get("parentId");
 
     previousFetch.current = currentFetch;
 
+    setFilePathsInfo((filePathsInfo) => {
+      return {
+        ...filePathsInfo,
+        loading: true
+      }
+    })
+    setFilesInfo((filesInfo) => {
+      return {
+        ...filesInfo,
+        loading: true
+      }
+    })
     fetchFilesInfo({ userId, groupId, parentId, getApp }, (filesInfo) => {
       if (currentFetch === previousFetch.current) {
-        setLoading(false);
         setFilesInfo(filesInfo);
       }
     });
+    fetchFilePaths({ groupId, parentId }, (filePathsInfo) => {
+      if (currentFetch === previousFetch.current) {
+        setFilePathsInfo(filePathsInfo);
+      }
+    })
   }, [searchParams])
 
   const value: FilesContextValue = useMemo(() => {
     storage.set(MYBRICKS_WORKSPACE_DEFAULT_FILES_VIEWTYPE, viewType);
     return {
       viewType,
-      loading,
       filesInfo,
+      filePathsInfo,
       setViewType,
-      refreshFiles: ({ file, type } = { file: null, type: null }) => {
-        const { params } = filesInfo;
-        if (file) {
-          setFilesInfo((filesInfo) => {
-            const { files, ...otherInfo } = filesInfo;
-            if (type === "create") {
-              handleCreateFile(files, file);
-            } else if (type === "delete") {
-              handleDeleteFile(files, file);
-            } else if (type === "update") {
-              handleUpdateFile(files, file);
-            }
-           
-            return {
-              files: files.concat(),
-              ...otherInfo
-            };
-          })
-        } else {
-          setLoading(true);
-          fetchFilesInfo({ userId, ...params }, (filesInfo) => {
-            setLoading(false);
-            setFilesInfo(filesInfo);
-          });
+      refreshFiles: ({ file, type }) => {
+        setFilesInfo((filesInfo) => {
+        const { files, ...otherInfo } = filesInfo;
+        if (type === "create") {
+          handleCreateFile(files, file);
+        } else if (type === "delete") {
+          handleDeleteFile(files, file);
+        } else if (type === "update") {
+          handleUpdateFile(files, file);
         }
+        
+        return {
+          files: files.concat(),
+          ...otherInfo
+        };
+      })
       },
       refreshFilePaths: ({ filePath, type } = { filePath: null, type: null }) => {
 
       }
     }
-  }, [viewType, loading, filesInfo])
+  }, [viewType, filesInfo, filePathsInfo])
 
   return (
     <FilesContext.Provider value={value}>

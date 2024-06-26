@@ -39,7 +39,7 @@ const FilesListContainer: FC<FilesListContainerProps> = ({
 }) => {
   const { refreshNode } = useFilesMenuTreeContext();
   const { showModal } = useModalConetxt();
-  const { loading, filesInfo: { files, roleDescription }, viewType, refreshFiles } = filesContext;
+  const { filesInfo: { loading, files, roleDescription }, viewType, refreshFiles } = filesContext;
 
   const handle: Handle = useMemo(() => {
     const refresh = ({ file, type }: { file: FileData, type: "delete" | "create" | "update"}) => {
@@ -139,7 +139,7 @@ const FilesListContainer: FC<FilesListContainerProps> = ({
   }, []);
 
   if (viewType === "grid") {
-    if (filesContext.loading) {
+    if (loading) {
       return (
         <div className={css.loading}>
           <LoadingPlaceholder size={64}/>
@@ -147,7 +147,7 @@ const FilesListContainer: FC<FilesListContainerProps> = ({
       )
     }
   
-    if (!filesContext.filesInfo.files.length) {
+    if (!files.length) {
       return "暂无内容，请添加...";
     }
 

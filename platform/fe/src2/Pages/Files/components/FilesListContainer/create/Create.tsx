@@ -36,7 +36,7 @@ export function Create({
   // show,
 }: CreateProps): JSX.Element {
   const { refreshNode } = useFilesMenuTreeContext();
-  const { filesInfo: { filePaths }, refreshFiles } = useFilesContext();
+  const { filePathsInfo: { filePaths }, refreshFiles } = useFilesContext();
   // const ctx = observe(Ctx, { from: 'parents' })
   // const appCtx = observe(AppCtx, { from: 'parents' })
   const { system, getUserSystemConfig, apps: { folderApps, designApps, getApp } } = useWorkspaceConetxt();

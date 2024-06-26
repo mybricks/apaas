@@ -12,7 +12,7 @@ interface InformationPanelProps {
 const InformationPanel: FC<InformationPanelProps> = ({
   filesContext
 }) => {
-  const { loading, filesInfo: { filePaths } } = filesContext;
+  const { filePathsInfo: { loading, filePaths } } = filesContext;
 
   if (filePaths.length === 1) {
     const lastFilePath = filePaths[0];

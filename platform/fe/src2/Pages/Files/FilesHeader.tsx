@@ -11,7 +11,7 @@ import FilesSearchButton from "./components/FilesSearchButton";
 import css from "./FilesHeader.less";
 
 const FilesHeader: FC = () => {
-  const { loading, filesInfo: { filePaths },  viewType, setViewType } = useFilesContext();
+  const { filePathsInfo: { loading, filePaths },  viewType, setViewType } = useFilesContext();
   
   return (
     <div className={css.filesHeader}>
