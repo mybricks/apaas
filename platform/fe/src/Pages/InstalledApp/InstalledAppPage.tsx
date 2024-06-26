@@ -6,7 +6,9 @@ import css from "./InstalledAppPage.less";
 
 const InstalledAppPage: FC<InstalledApp> = (app) => {
   return (
-    <iframe className={css.installedAppPage} src={app.homepage}/>
+    <div className={css.installedAppPage} >
+      <iframe src={app.homepage}/>
+    </div>
   )
 }
 
