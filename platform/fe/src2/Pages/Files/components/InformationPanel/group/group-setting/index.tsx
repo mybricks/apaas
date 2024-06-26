@@ -192,6 +192,7 @@ const GroupSetting: FC<any> = props => {
       onCancel={onClose}
       open={visible}
       maskClosable={false}
+      centered
     >
       <div className={`${styles.configModal} fangzhou-theme`}>
         <div className={styles.title}>
