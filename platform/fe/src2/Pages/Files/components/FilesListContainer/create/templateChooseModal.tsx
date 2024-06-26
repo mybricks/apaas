@@ -133,6 +133,7 @@ const CommonTemplateChooseModal = props => {
         onCancel={onCancel}
         cancelText="取消"
         okText="选择空模板"
+        centered
       >
         {/* display: 'flex', flexFlow: 'wrap' */}
         <div style={{ maxHeight: 716, overflow: 'auto' }}>

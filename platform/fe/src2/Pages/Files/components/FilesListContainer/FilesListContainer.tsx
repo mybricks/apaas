@@ -1,6 +1,6 @@
 import React, { FC, useMemo } from "react";
 
-import { User, FileData, InstalledApp } from "@/types";
+import { User, FileData } from "@/types";
 import ViewAsTable from "./ViewAsTable";
 import ViewAsGrid from "./ViewAsGrid";
 import { useFilesMenuTreeContext, useModalConetxt } from "@/context";
@@ -12,6 +12,7 @@ import ConfirmDeleteModal from "../ConfirmDeleteModal";
 import ConfirmShareModal from "../ConfirmShareModal";
 import ConfirmTouristVisitModal from "../ConfirmTouristVisitModal";
 import CopyFileModal from "../CopyFileModal";
+import MoveFileModal from "../MoveFileModal";
 
 import css from "./FilesListContainer.less";
 
@@ -22,7 +23,6 @@ interface FilesListContainerProps {
 
 interface HandleParams {
   file: FileData;
-  app: InstalledApp;
 }
 
 export type Handle = {
@@ -53,7 +53,7 @@ const FilesListContainer: FC<FilesListContainerProps> = ({
       }
     }
     return {
-      delete: ({ file, app }: HandleParams) => {
+      delete: ({ file }: HandleParams) => {
         showModal(Modal.Confirmation, ConfirmDeleteModal({
           file,
           user,
@@ -62,14 +62,14 @@ const FilesListContainer: FC<FilesListContainerProps> = ({
           }
         }))
       },
-      rename: ({ file, app }: HandleParams) => {
+      rename: ({ file }: HandleParams) => {
         showModal(RenameFileModal, {
           user,
           file,
           next: (file) => refresh({ file, type: "update" })
         });
       },
-      share: ({ file, app }: HandleParams) => {
+      share: ({ file }: HandleParams) => {
         showModal(Modal.Confirmation, ConfirmShareModal({
           file,
           user,
@@ -79,7 +79,7 @@ const FilesListContainer: FC<FilesListContainerProps> = ({
           }
         }))
       },
-      unShare: ({ file, app }: HandleParams) => {
+      unShare: ({ file }: HandleParams) => {
         showModal(Modal.Confirmation, ConfirmShareModal({
           file,
           user,
@@ -89,7 +89,7 @@ const FilesListContainer: FC<FilesListContainerProps> = ({
           }
         }))
       },
-      touristVisit: ({ file, app }: HandleParams) => {
+      touristVisit: ({ file }: HandleParams) => {
         showModal(Modal.Confirmation, ConfirmTouristVisitModal({
           file,
           user,
@@ -99,7 +99,7 @@ const FilesListContainer: FC<FilesListContainerProps> = ({
           }
         }))
       },
-      unTouristVisit: ({ file, app }: HandleParams) => {
+      unTouristVisit: ({ file }: HandleParams) => {
         showModal(Modal.Confirmation, ConfirmTouristVisitModal({
           file,
           user,
@@ -109,8 +109,24 @@ const FilesListContainer: FC<FilesListContainerProps> = ({
           }
         }))
       },
-      // move 文件移动，TODO
-      copy: ({ file, app }: HandleParams) => {
+      move: ({ file }: HandleParams) => {
+        const previousFile = file;
+
+        showModal(MoveFileModal, {
+          user,
+          file,
+          next: ({ targetFile, file }) => {
+            if (!targetFile.extName) {
+              refreshNode(`?appId=files&groupId=${targetFile.id}`, { file, type: "create" })
+            } else {
+              refreshNode(`?appId=files&groupId=${targetFile.groupId}&parentId=${targetFile.id}`, { file, type: "create" })
+            };
+            refreshNode(spellFileSearch(previousFile), { file, type: "delete" });
+            refreshFiles({ file, type: "delete" });
+          }
+        })
+      },
+      copy: ({ file }: HandleParams) => {
         showModal(CopyFileModal, {
           user,
           file,

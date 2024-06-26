@@ -160,16 +160,16 @@ export function RenderOperate({project, operate, size = 28, iconSize = 18, appMe
         </div>
       )
     },
-    // {
-    //   key: 'move',
-    //   label: (
-    //     <div className={css.operateItem} onClick={() => operate('move', {project})}>
-    //       {/* @ts-ignore */}
-    //       <SelectOutlined width={16} height={16}/>
-    //       <div className={css.label}>移动到</div>
-    //     </div>
-    //   )
-    // },
+    {
+      key: 'move',
+      label: (
+        <div className={css.operateItem} onClick={() => operate.move({ file: project })}>
+          {/* @ts-ignore */}
+          <SelectOutlined width={16} height={16}/>
+          <div className={css.label}>移动到</div>
+        </div>
+      )
+    },
    !isFolder ? {
       key: 'copy',
       label: (
@@ -209,7 +209,7 @@ export function RenderOperate({project, operate, size = 28, iconSize = 18, appMe
 
   return (
     <div className={css.btns} onClick={(e) => {
-      e.stopPropagation();
+      e.preventDefault(); // 目前不加会触发页面刷新，看下Link相关
     }}>
       <Dropdown
         menus={dropdownMenus}
