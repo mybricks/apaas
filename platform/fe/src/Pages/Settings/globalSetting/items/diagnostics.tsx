@@ -41,8 +41,8 @@ export default function Diagnostics() {
   }, [])
 
   return (
-    <div>
-      <div style={{display: 'flex'}}>
+    <div style={{height: '100%', display: 'flex', flexDirection: 'column'}}>
+      <div style={{display: 'flex', flex: 1}}>
         <span style={{width: 100}}>诊断结果：</span>
         <TextArea value={diagnosticsResult} style={{resize: 'none'}} disabled={true} allowClear={false} rows={7} placeholder="诊断结果即将展示在此" maxLength={6} />
       </div>

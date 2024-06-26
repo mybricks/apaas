@@ -1,7 +1,9 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import axios from 'axios'
 import { Select, message, Statistic, Table } from 'antd'
-import moment from 'moment'
+import dayjs from "dayjs";
+import duration from 'dayjs/plugin/duration';
+dayjs.extend(duration);
 
 import css from './monitor2.less'
 
@@ -127,7 +129,7 @@ export default () => {
       </Block>
 
       <Block title={'最近被访问的文件'}>
-        <div className={css.content}>
+        <div className={css.content} style={{ overflow: 'hidden' }}>
           <div className={css.list}>
             {Array.isArray(fileList) &&
               fileList.map((item) => {
@@ -143,7 +145,7 @@ export default () => {
                       </a>
                       <span className={css.col_desc}>
                         用户 {getUserName(item.userId)} 于{' '}
-                        {moment(item.lastActiveAt).format('HH:mm:ss')} 访问页面
+                        {dayjs(item.lastActiveAt).format('HH:mm:ss')} 访问页面
                       </span>
                     </div>
                     <a
@@ -163,9 +165,8 @@ export default () => {
   )
 }
 
-
 function formatMilliseconds(ms) {
-  const duration = moment.duration(ms);
+  const duration = dayjs.duration(ms);
   const days = duration.days();
   const hours = duration.hours();
   const minutes = duration.minutes();
