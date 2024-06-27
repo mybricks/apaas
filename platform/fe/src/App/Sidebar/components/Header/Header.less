@@ -1,0 +1,41 @@
+.header {
+  height: 49px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+
+  .wrapper {
+    width: 100%;
+    padding: 6px 18px 6px 28px;
+    display: flex;
+    align-items: center;
+    height: 48px;
+    border: 0;
+    background: none;
+    cursor: pointer;
+
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.04);
+    }
+
+    .logo {
+      width: 24px;
+      height: 24px;
+      border-radius: 4px;
+      margin-right: 12px;
+  
+      img {
+        width: 100%;
+      }
+    }
+
+    .name {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      line-height: 1.4;
+      text-align: left;
+      font-weight: 500;
+      max-width: 100%;
+      font-size: 14px;
+    }
+  }
+}

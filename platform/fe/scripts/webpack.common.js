@@ -29,6 +29,7 @@ module.exports = {
     },
     antd: 'antd',
     moment: 'moment',
+    dayjs: 'dayjs'
   }],
   module: {
     rules: [
