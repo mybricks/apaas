@@ -222,7 +222,7 @@ const StaticFilesPage: FC = () => {
 	}, [paths]);
 
 	return (
-		<>
+		<div className={styles.container}>
       <div className={styles.operate}>
 				<Button
 					className={styles.button}
@@ -384,7 +384,7 @@ const StaticFilesPage: FC = () => {
 					)
 				}}
 			/>
-    </>
+    </div>
 	);
 };
 

@@ -1,3 +1,5 @@
+@import url("@/theme.less");
+
 .title {
   .titleMiddle {
     display: flex;
@@ -163,27 +165,7 @@
   .modalList {
     height: 100%;
     overflow: auto;
-    // .scrollbar();
-    &::-webkit-scrollbar {
-      width: 5px;
-      height: 5px;
-      background: transparent;
-    }
-  
-    &::-webkit-scrollbar-thumb {
-      border-radius: 7px;
-      background: #BBB;
-      border: 0 solid transparent;
-      background-clip: padding-box;
-    }
-  
-    &::-webkit-scrollbar-button {
-      display: none;
-    }
-  
-    &::-webkit-scrollbar-corner {
-      display: none;
-    }
+    .scrollbar();
     .modalListItem {
       border-radius: 4px;
       padding: 12px 8px;

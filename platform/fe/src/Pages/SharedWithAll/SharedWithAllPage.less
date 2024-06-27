@@ -1,31 +1,13 @@
 // TODO: Next
+@import url("@/theme.less");
+
 .files {
   overflow: auto;
   max-height: 100%;
   margin-left: -5px;
   display: flex;
   flex-wrap: wrap;
-
-  &::-webkit-scrollbar {
-    width: 5px;
-    height: 5px;
-    background: transparent;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    border-radius: 7px;
-    background: #BBB;
-    border: 0 solid transparent;
-    background-clip: padding-box;
-  }
-
-  &::-webkit-scrollbar-button {
-    display: none;
-  }
-
-  &::-webkit-scrollbar-corner {
-    display: none;
-  }
+  .scrollbar();
 
   .loading {
     display: flex;
