@@ -129,7 +129,7 @@ const OperationLogPage: FC = () => {
   return (
     <div className={css.operationLogPage}>
       <Table
-        size="small"
+        size="middle"
         loading={loading}
         dataSource={dataSource}
         columns={columns}

@@ -1,24 +1,21 @@
-import React, {
-  useMemo,
-  useState,
-  useEffect,
-  useCallback
-} from 'react'
+import React, { useMemo, useState, useEffect, useCallback } from 'react'
 
-import {
-  message,
-} from 'antd'
+import { message, Breadcrumb } from 'antd'
 import axios from 'axios'
-import {observe} from '@mybricks/rxui'
-import {SettingOutlined, LeftOutlined, EllipsisOutlined } from '@ant-design/icons'
+import { observe } from '@mybricks/rxui'
+import {
+  SettingOutlined,
+  LeftOutlined,
+  EllipsisOutlined,
+} from '@ant-design/icons'
 
 // import AppCtx, { T_App } from '../../AppCtx'
 
 import { IS_IN_BRICKS_ENV } from '@/const'
-import { InstalledApp } from "@/types"
-import { useWorkspaceConetxt, useUserContext } from "@/context";
+import { InstalledApp } from '@/types'
+import { useWorkspaceConetxt, useUserContext } from '@/context'
 
-import SchemaSetting, {SettingItem} from './schemaSetting'
+import SchemaSetting, { SettingItem } from './schemaSetting'
 import { DiagnosticsIcon, LogIcon, MonitorIcon, OssIcon } from './icon'
 // import AboutForm from './items/aboutForm'
 import OssForm from './items/ossForm'
@@ -31,7 +28,7 @@ interface MenuItem extends InstalledApp {
 
 import styles from './index.less'
 import Term from './term'
-import Monitor2 from './items/monitor2'
+import Monitor from './items/monitor'
 import Diagnostics from './items/diagnostics'
 
 interface TabsProps {
@@ -49,33 +46,42 @@ interface TabsProps {
 const SystemConfigItems = [
   // { title: '全局设置', namespace: 'system', icon: <SettingOutlined /> },
   // { title: '资源存储', namespace: 'mybricks-oss-config', icon: <OssIcon />},
-  { title: '运行日志', namespace: 'mybricks-log', icon: <LogIcon />},
-  { title: '系统诊断', namespace: 'mybricks-diagnostics', icon: <DiagnosticsIcon /> },
+  { title: '运行日志', namespace: 'mybricks-log', icon: <LogIcon /> },
+  {
+    title: '系统诊断',
+    namespace: 'mybricks-diagnostics',
+    icon: <DiagnosticsIcon />,
+  },
   // { title: '更多', namespace: 'about', icon: <EllipsisOutlined /> }
 ]
-if(IS_IN_BRICKS_ENV) {
-  SystemConfigItems.splice(SystemConfigItems.length - 1, 0, { title: '监控与统计', namespace: 'mybricks-monitor', icon: <MonitorIcon />})
+if (IS_IN_BRICKS_ENV) {
+  SystemConfigItems.splice(SystemConfigItems.length - 1, 0, {
+    title: '监控与统计',
+    namespace: 'mybricks-monitor',
+    icon: <MonitorIcon />,
+  })
 }
 
 const Tabs = ({ onClick, activeKey, items = [], style }: TabsProps) => {
   if (!Array.isArray(items)) {
     return null
   }
-  let group1 = [];
-  let group2 = [];
+  let group1 = []
+  let group2 = []
   items?.forEach((item, index) => {
     let temp = (
       <div
-          key={item.namespace}
-          className={`${styles.tab} ${activeKey === item.namespace ? styles.activeTab : ''
-            }`}
-          onClick={() => onClick?.({ namespace: item.namespace })}
-        >
-          <div className={styles.icon}>{item?.icon}</div>
-          <div className={styles.label}>{item?.title}</div>
+        key={item.namespace}
+        className={`${styles.tab} ${
+          activeKey === item.namespace ? styles.activeTab : ''
+        }`}
+        onClick={() => onClick?.({ namespace: item.namespace })}
+      >
+        <div className={styles.icon}>{item?.icon}</div>
+        <div className={styles.label}>{item?.title}</div>
       </div>
-    );
-    if(index <= SystemConfigItems.length - 1) {
+    )
+    if (index <= SystemConfigItems.length - 1) {
       group1.push(temp)
     } else {
       group2.push(temp)
@@ -83,12 +89,8 @@ const Tabs = ({ onClick, activeKey, items = [], style }: TabsProps) => {
   })
   return (
     <div className={styles.tabs} style={style}>
-      <div style={{display: 'flex'}}>
-        {...group1}
-      </div>
-      <div style={{display: 'flex'}}>
-        {...group2}
-      </div>
+      <div style={{ display: 'flex' }}>{...group1}</div>
+      <div style={{ display: 'flex' }}>{...group2}</div>
     </div>
   )
 }
@@ -97,35 +99,38 @@ export default () => {
   // const appCtx = observe(AppCtx, {from: 'parents'})
   // const user = appCtx.user
 
-  const { apps: { installedApps } } = useWorkspaceConetxt();
+  const {
+    apps: { installedApps },
+  } = useWorkspaceConetxt()
 
-  const user = useUserContext();
+  const user = useUserContext()
 
   const [activeKey, setActiveKey] = useState()
   const [configMap, setConfigMap] = useState({})
 
   const [isConfigMount, setIsConfigMount] = useState(false)
-  const [currentPlatformVersion, setCurrentPlatformVersion] = useState('');
+  const [currentPlatformVersion, setCurrentPlatformVersion] = useState('')
 
   const menuItems = useMemo((): any[] => {
     if (!Array.isArray(installedApps)) {
       return SystemConfigItems
     } else {
-      const appSettings = installedApps.filter(
-        (app) => app?.setting
-      ).map((app) => {
-        return {
-          ...app,
-          icon: typeof app?.icon === 'string' ? <img src={app.icon} /> : app.icon,
-        }
-      })
+      const appSettings = installedApps
+        .filter((app) => app?.setting)
+        .map((app) => {
+          return {
+            ...app,
+            icon:
+              typeof app?.icon === 'string' ? <img src={app.icon} /> : app.icon,
+          }
+        })
 
       return [...SystemConfigItems, ...appSettings]
     }
   }, [SystemConfigItems])
 
   const queryConfig = useCallback(() => {
-    ; (async () => {
+    ;(async () => {
       const res = await axios({
         method: 'post',
         url: '/paas/api/config/get',
@@ -145,7 +150,7 @@ export default () => {
 
   const submitConfig = useCallback(
     (namespace, values) => {
-      ; (async () => {
+      ;(async () => {
         const res = await axios({
           method: 'post',
           url: '/paas/api/config/update',
@@ -173,14 +178,16 @@ export default () => {
   }, [queryConfig])
 
   useEffect(() => {
-    axios.post('/paas/api/system/channel', {
-      type: "getCurrentPlatformVersion",
-      userId: user?.id,
-    }).then(({ data }) => {
-      if(data.code === 1) {
-        setCurrentPlatformVersion(data.data)
-      }
-    })
+    axios
+      .post('/paas/api/system/channel', {
+        type: 'getCurrentPlatformVersion',
+        userId: user?.id,
+      })
+      .then(({ data }) => {
+        if (data.code === 1) {
+          setCurrentPlatformVersion(data.data)
+        }
+      })
   }, [])
 
   const renderContent = () => {
@@ -215,20 +222,13 @@ export default () => {
         )
       }
       case activeKey === 'mybricks-log': {
-        return (
-          <Term />
-        )
+        return <Term />
       }
       case activeKey === 'mybricks-monitor': {
-        return (
-
-          <Monitor2 />
-        )
+        return <Monitor />
       }
       case activeKey === 'mybricks-diagnostics': {
-        return (
-          <Diagnostics />
-        )
+        return <Diagnostics />
       }
       // case activeKey === 'about': {
       //   return (
@@ -255,7 +255,7 @@ export default () => {
               style={{
                 paddingTop: 20,
                 paddingBottom: 20,
-                flex: 1
+                flex: 1,
                 // minHeight: '500px',
                 // maxHeight: '90vh',
                 // height: 600,
@@ -300,15 +300,24 @@ export default () => {
 
   return (
     <div className={`${styles.configModal} fangzhou-theme`}>
-      {activeTitle && <div className={styles.title}>
-        {activeKey && (
-          <LeftOutlined
-            style={{ marginRight: 10, cursor: 'pointer' }}
-            onClick={() => setActiveKey('')}
-          />
-        )}
-        {activeTitle}
-      </div>}
+      <Breadcrumb
+        items={[
+          {
+            title: '全部设置',
+            key: 'all',
+            onClick: () => setActiveKey(''),
+          },
+          ...(activeKey
+            ? [
+                {
+                  title: activeTitle,
+                  key: activeKey,
+                  onClick: () => setActiveKey(activeKey),
+                },
+              ]
+            : []),
+        ]}
+      />
       <div className={styles.configContainer}>
         <Tabs
           style={{ display: !activeKey ? 'block' : 'none' }}

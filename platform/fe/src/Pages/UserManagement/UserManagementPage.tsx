@@ -155,7 +155,7 @@ export default function UserManagementPage() {
         autoComplete="off"
       >
         <Row justify={'space-around'}>
-          <Col span={7} offset={1} key={1}>
+          <Col span={7} key={1}>
             <Form.Item
               label="邮箱"
               name="email"
@@ -198,6 +198,7 @@ export default function UserManagementPage() {
           })
         }}
         pagination={{ position: ['bottomRight'], total: total, current: pagination.page, pageSize: pagination.pageSize }}
+        size='middle'
       />
     </div>
   )

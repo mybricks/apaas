@@ -97,9 +97,12 @@
       width: 100%;
       text-align: center;
       font-size: 13px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+
+      overflow: hidden; /* 隐藏超出部分 */
+      display: -webkit-box; /* 使用Flexbox布局 */
+      -webkit-box-orient: vertical; /* 垂直布局 */
+      -webkit-line-clamp: 2; /* 只显示两行 */
+      white-space: normal; /* 默认换行 */
     }
   }
 
