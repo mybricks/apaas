@@ -14,7 +14,7 @@ import ConfigService from '../config/config.service';
 import AppService from './apps.service';
 import { USER_LOG_TYPE } from '../../constants'
 import { installAppFromFolder } from './../../utils/install-apps'
-import { pick } from './../../utils'
+import { pick, escapeFileName } from './../../utils'
 import LockService from '../global/lock.service';
 import { configuration } from './../../utils/shared'
 
@@ -328,7 +328,7 @@ export default class AppsController {
 
 
       Logger.info(`${logPrefix} 开始安装APP`)
-      await installAppFromFolder(unzipFolderPath, destAppDir, { namespace: installPkgName || '未知namespace', needInstallDeps: needServiceUpdate }, { logPrefix })
+      await installAppFromFolder(unzipFolderPath, destAppDir, { namespace: installPkgName || '未知namespace', autoInstallNodeModules: needServiceUpdate }, { logPrefix })
       Logger.info(`${logPrefix} 安装APP成功`)
 
       Logger.info(`${logPrefix} 平台更新成功，准备写入操作日志`)
@@ -486,7 +486,7 @@ export default class AppsController {
     await fse.ensureDir(TEMP_FOLDER_PATH);
     await fse.emptydir(TEMP_FOLDER_PATH);
     try {
-      const zipFilePath = path.join(TEMP_FOLDER_PATH, `./${file.originalname}`)
+      const zipFilePath = path.join(TEMP_FOLDER_PATH, `./${escapeFileName(file.originalname)}`)
       Logger.info(`${logPrefix} 开始持久化压缩包`)
       fs.writeFileSync(zipFilePath, file.buffer);
       childProcess.execSync(`which unzip`).toString()
@@ -512,7 +512,7 @@ export default class AppsController {
       const destAppDir = installedApp?.directory ? installedApp.directory : path.join(env.getAppInstallFolder(), pkg.name)
       
       Logger.info(`${logPrefix} 准备安装APP ${pkg.name}`)
-      await installAppFromFolder(unzipFolderPath, destAppDir, { namespace: pkg.name || '未知namespace', needInstallDeps: true }, { logPrefix })
+      await installAppFromFolder(unzipFolderPath, destAppDir, { namespace: pkg.name || '未知namespace', autoInstallNodeModules: false }, { logPrefix })
       Logger.info(`${logPrefix} 安装APP成功`)
 
       Logger.info(`${logPrefix} 平台更新成功，准备写入操作日志`)

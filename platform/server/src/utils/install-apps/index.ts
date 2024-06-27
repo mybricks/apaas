@@ -11,9 +11,15 @@ const mysqlExecutor = MySqlExecutor()
 
 import { injectAjaxScript, travelDom, injectAppConfigScript } from './util'
 
-
-/** 从文件夹安装 */
-export async function installAppFromFolder(installAppFolderDir, destAppDir, { namespace, needInstallDeps }, { logPrefix }) {
+/**
+ * @description 从文件夹安装
+ * @param {string} installAppFolderDir 安装目录
+ * @param {string} destAppDir 目标目录
+ * @param {Object} options - 配置项.
+ * @param {string} options.namespace - 应用namspace
+ * @param {boolean} options.autoInstallNodeModules - 如果安装目录没有node_modules，则自动安装node_modules
+ */
+export async function installAppFromFolder(installAppFolderDir, destAppDir, { namespace, autoInstallNodeModules }, { logPrefix }) {
   if (!await fse.pathExists(installAppFolderDir)) {
     throw new Error(`应用包路径 ${installAppFolderDir} 不存在`)
   }
@@ -67,19 +73,22 @@ export async function installAppFromFolder(installAppFolderDir, destAppDir, { na
   await copyFiles(['assets', 'nodejs', 'package.json', 'preinstall.js', 'tsconfig.json', '.gitignore', 'README.md'], installAppFolderDir, destAppDir)
 
   if (await fse.pathExists(path.join(installAppFolderDir, 'node_modules'))) {
-    Logger.info(`${logPrefix} 检测到安装包包含 node_modules，开始移动 node_modules`)
-    await moveNodeModules(installAppFolderDir, destAppDir, (info) => {
-      Logger.info(`${logPrefix} ${info}`)
-    });
+    Logger.info(`${logPrefix} 检测到安装包包含 node_modules，开始移动 node_modules`);
+    const startMoveTime = Date.now()
+    await moveNodeModules(installAppFolderDir, destAppDir);
+    Logger.info(`${logPrefix} 移动node_modules成功，总计耗时 ${Date.now() - startMoveTime}ms`)
     return
   }
 
-  await installAppDeps(installAppFolderDir, needInstallDeps);
+  await installAppDeps(installAppFolderDir, autoInstallNodeModules, { logPrefix });
 
-  Logger.info(`${logPrefix} 开始移动 node_modules`);
-  await moveNodeModules(installAppFolderDir, destAppDir, (info) => {
-    Logger.info(`${logPrefix} ${info}`)
-  });
+  if (await fse.pathExists(path.join(installAppFolderDir, 'node_modules'))) {
+    Logger.info(`${logPrefix} 检测到安装包包含 node_modules，开始移动 node_modules`);
+    const startMoveTime = Date.now()
+    await moveNodeModules(installAppFolderDir, destAppDir);
+    Logger.info(`${logPrefix} 移动node_modules成功，总计耗时 ${Date.now() - startMoveTime}ms`)
+    return
+  }
 }
 
 
@@ -90,12 +99,12 @@ async function execJs({ jsPath, execSqlAsync }) {
   })
 }
 
-async function installAppDeps (appDir: string, forceInstall = false) {
+async function installAppDeps (appDir: string, autoInstallNodeModules = false, { logPrefix }) {
   if (!await fse.pathExists(appDir)) {
     throw new Error(`App ${appDir} not exist.`)
   }
 
-  Logger.info(`[install node_modules]: 正在检测 ${appDir} 的node_modules，请稍后`)
+  Logger.info(`${logPrefix} 正在检测 ${appDir} 的node_modules，请稍后`)
 
   let packageJson: any = {};
   let depDir = null;
@@ -109,14 +118,14 @@ async function installAppDeps (appDir: string, forceInstall = false) {
     
   }
 
-  // 非强制安装时，判断node_modules有就不安装了
-  let shouldInstall = forceInstall ? true : !fse.existsSync(depDir);
+  // 当没有node_modules依赖，且启用了自动安装才安装
+  let shouldInstall = autoInstallNodeModules && !fse.existsSync(depDir);
 
   let logStr
 
   if (shouldInstall && (await fse.pathExists(serverPath)) && packageJson.dependencies) {
     const installCommand = configuration?.platformConfig?.installCommand ?? `npm i --registry=https://registry.npmmirror.com --production`;
-    Logger.info(`[install node_modules]: 开始安装 ${packageJson.name} 应用依赖，执行命令${installCommand}，请稍后`)
+    Logger.info(`${logPrefix} 开始安装 ${packageJson.name} 应用依赖，执行命令${installCommand}，请稍后`)
 
     // 目前安装失败时跳过安装吧，重启的时候可以通过检测检测出来
     try {
@@ -125,12 +134,12 @@ async function installAppDeps (appDir: string, forceInstall = false) {
         throw new Error(logStr)
       }
     } catch (error) {
-      Logger.error(`[install node_modules]: ${packageJson.name} 依赖安装失败，错误详情 ${error.stack}`)
-      Logger.error(`[install node_modules]: ${packageJson.name} 依赖安装失败，已跳过，可以后续重新安装并重启服务器`)
+      Logger.error(`${logPrefix} ${packageJson.name} 依赖安装失败，错误详情 ${error.stack}`)
+      Logger.error(`${logPrefix} ${packageJson.name} 依赖安装失败，已跳过，可以后续重新安装并重启服务器`)
     }
-    Logger.info(`[install node_modules]: 安装 ${packageJson.name} 应用依赖成功`)
+    Logger.info(`${logPrefix} 安装 ${packageJson.name} 应用依赖成功`)
   } else {
-    Logger.info(`[install node_modules]: 检测到 ${packageJson.name} 依赖已安装，跳过依赖安装`)
+    Logger.info(`${logPrefix} 检测到本次安装无需安装依赖，跳过依赖安装`)
   }
 }
 
@@ -163,14 +172,10 @@ async function copyFiles(fileList, sourceDir, targetDir) {
   }
 }
 
-async function moveNodeModules (sourceDir, targetDir, log) {
-  let startTimeStamp = Date.now();
-
+async function moveNodeModules (sourceDir, targetDir) {
   const sourceFolderPath = path.join(sourceDir, 'node_modules');
   const targetFolderPath = path.join(targetDir, 'node_modules')
 
   // 注意，这里node_modules处理一定用move方法，否则性能差到十几分钟往上
   await fse.move(sourceFolderPath, targetFolderPath, { overwrite: true })
-
-  log(`移动node_modules成功，总计耗时 ${Date.now() - startTimeStamp}ms`)
 }
