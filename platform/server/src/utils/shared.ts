@@ -53,6 +53,9 @@ interface Configuration {
     gzip?: boolean
 
     installCommand?: string
+
+    /** 是否离线部署 */
+    isPureIntranet?: boolean
   }
 
   oss?: any

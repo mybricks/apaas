@@ -39,8 +39,7 @@ export default class SystemController {
   @Post('/system/channel')
   async channel(@Body() body: any) {
     const { type, version, isAdministrator, payload, userId } = body;
-    const systemConfig = await this.configService.getConfigByScope(['system'])
-    if(systemConfig?.system?.config?.isPureIntranet) {
+    if(configuration?.platformConfig?.isPureIntranet) {
       return {
         code: -1,
         msg: '纯内网部署，暂不支持此功能'

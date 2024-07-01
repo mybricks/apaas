@@ -56,7 +56,7 @@ export default class ConfigController {
     
           appBlackList: "pc-cgn,pc-page-vue2,pc-website,cloud-com,domain,th5-page,pc-comgen,mybricks-cloud-com",
     
-          isPureIntranet: false,
+          isPureIntranet: configuration?.platformConfig?.isPureIntranet ?? false,
     
           title: configuration?.platformConfig?.title,
           logo: configuration?.platformConfig?.logo,

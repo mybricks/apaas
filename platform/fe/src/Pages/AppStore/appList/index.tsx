@@ -195,57 +195,60 @@ const AppList: FC<AppListProps> = props => {
 				</Popover>
 				{/* 已安装的 */}
 			</p>
-			<div className={`${styles.appList}`}>
-				<Spin spinning={loading} className={styles.spin}>
-					{/* <div className={styles.filter}>
-						<Radio.Group onChange={onChangeType} value={type}>
-							<Radio.Button value='all'>全部</Radio.Button>
-							<Radio.Button value='installed'>已安装</Radio.Button>
-						</Radio.Group>
-					</div> */}
-					<div className={styles.rightFilter}>
-					</div>
-					{appList.length && !loading ? (
-						<div className={styles.rowContainer}>
-							{chunk(appList, 2).map(([app1, app2], index) => {
-								return (
-									<Row key={app1.namespace} className={styles.rows} gutter={0}>
-										<Col span={12}>
-											<AppCard
-												userId={userId}
-												disabled={currentUpgrade ? currentUpgrade !== app1.namespace : false}
-												setCurrentUpgrade={setCurrentUpgrade}
-												style={index === chunk(appList, 2).length -1 ? { borderBottomWidth: 0 } : {}}
-												app={app1}
-												type={type}
-											/>
-										</Col>
-										<Col span={12}>
-											{app2 ? (
+			{
+				systemConfig?.isPureIntranet ? <div className={styles.warnText}>当前为离线模式，请使用下方的「离线更新」安装应用</div> : 
+				<div className={`${styles.appList}`}>
+					<Spin spinning={loading} className={styles.spin}>
+						{/* <div className={styles.filter}>
+							<Radio.Group onChange={onChangeType} value={type}>
+								<Radio.Button value='all'>全部</Radio.Button>
+								<Radio.Button value='installed'>已安装</Radio.Button>
+							</Radio.Group>
+						</div> */}
+						<div className={styles.rightFilter}>
+						</div>
+						{appList.length && !loading ? (
+							<div className={styles.rowContainer}>
+								{chunk(appList, 2).map(([app1, app2], index) => {
+									return (
+										<Row key={app1.namespace} className={styles.rows} gutter={0}>
+											<Col span={12}>
 												<AppCard
 													userId={userId}
-													disabled={currentUpgrade ? currentUpgrade !== app2.namespace : false}
+													disabled={currentUpgrade ? currentUpgrade !== app1.namespace : false}
 													setCurrentUpgrade={setCurrentUpgrade}
 													style={index === chunk(appList, 2).length -1 ? { borderBottomWidth: 0 } : {}}
-													app={app2}
+													app={app1}
 													type={type}
 												/>
-											) : null}
-										</Col>
-									</Row>
-								)
-							})}
-						</div>
-					) : (
-						<Empty className={styles.empty} imageStyle={{ height: '152px' }} description='暂无组件'/>
-					)}
-				</Spin>
-			</div>
+											</Col>
+											<Col span={12}>
+												{app2 ? (
+													<AppCard
+														userId={userId}
+														disabled={currentUpgrade ? currentUpgrade !== app2.namespace : false}
+														setCurrentUpgrade={setCurrentUpgrade}
+														style={index === chunk(appList, 2).length -1 ? { borderBottomWidth: 0 } : {}}
+														app={app2}
+														type={type}
+													/>
+												) : null}
+											</Col>
+										</Row>
+									)
+								})}
+							</div>
+						) : (
+							<Empty className={styles.empty} imageStyle={{ height: '152px' }} description='暂无组件'/>
+						)}
+					</Spin>
+				</div>
+			}
 			{
 				!systemConfig?.closeOfflineUpdate ? 
 				(
 					<div>
-						<p style={{height: 32, fontSize: 16, fontWeight: 'bold'}}>
+						<p style={{height: 32, fontSize: 16, fontWeight: 'bold', marginTop: 24}}>
 							离线更新&nbsp;
 							<Popover
 								content={'不需要能够访问公网环境，拖入应用安装包即可上传进行应用更新'}
