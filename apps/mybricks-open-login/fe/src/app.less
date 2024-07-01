@@ -5,7 +5,7 @@ body {
 @import './theme.less';
 
 @head-height: 49px;
-@sticky-bar-width: 60px;
+@sticky-bar-width: 5px;
 
 .page {
   display: flex;
@@ -17,8 +17,9 @@ body {
     display: flex;
     align-items: center;
     height: @head-height;
-    border-bottom: 1px solid rgb(230, 230, 230);
     background-color: #ffffff;
+    border-bottom: 1px solid #e6e6e6;
+    //margin-left: 5px;
 
     flex-shrink: 0;
 
@@ -30,7 +31,7 @@ body {
       // background-image: linear-gradient(to right, #fa6400, #f6b352);
       // background-clip: text;
       letter-spacing: 1px;
-      
+
       span {
         color: #f84810;
       }
@@ -54,13 +55,13 @@ body {
     &::-webkit-scrollbar-thumb {
       border-radius: 4px;
       box-shadow: inset 0 0 5px rgba(182, 176, 176, 0.2);
-      background: #EEF4FA;//滚动条颜色
+      background: #EEF4FA; //滚动条颜色
     }
 
     &::-webkit-scrollbar-track {
       box-shadow: none;
       border-radius: 4px;
-      background: transparent;//底色
+      background: transparent; //底色
     }
   }
 
@@ -74,27 +75,22 @@ body {
     justify-content: center;
     padding-bottom: 40px;
   }
-
-  .stickyBar {
-    position: absolute;
-    left: 0px;
-    top: 0px;
-    z-index: -1;
-    width: @sticky-bar-width;
-    height: 100%;
-    background: linear-gradient(#FA6400, #FF956D, #FF9832, #FF7E2A);
-  }
 }
 
 
 @borderRadius: 6px;
 
 .title() {
-  color: #1f2329;
-  font-size: 32px;
-  line-height: 32px;
-  font-weight: 500;
+  color: #555;
+  font-size: 28px;
+  line-height: 28px;
+  font-weight: 400;
   text-align: center;
+
+  label {
+    color: @color-primary;
+    font-weight: 600;
+  }
 }
 
 .underline() {
@@ -107,13 +103,14 @@ body {
   justify-content: center;
   align-items: center;
   margin-top: 10vh;
+
   .form {
     width: 100%;
     max-width: 360px;
 
     .title {
       .title();
-      margin-bottom: 60px;
+      margin-bottom: 30px;
     }
 
     input {
@@ -166,17 +163,34 @@ body {
     }
 
     .submit {
-      cursor: pointer;
-      border-radius: @borderRadius;
-      height: 40px;
+      border-radius: 25px;
+      height: 45px;
       width: 100%;
-      font-size: 14px;
-      color: #ffffff;
-      background: @color-disabled;
 
-      transition: background 0.3s ease;
+      //background: radial-gradient(#c42d01 0%, #c42d01 10%, #fcf26e 40%, #00e754 60%, #00eef4 70%, #0070f3 100%);
+      background: radial-gradient(@color-primary 0%, @color-primary 10%, #fcf26e 40%, #00e754 60%, #00eef4 70%, #d519d2 100%);
+      background-size: 300% 300%;
+      padding: 3px;
+      //border-radius: 32px;
+      animation: shining 10s linear infinite;
+      will-change: background-position;
+      overflow: hidden;
+      box-shadow: rgba(0, 0, 0, 0.1) -1px 2px 2px 1px;
+
       &.visible {
         background: @color-primary;
+      }
+
+      > button {
+        cursor: pointer;
+        border-radius: 25px;
+        font-size: 14px;
+        font-weight: 400;
+        color: #ffffff;
+        width: 100%;
+        height: 100%;
+        //margin: 2px;
+        background: rgba(255, 255, 255, 0.1);
       }
     }
 
@@ -203,6 +217,7 @@ body {
   .others {
     width: 100%;
     padding: 20px 0px;
+
     .otherLine {
       width: 100%;
       position: relative;
@@ -230,7 +245,7 @@ body {
         background: #fff;
         z-index: 1;
       }
-      
+
     }
 
     .entries {
@@ -238,6 +253,7 @@ body {
       display: flex;
       align-items: center;
       justify-content: center;
+
       .icon {
         cursor: pointer;
       }
@@ -264,6 +280,7 @@ body {
   display: flex;
   align-items: center;
   word-break: initial;
+
   a {
     margin: 8px 10px;
     color: #95999e;
@@ -275,6 +292,7 @@ body {
     color: rgba(0, 0, 0, 0.55);
 
     transition: color 200ms ease 0s;
+
     svg {
       max-height: 16px;
       max-width: 16px;
@@ -293,14 +311,17 @@ body {
 
   .github:hover {
     color: #222222;
+
     svg {
       path {
         fill: #222222;
       }
     }
   }
+
   .vscode:hover {
     color: #2596e7;
+
     svg {
       path {
         fill: #2596e7;
@@ -323,10 +344,33 @@ body {
     color: #000000;
     text-decoration: none !important;
   }
+
   .subText {
     font-weight: 500;
     cursor: pointer;
     color: @color-primary;
     text-decoration: underline;
+  }
+}
+
+@keyframes shining {
+  0% {
+    background-position: -20% -20%;
+  }
+
+  25% {
+    background-position: 30% 80%;
+  }
+
+  50% {
+    background-position: 110% 110%;
+  }
+
+  75% {
+    background-position: 80% 30%;
+  }
+
+  to {
+    background-position: -20% -20%;
   }
 }

@@ -6,7 +6,7 @@ import React, {
   useRef,
   FC,
 } from 'react'
-import { Github, VScode } from './icons'
+import {Github, VScode} from './icons'
 import {
   getApiUrl,
   getCookie,
@@ -14,10 +14,10 @@ import {
   setCookie,
   getUrlQuery,
 } from './utils'
-import { COOKIE_LOGIN_USER } from './constants'
+import {COOKIE_LOGIN_USER} from './constants'
 import axios from 'axios'
 
-import { Message, Logo } from './components'
+import {Message, Logo} from './components'
 
 import css from './app.less'
 
@@ -27,9 +27,9 @@ const checkCurrentIsLogin = async () => {
   return new Promise((resolve) => {
     axios
       .post('/paas/api/user/queryCurrentSession')
-      .then(({ data }) => {
+      .then(({data}) => {
         if (data.code === 1) {
-          const { redirectUrl } = getUrlQuery()
+          const {redirectUrl} = getUrlQuery()
           if (typeof redirectUrl === 'string') {
             location.href = decodeURIComponent(redirectUrl)
           } else {
@@ -48,24 +48,24 @@ const checkCurrentIsLogin = async () => {
 export default function App() {
   const [loading, setLoading] = useState(true)
   const [actionLoading, setActionLoading] = useState(false)
-
+  
   const [action, setAction] = useState({
     type: 'signin',
     buttonText: '登录',
     toggleText: '创建新账户',
   })
-
+  
   const [errInfo, setErrInfo] = useState({
     type: '',
     message: '',
   })
-
+  
   const [formData, setFormData] = useState({
     email: '',
     password: '',
     captcha: '',
   })
-
+  
   useEffect(async () => {
     try {
       await checkCurrentIsLogin()
@@ -74,12 +74,12 @@ export default function App() {
     }
     setLoading(false)
   }, [])
-
+  
   const onSubmit = useCallback(
     (e) => {
       e.preventDefault()
       e.stopPropagation()
-
+      
       if (!formData.email || !formData.email.match(emailReg)) {
         setErrInfo({
           type: 'email',
@@ -87,7 +87,7 @@ export default function App() {
         })
         return
       }
-
+      
       if (
         !formData.password ||
         formData.password === '' ||
@@ -99,12 +99,12 @@ export default function App() {
         })
         return
       }
-
+      
       setErrInfo({
         type: '',
         message: ``,
       })
-
+      
       if (action.type === 'signin') {
         setActionLoading(true)
         axios({
@@ -115,7 +115,7 @@ export default function App() {
             psd: window.btoa(formData.password),
           },
         })
-          .then(({ data }) => {
+          .then(({data}) => {
             if (data.code != 1) {
               setErrInfo({
                 type: '',
@@ -130,7 +130,7 @@ export default function App() {
               )
               Message.success('登录成功')
               setTimeout(() => {
-                const { redirectUrl } = getUrlQuery()
+                const {redirectUrl} = getUrlQuery()
                 if (typeof redirectUrl === 'string') {
                   location.href = decodeURIComponent(redirectUrl)
                 } else {
@@ -141,7 +141,7 @@ export default function App() {
           })
           .finally(() => setActionLoading(false))
       }
-
+      
       if (action.type === 'signup') {
         setActionLoading(true)
         axios({
@@ -153,7 +153,7 @@ export default function App() {
             psd: window.btoa(formData.password),
           },
         })
-          .then(({ data }) => {
+          .then(({data}) => {
             if (data.code != 1) {
               setErrInfo({
                 type: '',
@@ -161,7 +161,7 @@ export default function App() {
               })
             } else {
               let rData = data.data
-
+              
               setCookie(
                 COOKIE_LOGIN_USER,
                 JSON.stringify(rData),
@@ -178,9 +178,9 @@ export default function App() {
     },
     [formData, action]
   )
-
+  
   const onToggleAction = useCallback(() => {
-    setErrInfo({ type: '', message: '' })
+    setErrInfo({type: '', message: ''})
     setActionLoading(false)
     switch (action.type) {
       case 'signin':
@@ -199,28 +199,28 @@ export default function App() {
         break
     }
   }, [action])
-
+  
   const onChangeFormData = useCallback(
-    (e, key) => setFormData({ ...formData, [key]: e.target.value }),
+    (e, key) => setFormData({...formData, [key]: e.target.value}),
     [formData]
   )
-
+  
   const visibleSubmit = useMemo(() => {
     return (
       !!formData.email &&
       !!formData.password
     )
   }, [formData, action])
-
+  
   if (loading) {
     return null
   }
-
+  
   return (
     <div className={css.page}>
-      <div className={css.stickyBar}></div>
+      {/*<div className={css.stickyBar}></div>*/}
       <div className={css.head}>
-        <Logo />
+        <Logo/>
         <p className={css.headTitle}>MyBricks</p>
       </div>
       <div className={css.view}>
@@ -229,9 +229,11 @@ export default function App() {
             {(action.type === 'signin' || action.type === 'signup') && (
               <form onSubmit={onSubmit} className={css.form} method="post">
                 <div className={css.title}>
-                  {action.type === 'signin' ? '使用 MyBricks' : '注册新用户'}
+                  {action.type === 'signin' ? (
+                    <>欢迎使用 My<label>B</label>ricks</>
+                  ) : '注册新用户'}
                 </div>
-
+                
                 <input
                   type="text"
                   className={errInfo.type === 'email' ? css.err : ''}
@@ -250,15 +252,16 @@ export default function App() {
                   }}
                   placeholder={'登录密码'}
                 />
-                <button
-                  className={`${css.submit} ${
-                    visibleSubmit && !actionLoading && css.visible
-                  }`}
-                  disabled={!visibleSubmit || actionLoading}
-                  onClick={onSubmit}
-                >
-                  {action.buttonText}
-                </button>
+                <div className={`${css.submit} ${
+                  visibleSubmit && !actionLoading && css.visible
+                }`}>
+                  <button
+                    disabled={!visibleSubmit || actionLoading}
+                    onClick={onSubmit}
+                  >
+                    {action.buttonText}
+                  </button>
+                </div>
                 {errInfo.message ? (
                   <div className={css.errMsg}>{errInfo.message}</div>
                 ) : null}
@@ -270,10 +273,12 @@ export default function App() {
                   <div className={css.toggleButton} onClick={onToggleAction}>
                     {/* {action.toggleText} */}
                     {
-                      action.type === 'signin' && <MutiText text={'没有账号？'} subText={'去创建'} onClick={onToggleAction} />
+                      action.type === 'signin' &&
+                      <MutiText text={'没有账号？'} subText={'去创建'} onClick={onToggleAction}/>
                     }
                     {
-                      action.type === 'signup' && <MutiText text={'已有账号？'} subText={'去登录'} onClick={onToggleAction} />
+                      action.type === 'signup' &&
+                      <MutiText text={'已有账号？'} subText={'去登录'} onClick={onToggleAction}/>
                     }
                   </div>
                 </div>
@@ -285,10 +290,10 @@ export default function App() {
           <div className={css.links}>
             <a
               className={css.github}
-              href="https://github.com/mybricks/designer-spa-demo"
+              href="https://github.com/mybricks/apaas"
               target="_blank"
             >
-              {Github}Demo源码
+              {Github}平台源码
             </a>
             <a
               className={css.vscode}
@@ -325,16 +330,16 @@ export default function App() {
   )
 }
 
-function MutiText ({
-  text = '',
-  subText,
-  subColor = '',
-  onClick,
-}) {
+function MutiText({
+                    text = '',
+                    subText,
+                    subColor = '',
+                    onClick,
+                  }) {
   return (
     <div className={css.mutiText}>
-      { text && <span className={css.text}>{text}</span> }
-      <span className={css.subText} style={{ color: subColor }} onClick={onClick}>{subText}</span>
+      {text && <span className={css.text}>{text}</span>}
+      <span className={css.subText} style={{color: subColor}} onClick={onClick}>{subText}</span>
     </div>
   )
 }
