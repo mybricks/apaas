@@ -19,6 +19,8 @@
   cursor: pointer;
   appearance: none;
 
+  transition: all 0.3s ease-in-out;
+
   &:hover {
     color: #ffffff;
   }
@@ -71,11 +73,11 @@
 
   &[disabled] {
     color: #ffffffb3;
-    background-color: #f267264d;
+    background-color: @color-disabled;
   }
 
   &:hover, &:active {
-    background-color: #f26726;
+    background-color: @color-disabled;
   }
 
   &:hover {
@@ -95,18 +97,24 @@
   background-color: hsla(0, 0%, 100%, 1);
 
   &[disabled] {
-    color: hsla(19, 89%, 55%, 0.3)
+    opacity: 0.6;
   }
 
   &:hover {
-    color: hsla(19, 89%, 55%, 1);
+    // color: hsla(19, 89%, 55%, 1);
+    // background-color: hsla(0, 0%, 90%, 1);
+    // background-clip: border-box;
+    color: @color-primary;
+    border-color: @color-primary;
     background-clip: border-box;
-    background-color: hsla(0, 0%, 90%, 1);
   }
 
   &:active {
-    color: hsla(19, 89%, 55%, 1);
-    background-color: hsla(0, 0%, 90%, 1);
+    // color: hsla(19, 89%, 55%, 1);
+    // background-color: hsla(0, 0%, 90%, 1);
+    // background-clip: border-box;
+    color: @color-primary;
+    border-color: @color-primary;
     background-clip: border-box;
   }
 }

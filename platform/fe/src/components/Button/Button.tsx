@@ -1,4 +1,4 @@
-import React, { FC, ReactNode, PropsWithChildren } from "react";
+import React, { FC, ReactNode, PropsWithChildren, CSSProperties } from "react";
 import classNames from "classnames";
 
 import { LoadingPlaceholder } from "@/components";
@@ -14,6 +14,7 @@ interface ButtonProps extends PropsWithChildren {
   contentWrapper?: (props: PropsWithChildren) => ReactNode;
   disabled?: boolean;
   onClick?: () => void;
+  style?: CSSProperties
 }
 
 const SIZE_MAP = {
@@ -31,7 +32,8 @@ const Button: FC<ButtonProps> = ({
   contentWrapper: ContentWrapper = DefaultContentWrapper,
   disabled,
   children,
-  onClick
+  onClick,
+  style,
 }) => {
   return (
     <button
@@ -46,6 +48,7 @@ const Button: FC<ButtonProps> = ({
       )}
       disabled={loading || disabled}
       onClick={onClick}
+      style={style}
     >
       {/* {icon && <IconWrapper>{icon}</IconWrapper>} */}
       <ContentWrapper>

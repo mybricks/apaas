@@ -1,3 +1,5 @@
+@import "../../theme";
+
 .input {
 
   label {
@@ -10,20 +12,30 @@
   }
 
   input {
-    height: 40px;
+    // box-sizing: content-box;
+    height: 32px;
     width: 100%;
-    background-color: rgb(250, 250, 250);
+    // background-color: rgb(250, 250, 250);
     color: rgb(0, 0, 0);
     font-size: 14px;
-    box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 2px 0px inset;
+    // box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 2px 0px inset;
     border-color: rgb(230, 230, 230);
-    padding: 10px 12px;
+    // padding: 10px 12px;
+    padding: 4px 11px;
     border: 1px solid rgb(230, 230, 230);
     border-radius: 6px;
     outline-offset: unset;
+    outline: none;
+
+    transition: all 0.3s ease-in-out;
+
+    &:focus {
+      border-color: @color-primary;
+    }
   }
 
   .error {
-    outline: rgb(204, 0, 0) auto 1px;
+    border-color: @color-error;
+    // outline: rgb(204, 0, 0) auto 1px;
   }
 }

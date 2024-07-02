@@ -69,12 +69,14 @@ const AccountPage: FC = () => {
                     />
                   </FormFiled>
                   <Button
+                    // type="primary"
                     onClick={submitForm}
                     disabled={!dirty || !isValid}
                     loading={isSubmitting}
-                    size={40}
+                    size={36}
+                    style={{ marginBottom: 2 }}
                   >
-                    保 存
+                    保存
                   </Button>
                 </>
               )
