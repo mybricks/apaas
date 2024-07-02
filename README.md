@@ -10,8 +10,8 @@
   开源、支持私有化部署的低代码开发平台
 </p>
 
-# 关注我们，获取更多支持
-<img style="width: 200px; margin-bottom: 10px" src="https://assets.mybricks.world/files/534065092341829/YDbNRhFeeyeMorgGiODjgNFTYMhnivh2-1708313464390.jpeg" />
+## 关注我们，获取更多支持
+<img style="width: 200px; margin:auto" src="https://assets.mybricks.world/files/534065092341829/YDbNRhFeeyeMorgGiODjgNFTYMhnivh2-1708313464390.jpeg" />
 
 
 # 快速体验
