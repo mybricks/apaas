@@ -95,7 +95,7 @@ const FilesMenuTree: FC<FilesMenuTreeProps> = memo(({
         clickable={clickable}
         active={search === activeSearch}
         style={{paddingLeft: 4}}
-        prefix={<NodeSwitch loading={loading} open={open} onClick={toggleOpen}/>}
+        prefix={<NodeSwitch open={open} onClick={toggleOpen}/>}
         onClick={handleMenuButtonClick}
       >
         {name}
