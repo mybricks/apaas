@@ -15,7 +15,8 @@ const FilesHeader: FC = () => {
   
   return (
     <div className={css.filesHeader}>
-      {loading ? <LoadingPlaceholder /> : <FilePathNavigation paths={filePaths}/>}
+      {/*{loading ? <LoadingPlaceholder /> : <FilePathNavigation paths={filePaths}/>}*/}
+      <FilePathNavigation paths={filePaths}/>
       <div className={css.operationArea}>
         <Navbar.Section<typeof viewType>
           value={viewType}

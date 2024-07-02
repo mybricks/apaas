@@ -148,7 +148,9 @@ const FilesListContainer: FC<FilesListContainerProps> = ({
     }
   
     if (!files.length) {
-      return "暂无内容，请添加...";
+      return (
+        <div className={css.empty}></div>
+      )
     }
 
     return (

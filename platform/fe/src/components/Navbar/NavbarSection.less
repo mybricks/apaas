@@ -1,7 +1,8 @@
+@import "../../theme";
+
 .navbarSection {
   display: flex;
-  height: 100%;
-  min-height: 100%;
+  height: 26px;
   align-items: center;
   overflow: hidden;
   justify-content: flex-start;
@@ -10,21 +11,20 @@
 .segment {
   display: inline-flex;
   cursor: pointer;
-  height: 32px;
+  height: 26px;
   color: rgba(0, 0, 0, 0.7);
   border-radius: 6px;
-  transition: background 100ms ease-in-out 0s, color 100ms ease-in-out 0s;
+  font-size: 16px;
 
   span {
-    padding: 4px 8px;
-    font-size: 14px;
+    padding: 4px 6px;
     line-height: 1;
     display: inline-flex;
     align-items: center;
 
     svg {
-      width: 20px;
-      height: 20px;
+      width: 18px;
+      height: 18px;
     }
   }
 
@@ -34,8 +34,9 @@
   }
 
   &.active {
-    background-color: rgba(242, 103, 38, 0.1);
-    color: rgb(242, 103, 38);
+    //background-color: @color-primary;
+    color: @color-primary;
+    font-weight: bold;
   }
 
   margin-left: 8px;

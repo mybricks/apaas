@@ -1,7 +1,7 @@
-import React, { FC } from "react";
+import React, {FC} from "react";
 
-import { MenuButton, Link } from "@/components";
-import { StaticFiles } from "@/components/icon";
+import {MenuButton, Link} from "@/components";
+import {StaticFiles} from "@/components/icon";
 
 import css from "./StaticFilesMenuButton.less";
 
@@ -12,7 +12,7 @@ const StaticFilesMenuButton: FC = () => {
   return (
     <Link to={search}>
       <MenuButton
-        icon={<StaticFiles />}
+        icon={StaticFiles}
         search={search}
         className={css.button}
       >

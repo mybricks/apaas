@@ -1,7 +1,7 @@
-import React, { FC } from "react";
+import React, {FC} from "react";
 
-import { MenuButton, Link } from "@/components";
-import { Settings } from "@/components/icon";
+import {MenuButton, Link} from "@/components";
+import {Settings} from "@/components/icon";
 
 import css from "./SettingsMenuButton.less";
 
@@ -12,11 +12,11 @@ const SettingsMenuButton: FC = () => {
   return (
     <Link to={search}>
       <MenuButton
-        icon={<Settings />}
+        icon={Settings}
         search={search}
         className={css.button}
       >
-        设置
+        配置中心
       </MenuButton>
     </Link>
   )

@@ -10,7 +10,7 @@ const TrashMenuButton: FC = () => {
   return (
     <Link to={search}>
       <MenuButton
-        icon={Trash}////TODO
+        icon={Trash}
         search={search}
       >
         回收站

@@ -117,7 +117,7 @@ const FilesMenuTree: FC<FilesMenuTreeProps> = memo(({
                 id={isGroup ? String(id) : `${groupId}-${id}`}
                 search={`?appId=files${isGroup ? `&groupId=${id}` : `${groupId ? `&groupId=${groupId}` : ''}${id ? `&parentId=${id}` : ''}`}`}
                 name={name}
-                icon={isGroup ? UserGroup : <Folder/>} // TODO
+                icon={isGroup ? UserGroup : Folder}
                 node={nextNode[id]}
                 activeSearch={activeSearch}
                 navigate={navigate}

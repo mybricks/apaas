@@ -46,7 +46,7 @@ export function initApps(): Promise<Apps> {
         description: "文件夹",
         extName: "folder",
         namespace: "mybricks-folder",
-        icon: <Folder />,
+        icon: Folder,
       },
     ];
     const menuApps: InstalledApps = [];

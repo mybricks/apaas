@@ -1,8 +1,7 @@
 .InfoContainer {
   background-color: #fff;
   border-radius: 3px;
-  padding: 0px 16px;
-  border-left: 1px solid #EEE;
+  padding: 16px 20px;
   height: 100%;
   // box-shadow: 0 2px 4px 0 rgb(54 58 80 / 32%);
 
@@ -31,9 +30,10 @@
     background-color: #fff;
     border-radius: 4px;
     box-shadow: 0 2px 4px 0 rgb(54 58 80 / 32%);
-    color: rgba(0,0,0,.9);
+    color: rgba(0, 0, 0, .9);
     margin-bottom: 12px;
     padding: 6px;
+
     &:hover {
       box-shadow: 0 2px 10px 0 rgb(0 0 0 / 20%);
     }
@@ -43,11 +43,12 @@
     height: 28px;
     display: flex;
     width: 28px;
-    margin-right: -7px;
+    //margin-right: -7px;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     border-radius: 5px;
+
     &:hover {
       background-color: #3d5c800d;
     }
@@ -57,6 +58,7 @@
 .container {
   width: 100%;
   height: 100%;
+  //margin: 20px;
 
   .descriptionWrapper {
     margin-bottom: 8px;
@@ -70,7 +72,7 @@
       align-items: center;
       font-weight: bold;
     }
-  
+
     .descriptionDetail {
       word-break: break-word;
       white-space: pre-wrap;
@@ -84,7 +86,7 @@
       overflow-y: auto;
       display: flex;
       flex-wrap: wrap;
-  
+
       .user {
         width: 28px;
         height: 28px;
@@ -96,7 +98,7 @@
         display: flex;
         align-items: center;
         box-sizing: border-box;
-  
+
         .userAvatar {
           cursor: pointer;
           width: 28px;
@@ -113,11 +115,12 @@
     display: flex;
     flex-wrap: wrap;
   }
-  
+
   .avatarWrapper {
     margin-right: 8px;
     margin-bottom: 4px;
     cursor: pointer;
+
     .avatar {
       position: relative;
     }
@@ -131,6 +134,7 @@
     justify-content: center;
     cursor: pointer;
     border-radius: 5px;
+
     &:hover {
       background-color: #3d5c800d;
     }
@@ -236,7 +240,7 @@
 
 .tagEditable {
   .tag();
-  background-color:  #52c41a;
+  background-color: #52c41a;
 }
 
 .tagViewable {
@@ -305,7 +309,7 @@
   .optionItemSelected {
     cursor: not-allowed;
     color: #0c63fa;
-    background-color: #FFF!important;
+    background-color: #FFF !important;
   }
 }
 
@@ -325,10 +329,12 @@
     .ant-upload.ant-upload-drag .ant-upload {
       padding: 0;
     }
+
     .ant-upload.ant-upload-drag {
       width: 80px;
       height: 80px;
     }
+
     .ant-upload-drag-container {
       height: 100%;
       width: 100%;

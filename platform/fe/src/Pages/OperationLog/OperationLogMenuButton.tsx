@@ -1,7 +1,7 @@
-import React, { FC } from "react";
+import React, {FC} from "react";
 
-import { MenuButton, Link } from "@/components";
-import { OperationLog } from "@/components/icon";
+import {MenuButton, Link} from "@/components";
+import {OperationLog} from "@/components/icon";
 
 import css from "./OperationLogMenuButton.less";
 
@@ -12,7 +12,7 @@ const OperationLogMenuButton: FC = () => {
   return (
     <Link to={search}>
       <MenuButton
-        icon={<OperationLog />}
+        icon={OperationLog}
         search={search}
         className={css.button}
       >

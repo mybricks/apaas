@@ -1,10 +1,10 @@
-import React, { useMemo, useState, useEffect } from 'react'
+import React, {useMemo, useState, useEffect} from 'react'
 import axios from "axios";
 
-import { LoadingPlaceholder } from "@/components"
-import {Icon, UserGroup, Folder } from '@/components/icon'
+import {LoadingPlaceholder} from "@/components"
+import {Icon, UserGroup, Folder} from '@/components/icon'
 
-import { LoadingOutlined, CaretRightOutlined } from '@ant-design/icons'
+import {LoadingOutlined, CaretRightOutlined} from '@ant-design/icons'
 // @ts-ignore
 import css from './index.less'
 
@@ -16,7 +16,7 @@ interface Props {
   bodyStyle?
 }
 
-function FolderList (props: Props) {
+function FolderList(props: Props) {
   const Render: JSX.Element = useMemo(() => {
     return (
       <div className={css.container}>
@@ -29,18 +29,18 @@ function FolderList (props: Props) {
       </div>
     )
   }, [props.active, props.dataSource])
-
+  
   return Render
 }
 
 function Tree({dataSource, active, clickWrapper, clickSwitcher, count}: any): JSX.Element {
   if (!Array.isArray(dataSource)) return
-
+  
   return (
     <>
       {dataSource.map(item => {
-        const { id } = item
-
+        const {id} = item
+        
         return <Leaf
           key={id}
           active={active}
@@ -55,18 +55,18 @@ function Tree({dataSource, active, clickWrapper, clickSwitcher, count}: any): JS
 }
 
 function Leaf({item, clickWrapper, clickSwitcher, count, active}) {
-  const { id, hidden, loading, open, name, extName, active: itemActive, dataSource, icon } = item
-
+  const {id, hidden, loading, open, name, extName, active: itemActive, dataSource, icon} = item
+  
   const [ctx, setCtx] = useState({
     open: false,
     dataSource: [],
     loading: false
   })
-
+  
   if (hidden) return
-
+  
   const isActive = active?.id === id || itemActive
-
+  
   const RenderWrapper = useMemo(() => {
     return (
       <div className={`${css.tree} ${isActive ? css.active : ''}`} style={{padding: `0 0 0 ${25 * count}px`}}>
@@ -83,9 +83,9 @@ function Leaf({item, clickWrapper, clickSwitcher, count, active}) {
           })
         }}>
           {clickSwitcher && <span className={css.switcher}>
-            {loading ? 
+            {loading ?
               // @ts-ignore
-              <LoadingOutlined /> : 
+              <LoadingOutlined/> :
               // @ts-ignore
               <CaretRightOutlined
                 className={`${open ? css.open : ''}`}
@@ -106,7 +106,7 @@ function Leaf({item, clickWrapper, clickSwitcher, count, active}) {
           <span className={css.wrapper}>
             <span className={css.title}>
               <i className={`${css.anticon}`}>
-                <Icon icon={extName ? <Folder /> : UserGroup}/>
+                <Icon icon={extName ? Folder : UserGroup}/>
                 {/* {getIconInfo({key: iconKey, width: '16px'}).icon} */}
                 {/* <Icon icon={(extName && appCtx.APPSMap[extName]?.icon) || (icon || UserGroup)} width={20} height={20}/> */}
               </i>
@@ -121,7 +121,7 @@ function Leaf({item, clickWrapper, clickSwitcher, count, active}) {
       </div>
     )
   }, [ctx, isActive, icon])
-
+  
   const RenderTree = useMemo(() => {
     return (
       <div style={{display: open ? 'block' : 'none'}}>
@@ -135,7 +135,7 @@ function Leaf({item, clickWrapper, clickSwitcher, count, active}) {
       </div>
     )
   }, [ctx, active])
-
+  
   return (
     <div>
       {RenderWrapper}
@@ -146,23 +146,23 @@ function Leaf({item, clickWrapper, clickSwitcher, count, active}) {
 
 
 const List = ({
-  user,
-  file: app,
-  setTargetFile,
-}) => {
-
+                user,
+                file: app,
+                setTargetFile,
+              }) => {
+  
   // const [ctx, setCtx] = useState({
   //   open: false,
   //   active: null,
   //   dataSource: [],
   //   loading: false
   // })
-
+  
   // const [open, setOpen] = useState(false)
   const [active, setActive] = useState(null)
   const [dataSource, setDataSource] = useState([])
   const [loading, setLoading] = useState(true);
-
+  
   useEffect(() => {
     // ctx.open = open
     if (open) {
@@ -173,7 +173,7 @@ const List = ({
         params: {
           userId: user.id
         }
-      }).then(({ data: { data } }) => {
+      }).then(({data: {data}}) => {
         // ctx.dataSource = data.filter((item) => item.roleDescription && item.roleDescription < 3)
         // ctx.loading = false
         setDataSource(data.filter((item) => item.roleDescription && item.roleDescription < 3))
@@ -181,10 +181,10 @@ const List = ({
       })
     }
   }, [])
-
+  
   return (
-    <div style={{ height: '70vh'}}>
-      {loading && <LoadingPlaceholder />}
+    <div style={{height: '70vh'}}>
+      {loading && <LoadingPlaceholder/>}
       <FolderList
         active={active}
         bodyStyle={{marginLeft: 0}}
@@ -192,16 +192,16 @@ const List = ({
         clickWrapper={async (item, next) => {
           setActive(item)
           setTargetFile(item)
-
+          
           if (!item.open) {
             item.loading = true
             next({loading: true})
-
+            
             const params: any = {
               userId: user.id,
               extNames: 'folder',
             }
-
+            
             if (!item.groupId) {
               // 协作组
               params.groupId = item.id
@@ -209,18 +209,18 @@ const List = ({
               params.groupId = item.groupId
               params.parentId = item.id
             }
-
+            
             axios({
               method: 'get',
               url: "/paas/api/file/getGroupFiles",
               params
-            }).then(({ data }) => {
-              if(data.code === 1) {
+            }).then(({data}) => {
+              if (data.code === 1) {
                 item.dataSource = filesSort(data.data.filter((item) => item.id !== app.id))
                 item.open = true
               }
               item.loading = false
-
+              
               next({
                 dataSource: filesSort(data.data.filter((item) => item.id !== app.id)),
                 open: true,
@@ -232,16 +232,16 @@ const List = ({
         clickSwitcher={async (item, next) => {
           if (item.open) {
             item.open = false
-            next({ open: false })
+            next({open: false})
           } else {
             item.loading = true
-            next({ loading: true })
-
+            next({loading: true})
+            
             const params: any = {
               userId: user.id,
               extNames: 'folder',
             }
-
+            
             if (!item.groupId) {
               // 协作组
               params.groupId = item.id
@@ -249,13 +249,13 @@ const List = ({
               params.groupId = item.groupId
               params.parentId = item.id
             }
-
+            
             axios({
               method: 'get',
               url: '/paas/api/file/getGroupFiles',
               params
-            }).then(({ data }) => {
-              if(data.code === 1) {
+            }).then(({data}) => {
+              if (data.code === 1) {
                 item.dataSource = filesSort(data.data.filter((item) => item.id !== app.id))
                 item.open = true
               }
@@ -284,7 +284,7 @@ const filesSort = (files) => {
   return files.sort((c, s) => {
     const cNum = orderMap[c.extName] || -1
     const sNum = orderMap[s.extName] || -1
-
+    
     return sNum - cNum
   })
 }

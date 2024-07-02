@@ -3,7 +3,7 @@ import {NavigateFunction} from "react-router-dom";
 import axios from "axios";
 
 import FilesMenuTree from "../FilesMenuTree";
-import {UserGroup} from "@/components/icon";
+import {Cooperation, UserGroup} from "@/components/icon";
 import {TreeNode} from "../FilesMenuTree";
 import AddGroupButton from "../AddGroupButton";
 import {FilesMenuTreeContextValue} from "@/types";
@@ -25,7 +25,7 @@ const GroupMenuButton: FC<GroupMenuButtonProps> = ({
                                                    }) => {
   return (
     <FilesMenuTree
-      icon={UserGroup}
+      icon={Cooperation}
       clickable={false}
       search={"group"}
       activeSearch={activeSearch}

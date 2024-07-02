@@ -92,7 +92,7 @@ const ViewAsTable: FC<ViewAsTableProps> = ({
       size='small'
       pagination={false}
       locale={{
-        emptyText: '暂无内容，请添加...'
+        emptyText: '内容为空'
       }}
     />
   )
