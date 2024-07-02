@@ -1,7 +1,7 @@
 import React, { useMemo, useState, useEffect } from 'react'
-import { Spin } from "antd";
 import axios from "axios";
 
+import { LoadingPlaceholder } from "@/components"
 import {Icon, UserGroup, Folder } from '@/components/icon'
 
 import { LoadingOutlined, CaretRightOutlined } from '@ant-design/icons'
@@ -106,7 +106,7 @@ function Leaf({item, clickWrapper, clickSwitcher, count, active}) {
           <span className={css.wrapper}>
             <span className={css.title}>
               <i className={`${css.anticon}`}>
-                <Icon icon={extName ? <Folder /> : <UserGroup />}/>
+                <Icon icon={extName ? <Folder /> : UserGroup}/>
                 {/* {getIconInfo({key: iconKey, width: '16px'}).icon} */}
                 {/* <Icon icon={(extName && appCtx.APPSMap[extName]?.icon) || (icon || UserGroup)} width={20} height={20}/> */}
               </i>
@@ -184,7 +184,7 @@ const List = ({
 
   return (
     <div style={{ height: '70vh'}}>
-      <Spin spinning={loading}>
+      {loading && <LoadingPlaceholder />}
       <FolderList
         active={active}
         bodyStyle={{marginLeft: 0}}
@@ -269,7 +269,6 @@ const List = ({
           }
         }}
       />
-    </Spin>
     </div>
   )
 }

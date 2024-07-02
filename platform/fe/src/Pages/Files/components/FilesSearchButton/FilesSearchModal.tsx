@@ -222,7 +222,7 @@ function SearchModal({open, onCancel}) {
                 )}
                 avatar={(
                   <div className={css.avatar}>
-                    <Icon icon={isGroup ? (icon || <UserGroup />) : appReg.icon} />
+                    <Icon icon={isGroup ? (icon || UserGroup) : appReg.icon} />
                   </div>
                 )}
               />
@@ -249,8 +249,7 @@ function Path({path, onClick, getApp}) {
       return <></>
     }
 
-    // (itemIcon || <UserGroup />)
-    const icon = <Icon icon={isMy ? "./image/icon_myproject.png" : (isGroup ? <UserGroup /> : appReg.icon)}/>
+    const icon = <Icon icon={isMy ? "./image/icon_myproject.png" : (isGroup ? UserGroup : appReg.icon)}/>
 
     return (
       <div className={css.path}>
