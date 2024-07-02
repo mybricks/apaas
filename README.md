@@ -7,7 +7,7 @@
 <h1 align="center">MyBricks aPaaS 平台</h1>
 
 <p align="center">
-  开源、您专属的低代码开发平台 · <a href="https://mybricks.world/" target="_blank">官网</a>
+  开源、支持私有化部署的低代码开发平台
 </p>
 
 ## 快速体验
