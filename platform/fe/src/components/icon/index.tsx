@@ -315,8 +315,13 @@ export const Plus: FC = () => {
 }
 
 export const ArrowDown = (
-  <svg className="svg" xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 8 8">
-    <path fill="#000" fill-opacity="1" fill-rule="nonzero" stroke="none"
-          d="m.646 3.354.708-.708L4 5.293l2.646-2.647.708.708L4 6.707.646 3.354z"></path>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+    <script xmlns=""/>
+    <g id="chevron-vertical-16" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+      <path
+        d="M3.28 5.47a.75.75 0 00-1.06 1.06l5.25 5.25a.75.75 0 001.06 0l5.25-5.25a.75.75 0 00-1.06-1.06L8 10.19 3.28 5.47z"
+        id="chevron" fill="currentColor" fill-rule="nonzero"/>
+    </g>
+    <script xmlns=""/>
   </svg>
 )
