@@ -7,8 +7,8 @@ import css from './FixedTip.less'
 const Qrcode: FC = () => {
   return (
     <div className={css.qrcode}>
-      <div>微信「扫一扫」添加交流群</div>
-      <img src="https://assets.mybricks.world/wxq-qrcode.png" alt="" />
+      <div>关注获得更多支持</div>
+      <img src="https://assets.mybricks.world/files/534065092341829/YDbNRhFeeyeMorgGiODjgNFTYMhnivh2-1708313464390.jpeg" alt="" />
     </div>
   )
 }

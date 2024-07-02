@@ -3,11 +3,6 @@
   0 3px 6px -4px rgba(0, 0, 0, 0.18),
   0 9px 28px 8px rgba(0, 0, 0, 0.08);
 
-  // box-shadow: 0 9px 28px 8px rgba(83, 188, 8, 0.2);
-
-  // width: 50px;
-  // height: 60px;
-  // padding: 6px 3px;
   padding: 8px;
 
   position: fixed;
@@ -20,7 +15,7 @@
   align-items: center;
 
   border-radius: 5px;
-
+  
   .text {
     text-align: center;
     font-size: 12px;
@@ -30,25 +25,26 @@
 
   :global {
     .anticon {
-      font-size: 23px;
+      font-size: 28px;
       color: #44b549;
     }
   }
 }
 
 .qrcode {
-  width: 128px;
+  width: 180px;
   display: flex;
   flex-direction: column;
   align-items: center;
   div {
-    font-size: 14px;
     margin-bottom: 12px;
+    font-size: 16px;
+    font-weight: 500;
   }
   img {
     width: 100%;
     height: fit-content;
-    min-height: 128px;
+    min-height: 180px;
     object-fit: contain;
   }
 }
