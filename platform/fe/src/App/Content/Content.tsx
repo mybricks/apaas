@@ -40,7 +40,8 @@ const Content: FC = () => {
   const {
     header: HeaderView,
     page: PageView = PageNotFound,
-    provider: ProviderView = Fragment
+    provider: ProviderView = Fragment,
+    pageStyle,
   } = CONTENT_MAP[appId] || (() => {
     const app = getApp(appId);
     if (app) {
@@ -58,7 +59,7 @@ const Content: FC = () => {
         <Header>
           {HeaderView && <HeaderView />}
         </Header>
-        <Page>
+        <Page style={pageStyle}>
           {PageView && <PageView />}
         </Page>
       </ProviderView>

@@ -8,6 +8,9 @@ export { button };
 export default {
   id: "files",
   page,
+  pageStyle: {
+    padding: 0,
+  },
   header,
   provider: FilesProvider
 };
