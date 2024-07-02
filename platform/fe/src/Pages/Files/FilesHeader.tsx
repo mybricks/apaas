@@ -1,17 +1,17 @@
-import React, { FC } from "react";
+import React, {FC} from "react";
 
-import { Navbar, LoadingPlaceholder, Button, Popover } from "@/components";
-import { ViewAsGrid, ViewAsList } from "@/components/icon";
-import { useFilesContext } from "./FilesProvider";
+import {Navbar, LoadingPlaceholder, Button, Popover} from "@/components";
+import {ArrowDown, ViewAsGrid, ViewAsList} from "@/components/icon";
+import {useFilesContext} from "./FilesProvider";
 import FilePathNavigation from "./components/FilePathNavigation";
 // TODO: Next
-import { Create } from "./components/FilesListContainer/create/Create";
+import {Create} from "./components/FilesListContainer/create/Create";
 import FilesSearchButton from "./components/FilesSearchButton";
 
 import css from "./FilesHeader.less";
 
 const FilesHeader: FC = () => {
-  const { filePathsInfo: { loading, filePaths },  viewType, setViewType } = useFilesContext();
+  const {filePathsInfo: {loading, filePaths}, viewType, setViewType} = useFilesContext();
   
   return (
     <div className={css.filesHeader}>
@@ -23,26 +23,26 @@ const FilesHeader: FC = () => {
           onChange={setViewType}
           options={[
             {
-              label: <ViewAsGrid />,
+              label: <ViewAsGrid/>,
               value: "grid",
               tip: "切换为网格视图"
             },
             {
-              label: <ViewAsList />,
+              label: <ViewAsList/>,
               value: "list",
               tip: "切换为列表视图"
             },
           ]}
         />
-        <FilesSearchButton />
+        <FilesSearchButton/>
         <Popover
           arrow={false}
-          content={<Create />}
+          content={<Create/>}
           placement="bottomRight"
           trigger="click"
         >
           <Button type={"primary"}>
-            新 建
+            <label>+</label>新建<span>{ArrowDown}</span>
           </Button>
         </Popover>
       </div>

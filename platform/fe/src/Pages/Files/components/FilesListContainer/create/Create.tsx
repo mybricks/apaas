@@ -48,7 +48,6 @@ export function Create({
 
   /** 点击新建 */
   const newProject: (app: any) => void = useCallback(async (app: InstalledApp) => {
-    console.log(`创建app:`, app)
     const currentUserSystemConfig = getUserSystemConfig();
     // @ts-ignore
     if (currentUserSystemConfig?.createFileCount) {

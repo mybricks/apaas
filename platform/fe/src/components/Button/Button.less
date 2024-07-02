@@ -51,7 +51,6 @@
   font-size: 14px;
   padding: 5px 16px;
   height: 30px;
-  letter-spacing: -2px;
 }
 
 .size40 {
@@ -87,10 +86,32 @@
   &:active {
     color: #ffffffb3;
   }
+
+  label {
+    font-size: 16px;
+    font-weight: 400;
+    margin-right: 5px;
+    margin-top: -2px;
+  }
+
+  span {
+    margin-left: 5px;
+    margin-top: -2px;
+
+    svg {
+      max-width: 12px;
+
+      path {
+        fill: #ffffff;
+      }
+    }
+
+  }
 }
 
 .secondary {
-  border-color: #DDD;
+  //border-color: #DDD;
+  font-size: 12px;
   background-clip: padding-box;
   color: #555;
   //color: hsla(19, 89%, 55%, 1);
