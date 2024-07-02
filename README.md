@@ -10,13 +10,18 @@
   开源、支持私有化部署的低代码开发平台
 </p>
 
-## 快速体验
+
+# 快速体验
 访问在线版 [MyBricks aPaaS平台](https://my.mybricks.world/) 搭建专属于您的 中后台页面、门户网站、小程序、H5等。
+<br/>
+<br/>
 
-## 简介
+# 简介
 本Git项目包含了MyBricks aPaaS（与在线版等同）的所有代码，您也可以快速部署专属您自己的低代码开发平台。
+<br/>
+<br/>
 
-## 平台部署
+# 平台部署
 
 ### 0.前置条件
 请确保环境内
@@ -166,11 +171,15 @@ location / {
   gzip_disable   "MSIE [1-6]\.";
 }
 ```
+<br/>
+<br/>
 
-## 关于我们
-<img style="width: 100px; margin-bottom: 10px" src="https://assets.mybricks.world/files/534065092341829/YDbNRhFeeyeMorgGiODjgNFTYMhnivh2-1708313464390.jpeg" />
+## 关注我们，获取更多支持
+<div style="display:flex;justify-content: center">
+<img style="width: 200px; margin:0px auto;" src="https://assets.mybricks.world/files/534065092341829/YDbNRhFeeyeMorgGiODjgNFTYMhnivh2-1708313464390.jpeg" />
 
-关注我们，获取更多专业信息
+</div>
+
 
 ## 了解更多
 - [MyBricks 官网](https://mybricks.world/)
