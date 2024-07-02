@@ -4,17 +4,17 @@
   <a href="https://mybricks.world" target="blank"><img src="https://docs.mybricks.world/img/logo.png" width="90" alt="MyBricks APaaS Logo" /></a>
 </p>
 
-<h1 align="center">MyBricks aPaaS</h1>
+<h1 align="center">MyBricks aPaaS 平台</h1>
 
 <p align="center">
-  专业、开源的低代码开发平台 · <a href="https://mybricks.world/" target="_blank">官网</a>
+  开源、您专属的低代码开发平台 · <a href="https://mybricks.world/" target="_blank">官网</a>
 </p>
 
 ## 快速体验
-访问 [MyBricks 体验平台](https://my.mybricks.world/) 来开始搭建专属于你的 中后台页面、小程序、H5页面。
+访问在线版 [MyBricks aPaaS平台](https://my.mybricks.world/) 搭建专属于您的 中后台页面、门户网站、小程序、H5等。
 
 ## 简介
-本Git项目包含 [MyBricks 体验平台](https://my.mybricks.world/) 的所有代码，你也可以开发/部署一个专属于你的低代码平台
+本Git项目包含了MyBricks aPaaS（与在线版等同）的所有代码，您也可以快速部署专属您自己的低代码开发平台。
 
 ## 平台部署
 
@@ -173,7 +173,7 @@ location / {
 关注我们，获取更多专业信息
 
 ## 了解更多
-- [MyBricks 文档](https://docs.mybricks.world/)
 - [MyBricks 官网](https://mybricks.world/)
-- [MyBricks 体验平台](https://my.mybricks.world/)
-- [VsCode 插件](https://marketplace.visualstudio.com/items?itemName=Mybricks.Mybricks)
+- [MyBricks 文档](https://docs.mybricks.world/)
+- [MyBricks 在线版](https://my.mybricks.world/)
+- [VSCode 插件 开发者工具](https://marketplace.visualstudio.com/items?itemName=Mybricks.Mybricks)
