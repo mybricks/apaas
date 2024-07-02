@@ -1,12 +1,12 @@
-import React, { FC } from "react";
-import { NavigateFunction } from "react-router-dom";
+import React, {FC} from "react";
+import {NavigateFunction} from "react-router-dom";
 import axios from "axios";
 
 import FilesMenuTree from "../FilesMenuTree";
-import { UserGroup } from "@/components/icon";
-import { TreeNode } from "../FilesMenuTree";
+import {UserGroup} from "@/components/icon";
+import {TreeNode} from "../FilesMenuTree";
 import AddGroupButton from "../AddGroupButton";
-import { FilesMenuTreeContextValue } from "@/types";
+import {FilesMenuTreeContextValue} from "@/types";
 
 interface GroupMenuButtonProps {
   userId: number;
@@ -17,15 +17,15 @@ interface GroupMenuButtonProps {
 }
 
 const GroupMenuButton: FC<GroupMenuButtonProps> = ({
-  node,
-  userId,
-  activeSearch,
-  navigate,
-  filesMenuTreeContext
-}) => {
+                                                     node,
+                                                     userId,
+                                                     activeSearch,
+                                                     navigate,
+                                                     filesMenuTreeContext
+                                                   }) => {
   return (
     <FilesMenuTree
-      icon={<UserGroup />}
+      icon={UserGroup}
       clickable={false}
       search={"group"}
       activeSearch={activeSearch}

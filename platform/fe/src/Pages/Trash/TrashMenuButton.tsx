@@ -10,7 +10,7 @@ const TrashMenuButton: FC = () => {
   return (
     <Link to={search}>
       <MenuButton
-        icon={"./image/icon_rubbish.png"}
+        icon={Trash}////TODO
         search={search}
       >
         回收站

@@ -1,11 +1,12 @@
-import React, { FC } from "react";
-import { NavigateFunction } from "react-router-dom";
+import React, {FC} from "react";
+import {NavigateFunction} from "react-router-dom";
 import axios from "axios";
 
 import FilesMenuTree from "../FilesMenuTree";
-import { Account } from "@/components/icon";
-import { TreeNode } from "../FilesMenuTree";
-import { FilesMenuTreeContextValue } from "@/types";
+import {My,Account} from "@/components/icon";
+import {TreeNode} from "../FilesMenuTree";
+import {FilesMenuTreeContextValue} from "@/types";
+
 
 interface MyMenuButtonProps {
   userId: number;
@@ -16,15 +17,15 @@ interface MyMenuButtonProps {
 }
 
 const MyMenuButton: FC<MyMenuButtonProps> = ({
-  node,
-  userId,
-  activeSearch,
-  navigate,
-  filesMenuTreeContext
-}) => {
+                                               node,
+                                               userId,
+                                               activeSearch,
+                                               navigate,
+                                               filesMenuTreeContext
+                                             }) => {
   return (
     <FilesMenuTree
-      icon={"./image/icon_myproject.png"}
+      icon={My}
       search={`?appId=files`}
       activeSearch={activeSearch}
       name={"我的"}
@@ -40,11 +41,12 @@ const MyMenuButton: FC<MyMenuButtonProps> = ({
             parentId
           }
         })).data.data;
-
+        
         return files;
       }}
     />
   )
 }
+
 
 export default MyMenuButton;
