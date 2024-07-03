@@ -116,12 +116,15 @@ const FilesListContainer: FC<FilesListContainerProps> = ({
           user,
           file,
           next: ({ targetFile, file }) => {
-            if (!targetFile.extName) {
-              refreshNode(`?appId=files&groupId=${targetFile.id}`, { file, type: "create" })
-            } else {
-              refreshNode(`?appId=files&groupId=${targetFile.groupId}&parentId=${targetFile.id}`, { file, type: "create" })
-            };
-            refreshNode(spellFileSearch(previousFile), { file, type: "delete" });
+            if (file.extName === "folder") {
+              const { id, groupId } = targetFile;
+              if (!targetFile.extName) {
+                refreshNode(`?appId=files${id ? `&groupId=${id}` : ''}`, { file, type: "create" })
+              } else {
+                refreshNode(`?appId=files${groupId ? `&groupId=${groupId}` : ""}${id ? `&parentId=${id}` : ''}`, { file, type: "create" })
+              };
+              refreshNode(spellFileSearch(previousFile), { file, type: "delete" });
+            }
             refreshFiles({ file, type: "delete" });
           }
         })

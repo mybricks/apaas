@@ -1,12 +1,23 @@
-import React, { FC, PropsWithChildren } from "react";
+import React, { FC, PropsWithChildren, CSSProperties } from "react";
+import classNames from "classnames";
 
 import css from "./ModalBody.less";
 
-interface ModalBodyProps extends PropsWithChildren {}
+interface ModalBodyProps extends PropsWithChildren {
+  className?: string;
+  style?: CSSProperties;
+}
 
-const ModalBody: FC<ModalBodyProps> = ({ children }) => {
+const ModalBody: FC<ModalBodyProps> = ({
+  children,
+  className,
+  style
+}) => {
   return (
-    <div className={css.modalBody}>{children}</div>
+    <div
+      className={classNames(css.modalBody, className)}
+      style={style}
+    >{children}</div>
   )
 }
 
