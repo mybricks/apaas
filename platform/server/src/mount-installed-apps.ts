@@ -1,10 +1,44 @@
 import * as path from "path";
-import { NextFunction, Request, Response } from "express";
+import * as fs from 'fs';
+import { NestExpressApplication } from '@nestjs/platform-express'
+import { NextFunction, Request, Response, Application } from "express";
 import { Logger } from "@mybricks/rocker-commons";
-import { loadApps, loadedApps } from './utils/shared'
+import { safeEncodeURIComponent } from './utils'
+import { loadApps, loadedApps, configuration } from './utils/shared'
+
+
+/** 兼容离线模式的middleware，读取 html 文件时优先读取 offline.html 文件 */
+const offlineHtmlSupportMiddleware = (req: Request, res: Response, next: NextFunction) => {
+  if (!configuration?.platformConfig?.isPureIntranet) {
+    next();
+    return
+  }
+
+  if (req.path.includes('.html')) {
+    const app = loadedApps.find(app => req.path.startsWith(`/${app.namespace}`) || req.path.startsWith(safeEncodeURIComponent(`/${app.namespace}`)))
+
+    if (app?.assetsDirectory) {
+      const parsedPath = path.parse(req.path);
+
+      // 获取文件名
+      const fileName = parsedPath.name;
+
+      const hasOfflineFile = fs.existsSync(path.resolve(app.assetsDirectory, `${fileName}.offline.html`))
+
+      // 如果有离线文件则走离线文件
+      if (hasOfflineFile) {
+        req.url = req.url.replace('.html', '.offline.html');
+      }
+    }
+  }
+  next();
+}
 
 /** 将APP内静态资源挂载上来 */
-export function installedAppMount(app: any, installedAppsMeta: any[]) {
+export function installedAppMount(app: NestExpressApplication, installedAppsMeta: any[]) {
+
+  app.use(offlineHtmlSupportMiddleware)
+
   installedAppsMeta?.forEach(appMeta => {
     const ns = appMeta.namespace;
 
@@ -131,7 +165,7 @@ const routerRedirectMiddleWare = (namespaceMap) => {
 };
 
 /** 将APP内相对路由转到平台上来 */
-export function installedAppRouterMount(app: any, loadedApps: any) {
+export function installedAppRouterMount(app: NestExpressApplication, loadedApps: any) {
 
   const namespaceMap = {}
   loadedApps.forEach(a => {

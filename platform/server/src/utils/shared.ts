@@ -71,6 +71,8 @@ interface LoadedApp {
   name: string,
 
   mapperFolderDirectory?: string
+
+  assetsDirectory?: string
 }
 
 

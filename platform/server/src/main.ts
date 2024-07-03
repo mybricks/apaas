@@ -51,8 +51,8 @@ async function bootstrap() {
 
   // 根据加载的应用，支持对应的html渲染
   installedAppMount(app, installedAppsMeta);
+  
   // 根据加载的应用，自动修改其API接口的路径
-
   installedAppRouterMount(app, installedAppsMeta)
 
 

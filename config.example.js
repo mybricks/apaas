@@ -49,7 +49,12 @@ module.exports = {
     /**
      * @description [可选项] 指定平台运行时动态安装应用时如何安装应用的node_modules依赖，默认值为 npm i --registry=https://registry.npmmirror.com --production
      */
-    installCommand: 'npm i --registry=https://registry.npmmirror.com --production'
+    installCommand: 'npm i --registry=https://registry.npmmirror.com --production',
+
+    /**
+     * @description [可选项] 务必谨慎操作！离线模式开关，如果部署的服务器无法访问外网的（如myBricks的中心化服务 以及 各类Cdn），请开启此开关，开启后会开启离线模式
+     */
+    isPureIntranet: false,
   },
   /**
    * @description [可选项] 管理员账号与密码，初始化数据库时会使用此账号密码
