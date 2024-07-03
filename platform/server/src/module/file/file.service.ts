@@ -111,6 +111,19 @@ export default class FileService {
         };
         return result;
       }
+    } else {
+      // 移动到“我的”
+      const { id } = await this.fileDao.moveFile({
+        fileId,
+        extName: file.extName,
+        groupId: null,
+        parentId: null
+      });
+      result = {
+        data: id,
+        message: '移动成功',
+      };
+      return result;
     }
   }
 

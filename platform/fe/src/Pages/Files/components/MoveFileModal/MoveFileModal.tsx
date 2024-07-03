@@ -3,8 +3,11 @@ import axios from "axios";
 import { message } from "antd";
 
 import { Modal, Button } from "@/components";
+import { My, Cooperation } from "@/components/icon";
 import { ModalInjectedProps, User, FileData } from "@/types";
-import FolderList from "./FolderList";
+import FilesMenuTree from "./FilesMenuTree";
+
+import css from "./MoveFileModal.less";
 
 interface MoveFileModalProps extends ModalInjectedProps {
   user: User;
@@ -22,22 +25,24 @@ const MoveFileModal: FC<MoveFileModalProps> = ({
   const [targetFile, setTargetFile] = useState<FileData>(null);
 
   const handleConfirmButtonClick = () => {
-    setLoading(true);
-
     const { id, groupId } = targetFile;
 
-    if (file.id === id) {
-      message.error(`目标文件夹“${file.name}”已被选中，无法移动`);
+    if ((!id && !file.groupId && !file.parentId) || file.parentId ? file.parentId === id : file.groupId === id) {
+      message.error("已在当前位置，无法移动");
     } else {
-      const isGroup = typeof groupId === 'undefined';
+      setLoading(true);
       const data: any = {
         fileId: file.id,
       }
-      if (isGroup) {
-        data.toGroupId = id
-      } else {
-        data.toFileId = id
+      if (id) {
+        const isGroup = typeof groupId === 'undefined';
+        if (isGroup) {
+          data.toGroupId = id
+        } else {
+          data.toFileId = id
+        }
       }
+
       axios({
         method: 'post',
         url: '/api/file/moveFile',
@@ -73,8 +78,58 @@ const MoveFileModal: FC<MoveFileModalProps> = ({
 
   return (
     <Modal title={`将“${file.name}”移动到`}>
-      <Modal.Body>
-        <FolderList user={user} file={file} setTargetFile={setTargetFile}/>
+      <Modal.Body className={css.body}>
+        {user.id === Number(file.creatorId) && <FilesMenuTree
+          icon={My}
+          name={"我的"}
+          file={{ id: 0 } as FileData}
+          moveFile={file}
+          targetFile={targetFile}
+          onChange={setTargetFile}
+          getFiles={async (file) => {
+            const files = (await axios.get("/paas/api/file/getMyFiles", {
+              params: {
+                userId: user.id,
+                extNames: "folder",
+                parentId: file?.id || null
+              }
+            })).data.data;
+            
+            return files;
+          }}
+        />}
+        <FilesMenuTree
+          icon={Cooperation}
+          clickable={false}
+          moveFile={file}
+          defaultOpen={true}
+          targetFile={targetFile}
+          name={"我加入的协作组"}
+          getFiles={async (file) => {
+            if (!file) {
+              return (await axios.get("/paas/api/userGroup/getVisibleGroups", {
+                params: {
+                  userId: user.id
+                }
+              })).data.data;
+            } else {
+              const { groupId, extName, id } = file;
+              const isGroup = !extName && id;
+
+              const params = {
+                userId: user.id,
+                extNames: "folder",
+                groupId: isGroup ? id : groupId,
+                parentId: isGroup ? null : id
+              }
+
+              return (await axios.get("/paas/api/file/getGroupFiles", {
+                params
+              })).data.data;
+            }
+          }}
+          onChange={setTargetFile}
+        />
       </Modal.Body>
       <Modal.Footer>
         <Button disabled={loading} onClick={hideModal}>
