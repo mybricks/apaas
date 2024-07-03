@@ -22,12 +22,11 @@ const FilesHeader: FC = () => {
           value={viewType}
           onChange={setViewType}
           options={[
-            {
+            viewType === 'list' ? {
               label: <ViewAsGrid/>,
               value: "grid",
               tip: "切换为网格视图"
-            },
-            {
+            } : {
               label: <ViewAsList/>,
               value: "list",
               tip: "切换为列表视图"
@@ -41,7 +40,7 @@ const FilesHeader: FC = () => {
           placement="bottomRight"
           trigger="click"
         >
-          <Button type={"primary"}>
+          <Button type={"primary"} style={{ fontWeight: 'bold' }}>
             <label className={css.addIcon}>+</label>新建<span className={css.downIcon}>{ArrowDown}</span>
           </Button>
         </Popover>
