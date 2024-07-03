@@ -1,5 +1,6 @@
 import React, { FC, useEffect, useState } from "react";
 import { ConfigProvider, Skeleton } from "antd";
+import zhCN from 'antd/locale/zh_CN';
 import classNames from "classnames";
 import { BrowserRouter } from "react-router-dom";
 
@@ -36,6 +37,7 @@ const App: FC = () => {
                   colorPrimary: "#f26726d9",
                 },
               }}
+              locale={zhCN}
             >
               <AppContextProvider value={appContextValue}>
                 <Sidebar />
