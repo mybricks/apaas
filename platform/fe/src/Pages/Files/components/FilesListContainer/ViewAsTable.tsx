@@ -1,4 +1,4 @@
-import React, { FC, useCallback } from "react";
+import React, { FC, useMemo, useCallback } from "react";
 import { Table } from "antd";
 
 import { User, FileData } from "@/types";
@@ -27,7 +27,7 @@ const ViewAsTable: FC<ViewAsTableProps> = ({
   roleDescription
 }) => {
   const { apps: { getApp } } = useWorkspaceConetxt();
-  const columns = useCallback(() => {
+  const columns = useMemo(() => {
     return [
       {
         title: '名称',
@@ -84,11 +84,15 @@ const ViewAsTable: FC<ViewAsTableProps> = ({
     ]
   }, []);
 
+  const dataSource = useCallback(() => {
+    return files.concat()
+  }, [files])
+
   return (
     <Table
       loading={loading}
-      columns={columns()}
-      dataSource={files}
+      columns={columns}
+      dataSource={dataSource()}
       size='small'
       pagination={false}
       locale={{
