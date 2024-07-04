@@ -67,7 +67,7 @@ module.exports = async function startInitDatabase ({ console }) {
     console.error(error)
     // 脚本文件，不成功直接退出进程
     await mySqlExecutor.closeConnection();
-    process.exit(1)
+    throw new Error('数据初始化操作失败')
   }
   console.log(`数据库准备完毕`)
   await mySqlExecutor.closeConnection();

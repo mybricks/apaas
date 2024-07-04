@@ -4,11 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start:prod": "NODE_ENV=production npx pm2 start ecosystem.config.js",
+    "start:prod": "NODE_ENV=production pm2 start ecosystem.config.js",
     "start:dev": "NODE_ENV=development node index.js",
     "start:watch": "NODE_ENV=development nodemon --config nodemon.json --ext ts --exec 'node index.js'",
-    "stop:prod": "npx pm2 stop ecosystem.config.js",
-    "reload:prod": "NODE_ENV=production npx pm2 reload ecosystem.config.js"
+    "stop:prod": "pm2 stop ecosystem.config.js",
+    "reload:prod": "NODE_ENV=production pm2 reload ecosystem.config.js"
   },
   "author": "",
   "license": "ISC",

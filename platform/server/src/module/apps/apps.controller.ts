@@ -552,7 +552,7 @@ export default class AppsController {
     if (env.isProd()) {
       Logger.info('开始重启服务')
       setTimeout(() => {
-        const command = process.env?.pm_id !== undefined ? `npx pm2 reload ${process.env?.pm_id}` : `npx pm2 reload ${configuration?.platformConfig?.appName}`;
+        const command = process.env?.pm_id !== undefined ? `pm2 reload ${process.env?.pm_id}` : `pm2 reload ${configuration?.platformConfig?.appName}`;
         // 重启服务
         childProcess.exec(
           command,
@@ -561,11 +561,11 @@ export default class AppsController {
           },
           (error, stdout, stderr) => {
             if (error) {
-              Logger.info(`[offlineUpdate]: exec error: ${error}`);
+              Logger.info(`[restart]: exec error: ${error}`);
               return;
             }
-            Logger.info(`[offlineUpdate]: stdout: ${stdout}`);
-            Logger.info(`[offlineUpdate]: stderr: ${stderr}`);
+            Logger.info(`[restart]: stdout: ${stdout}`);
+            Logger.info(`[restart]: stderr: ${stderr}`);
           }
         );
       }, 500)

@@ -20,8 +20,7 @@
     "stop": "node ./scripts/stop",
     "reload": "node ./scripts/reload",
     "upgrade": "node ./scripts/upgrade",
-    "openapi:sign": "NODE_ENV=production node ./scripts/openapi-sign",
-    "health": "NODE_ENV=production node ./scripts/health"
+    "openapi:sign": "NODE_ENV=production node ./scripts/openapi-sign"
   },
   "dependencies": {
     "adm-zip": "^0.5.14",

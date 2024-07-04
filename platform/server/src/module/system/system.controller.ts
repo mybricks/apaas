@@ -47,19 +47,6 @@ export default class SystemController {
     }
     try {
       switch (type) {
-        case 'reloadPlatform': {
-          try {
-            childProcess.exec(`npx pm2 reload all`)
-            return {
-              code: 1,
-            };
-          } catch(e) {
-            return {
-              code: -1,
-              msg: e.message || '升级失败'
-            }
-          }
-        }
         case 'getLatestNoticeList': {
           const res = (await (axios as any).post(
             `https://my.mybricks.world/central/api/channel/gateway`, 
@@ -105,15 +92,6 @@ export default class SystemController {
         msg: `[${type}]:` + e.message
       }
     }
-  }
-
-
-  @Post('/system/reloadAll')
-  async reloadAll() {
-    childProcess.exec(`npx pm2 reload all`)
-    return {
-      code: 1,
-    };
   }
 
   @Post('/system/diagnostics')
@@ -178,7 +156,7 @@ export default class SystemController {
             if (process.env.pm_id) {
               const appName = getAppNameById(process.env.pm_id);
               if (appName && appName !== configuration.platformConfig.appName) {
-                throw new Error(`当前启动的 appName 与配置的 appName 不相等\n 建议管理员 npx pm2 delete ${appName}，并使用 npm run reload 重启平台`)
+                throw new Error(`当前启动的 appName 与配置的 appName 不相等\n 建议管理员 pm2 delete ${appName}，并使用 npm run reload 重启平台`)
               }
               msg += `\n[重启服务检测]：当前平台PM2 Id 为 ${process.env.pm_id}，name为 ${appName}`
             }
@@ -207,7 +185,7 @@ export default class SystemController {
 
 function getAppNameById(pm_id) {
   try {
-    const stdout = childProcess.execSync(`npx pm2 info ${pm_id}`).toString();
+    const stdout = childProcess.execSync(`pm2 info ${pm_id}`).toString();
     const nameMatch = stdout.match(/Describing process with id \d+ - name (\S+)/);
     if (!nameMatch?.[1]) {
       const nameMatch2 = stdout.match(/monitor CPU and Memory usage (\S+)/);
