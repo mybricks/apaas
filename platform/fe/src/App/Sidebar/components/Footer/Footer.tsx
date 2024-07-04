@@ -14,7 +14,7 @@ import { button as SettingsMenuButton } from "@/Pages/Settings";
 import css from "./Footer.less";
 
 const Footer = () => {
-  const { user: { name, email, avatar } } = useUserContext();
+  const { user: { name, email, avatar, isAdmin } } = useUserContext();
   const { showModal } = useModalConetxt();
 
   const handleSignout = () => {
@@ -30,13 +30,15 @@ const Footer = () => {
 
   return (
     <div className={css.footer}>
-      <div className={css.system}>
-        <AppStoreMenuButton />
-        <OperationLogMenuButton />
-        <UserManagementMenuButton />
-        <StaticFilesMenuButton />
-        <SettingsMenuButton />
-      </div>
+      {isAdmin && (
+        <div className={css.system}>
+          <AppStoreMenuButton />
+          <OperationLogMenuButton />
+          <UserManagementMenuButton />
+          <StaticFilesMenuButton />
+          <SettingsMenuButton />
+        </div>
+      )}
       <div className={css.personal}>
         <Popover
           placement="topLeft"
