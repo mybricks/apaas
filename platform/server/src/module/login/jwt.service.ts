@@ -57,7 +57,7 @@ export default class JwtService {
 
 
     if(headerUsername) {
-      userEmail = `${headerUsername}@kuaishou.com`;
+      userEmail = headerUsername;
     }
 
     let cookieInfo = null
