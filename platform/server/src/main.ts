@@ -14,6 +14,7 @@ import { gzipMiddleware } from './middleware/gzip.middleware'
 
 import { runtimeLogger } from './middleware/log.middleware';
 import initDatabase from "./init-database";
+import { onProcessExit } from './on-process-exit'
 import { initLogger } from './utils/logger';
 
 import { loadInstalledAppMeta, installedAppMount, installedAppRouterMount } from './mount-installed-apps'
@@ -110,6 +111,9 @@ async function bootstrap() {
   app.use(timeout(TIMEOUT_TIME))
 
   await app.listen(configuration?.platformConfig?.port || 3100);
+
+  // 应用被结束或者重启时的操作
+  onProcessExit({ app })
 }
 
 

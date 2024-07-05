@@ -1,9 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { Logger } from '@mybricks/rocker-commons';
 import { formatBodyOrParamsData } from "../utils/traverse";
-import { ChildLogger } from '../utils/child-logger'
-import env from '../utils/env'
-import * as path from 'path'
+import { UserOnlineLogger } from '../utils/child-logger'
 
 import { configuration } from './../utils/shared'
 
@@ -13,10 +11,6 @@ interface Option {
 
 export function runtimeLogger(option: Option = {}) {
   const { appNamespaceList = [] } = option;
-
-  const childLogger = new ChildLogger({
-    logDir: path.join(env.FILE_ANALYSIS_ONLINEUSERS_FOLDER)
-  })
 
   const openMonitor = configuration?.platformConfig?.openMonitor;
 
@@ -35,7 +29,7 @@ export function runtimeLogger(option: Option = {}) {
         Logger.info(`[application: ${application}] [code: ${res.statusCode}] [method: ${req.method}] [duration: ${duration}] [path: ${req.path}] [url: ${req.originalUrl}] [ip: ${req.ip}] [refer: ${req.headers.referer}] [userAgent: ${req.headers['user-agent']}]`);
       } else if (openMonitor) {
         try {
-          childLogger.info({
+          UserOnlineLogger.info({
             ...(getParamsFromReq(req) ?? {}),
             refer: req.headers.referer,
             userAgent: req.headers['user-agent'],

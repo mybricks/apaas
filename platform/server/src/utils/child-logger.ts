@@ -1,6 +1,7 @@
 import * as path from 'path';
 import * as fse from 'fs-extra'
 import * as dayjs from 'dayjs';
+import env from './env';
 
 interface LoggerOptions {
   logDir?: string;
@@ -24,17 +25,6 @@ export class ChildLogger {
 
     fse.ensureDirSync(this.logDir);
     this.startFlushInterval();
-
-    // Ensure logs are flushed on exit
-    process.on('exit', () => this.flushSync());
-    process.on('SIGINT', () => {
-      this.flushSync();
-      process.exit();
-    });
-    process.on('SIGTERM', () => {
-      this.flushSync();
-      process.exit();
-    });
   }
 
   private async getExpiredLogFiles() {
@@ -97,7 +87,7 @@ export class ChildLogger {
     }
   }
 
-  private flushSync() {
+  public flushSync() {
     if (this.cache.length === 0) return;
 
     const logsByDate = this.groupLogsByDate();
@@ -259,3 +249,7 @@ export class ChildLoggerAnalyzer {
     return found;
   }
 }
+
+export const UserOnlineLogger = new ChildLogger({
+  logDir: path.join(env.FILE_ANALYSIS_ONLINEUSERS_FOLDER)
+})
