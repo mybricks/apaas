@@ -23,11 +23,11 @@ const FilesHeader: FC = () => {
           onChange={setViewType}
           options={[
             viewType === 'list' ? {
-              label: <ViewAsGrid/>,
+              label: <ViewAsList/>,
               value: "grid",
               tip: "切换为网格视图"
             } : {
-              label: <ViewAsList/>,
+              label: <ViewAsGrid/>,
               value: "list",
               tip: "切换为列表视图"
             },
