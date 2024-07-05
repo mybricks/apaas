@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import { NestExpressApplication } from '@nestjs/platform-express'
 import { NextFunction, Request, Response, Application } from "express";
 import { Logger } from "@mybricks/rocker-commons";
-import { safeEncodeURIComponent } from './utils'
+import { safeEncodeURIComponent, MemoryState } from './utils'
 import { loadApps, loadedApps, configuration } from './utils/shared'
 
 
@@ -77,6 +77,8 @@ export function installedAppMount(app: NestExpressApplication, installedAppsMeta
       },
       etag: true
     });
+
+    MemoryState.appStatus.setFeStatus(ns, true)
   })
 }
 
@@ -184,10 +186,11 @@ export function loadInstalledAppMeta() {
 
 export function loadInstalledAppModules() {
   let modules = [];
-  loadApps(({ serverModuleDirectory, hasServer }, appName) => {
+  loadApps(({ serverModuleDirectory, hasServer, namespace }, appName) => {
     if (hasServer) {
       try {
         modules.push(require(serverModuleDirectory).default);
+        MemoryState.appStatus.setServerStatus(namespace, true, '应用服务端模块加载成功')
       } catch (e) {
         if(!global.MYBRICKS_PLATFORM_START_ERROR) {
           global.MYBRICKS_PLATFORM_START_ERROR = ''
@@ -195,6 +198,7 @@ export function loadInstalledAppModules() {
         global.MYBRICKS_PLATFORM_START_ERROR += `\n 模块 ${appName} 加载失败 \n ${e.message.indexOf('Cannot find module') > -1 ? '可能是node_modules安装失败，建议重新/手动安装node_modules' : ''} \n 错误是：${e.message} \n 详情是: ${e?.stack?.toString()}`;
         Logger.info(`模块加载失败, 准备跳过：${e.message}`)
         Logger.info(`错误详情是: ${e?.stack?.toString()}`)
+        MemoryState.appStatus.setServerStatus(namespace, false, `模块 ${appName} 加载失败， 错误是：${e.message} 详情是: ${e?.stack?.toString()}`)
       }
     }
     return {}

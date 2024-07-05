@@ -1,4 +1,11 @@
-const { readUserConfig, loadApps: _loadApps, MySqlExecutor: _MySqlExecutor, accessToken: _accessToken } = require('./../../../../scripts/shared/index.js')
+const {
+  readUserConfig,
+  loadApps: _loadApps,
+  MySqlExecutor: _MySqlExecutor,
+  accessToken: _accessToken,
+  getPM2Version: _getPM2Version,
+  getNodeVersion: _getNodeVersion
+} = require('./../../../../scripts/shared/index.js')
 
 
 /**
@@ -92,7 +99,11 @@ export const loadApps = _loadApps
 /**
  * @description Sql执行器
  */
-export const MySqlExecutor = _MySqlExecutor
+export const MySqlExecutor = _MySqlExecutor;
 
 
-export const accessToken = _accessToken
+export const accessToken = _accessToken;
+
+export const getPM2Version: () => string = _getPM2Version;
+
+export const getNodeVersion: () => string = _getNodeVersion;

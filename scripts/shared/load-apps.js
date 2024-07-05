@@ -109,6 +109,7 @@ const scanAppDir = (dirFullPath, appName, callback) => {
 
 
   const extraParams = callback && callback({
+    namespace: packageJson.name,
     serverDirectory,
     serverModuleDirectory,
     hasServer,

@@ -2,8 +2,9 @@ import {Body, Controller, Get, Param, Post, Query, Req,
   Res,
   UploadedFile,
   UseInterceptors,
+  UseFilters,
 } from '@nestjs/common';
-import { getOSInfo, getPlatformFingerPrint, uuid } from '../../utils/index';
+import { getOSInfo, getProcessStartTime, getPlatformFingerPrint, MemoryState } from '../../utils/index';
 import { Logger } from '@mybricks/rocker-commons';
 // @ts-ignore
 import * as axios from "axios";
@@ -11,12 +12,15 @@ import { STATUS_CODE, USER_LOG_TYPE } from '../../constants'
 import ConfigService from '../config/config.service';
 import env from './../../utils/env'
 import * as fse from 'fs-extra'
-import { configuration } from './../../utils/shared';
+import * as dayjs from 'dayjs'
+import { configuration, getNodeVersion, getPM2Version, loadApps } from './../../utils/shared';
+import { ErrorExceptionFilter } from './../../filter/exception.filter';
 
 const childProcess = require('child_process');
 const path = require('path')
 
-@Controller('/paas/api')
+@Controller('/paas/api/system')
+@UseFilters(ErrorExceptionFilter)
 export default class SystemController {
 
   configService: ConfigService;
@@ -36,7 +40,111 @@ export default class SystemController {
     return res
   }
 
-  @Post('/system/channel')
+  @Get('/monitor/overview')
+  async getMonitorOverview() {
+    return {
+      code: 1,
+      data: {
+        startAt: dayjs(getProcessStartTime()).format('YYYY-MM-DD HH:mm:ss'),
+        os: getOSInfo(),
+        nodeVersion: getNodeVersion(),
+        pm2Version: getPM2Version(),
+        pm2Name: configuration.platformConfig?.appName,
+        isPureIntranet: !!configuration.platformConfig?.isPureIntranet
+      }
+    }
+  }
+
+  @Get('/monitor/pingCenter')
+  async monitorPingCenter() {
+
+  }
+
+  @Get('/monitor/apps')
+  async getMonitorApps() {
+    const apps = loadApps();
+    return {
+      code: 1,
+      data: apps.map(app => {
+        return {
+          title: app.title,
+          namespace: app.namespace,
+          version: app.version,
+          isSystem: app.isSystem,
+          ...MemoryState.appStatus.getStatus(app.namespace)
+        }
+      })
+    }
+  }
+
+  @Get('/monitor/diagnostics')
+  async getMonitorDiagnostics() {
+    let result = []
+
+    try {
+      result = result.concat(MemoryState.appStatus.items.map(item => {
+        const isPass = !item?.server ? true : !!item?.server?.status;
+        return {
+          title: `应用检查：${item.namespace}`,
+          type: 'app_check',
+          level: isPass ? 'success' : 'error',
+          error: isPass ? null : item?.server?.desc 
+        }
+      }))
+    } catch (error) {}
+
+    try {
+      await childProcess.execSync('unzip').toString()
+      result.push({
+        title: 'unzip命令检查',
+        type: 'unzip_check',
+        level: 'success',
+        error: null,
+      })
+    } catch (error) {
+      result.push({
+        title: 'unzip命令检查',
+        type: 'unzip_check',
+        level: 'warn',
+        error: error?.stack?.toString(),
+      })
+    }
+
+    try {
+      const ManacoEditorAssets = path.join(env.FILE_LOCAL_STORAGE_FOLDER, 'editor_assets', 'monaco-editor');
+      const isExist = await fse.pathExists(ManacoEditorAssets)
+      const MaterialExternalAssets = path.join(env.FILE_LOCAL_STORAGE_FOLDER, 'mybricks_material_externals');
+      const isMaterialExternalExist = await fse.pathExists(MaterialExternalAssets)
+      if (isExist && isMaterialExternalExist) {
+        result.push({
+          title: '静态资源依赖检测',
+          type: 'assets_check',
+          level: 'success',
+        })
+      } else {
+        result.push({
+          title: '静态资源依赖检测',
+          type: 'assets_check',
+          level: 'error',
+          error: '部分文件缺失，请联系管理员确认，可通过 npm run prepare:start 补全文件'
+        })
+      }
+    } catch (error) {
+      result.push({
+        title: '静态资源依赖检测',
+        type: 'assets_check',
+        level: 'error',
+        error: `发现异常，请与管理员确认 externalFilesStoragePath 是否配置正确，错误详情：${error.message ?? '未知错误'}`
+      })
+    }
+
+    return {
+      code: 1,
+      data: result
+    }
+  }
+
+  @Post('/channel')
   async channel(@Body() body: any) {
     const { type, version, isAdministrator, payload, userId } = body;
     if(configuration?.platformConfig?.isPureIntranet) {
@@ -47,15 +155,6 @@ export default class SystemController {
     }
     try {
       switch (type) {
-        case 'getLatestNoticeList': {
-          const res = (await (axios as any).post(
-            `https://my.mybricks.world/central/api/channel/gateway`, 
-            {
-            action: "notice_latestList",
-            payload: JSON.stringify({ isAdministrator })
-          })).data
-          return res
-        }
         case 'connect': {
           // 每次进来初始化，上报一次数据
           await this._sendReport(JSON.stringify({
@@ -94,7 +193,7 @@ export default class SystemController {
     }
   }
 
-  @Post('/system/diagnostics')
+  @Post('/diagnostics')
   async diagnostics(@Body('action') action, @Body('payload') payload) {
     const domain = 'https://my.mybricks.world';
     try {

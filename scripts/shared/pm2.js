@@ -5,7 +5,13 @@ function getPM2Version () {
   return output.trim();
 }
 
+function getNodeVersion () {
+  const output = execSync('node -v', { encoding: 'utf-8' });
+  return output.trim();
+}
+
 
 module.exports = {
   getPM2Version,
+  getNodeVersion,
 }

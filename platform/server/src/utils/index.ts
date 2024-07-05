@@ -2,6 +2,8 @@ import * as moment from "dayjs";
 const crypto = require('crypto');
 const os = require('os');
 
+export * from './memory-state';
+
 import { Logger } from '@mybricks/rocker-commons'
 
 export function uuid(length = 32): string {
@@ -129,10 +131,17 @@ export * from './snow-flake'
 export function getOSInfo() {
   return {
     arch: os.arch(), // 获取操作系统的位数，如32位或64位
-    type: os.type(), // 获取操作系统类型，如Linux或Windows_NT
+    type: os.type(), // 获取操作系统类型，'Linux', 'Darwin', 'Windows_NT' 等
     release: os.release(), // 获取操作系统版本，如6.1.7601
-    hostname: os.hostname() // 获取主机名，如localhost
+    hostname: os.hostname?.() // 获取主机名，如localhost
   }
+}
+
+export function getProcessStartTime(): Date {
+  const currentTime = new Date();
+  const uptime = process.uptime();
+  const startTime = new Date(currentTime.getTime() - uptime * 1000);
+  return startTime;
 }
 
 export function getPlatformFingerPrint() {

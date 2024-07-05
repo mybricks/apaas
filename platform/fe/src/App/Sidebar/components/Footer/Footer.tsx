@@ -6,7 +6,8 @@ import { Signout } from "@/components/icon";
 import { useUserContext, useModalConetxt } from "@/context";
 import { button as AppStoreMenuButton } from "@/Pages/AppStore";
 import { button as AccountMenuButton } from "@/Pages/Account";
-import { button as OperationLogMenuButton } from "@/Pages/OperationLog";
+import { button as WebsiteMenuButton } from '@/Pages/Website';
+// import { button as OperationLogMenuButton } from "@/Pages/OperationLog";
 import { button as UserManagementMenuButton } from "@/Pages/UserManagement";
 import { button as StaticFilesMenuButton } from "@/Pages/StaticFiles";
 import { button as SettingsMenuButton } from "@/Pages/Settings";
@@ -33,7 +34,8 @@ const Footer = () => {
       {isAdmin && (
         <div className={css.system}>
           <AppStoreMenuButton />
-          <OperationLogMenuButton />
+          {/* <OperationLogMenuButton /> */}
+          <WebsiteMenuButton />
           <UserManagementMenuButton />
           <StaticFilesMenuButton />
           <SettingsMenuButton />
