@@ -5,11 +5,13 @@ const childProcess = require('child_process')
 const { PLATFORM_SERVER_PATH } = require('./env')
 const Log = require('./utils/log')
 const { pm2Check } = require('./utils/pm2-check')
+const { buildAssetsCheck } = require('./utils/build-check')
 
 const envLog = Log('MyBricks: 部署环境检测')
 
 ;(async () => {
   await pm2Check({ console: envLog });
+  await buildAssetsCheck({ console: envLog });
 
   childProcess.execSync(`npm run start:prod`, {
     stdio: 'inherit',
