@@ -72,7 +72,7 @@ export default class JwtService {
     if(cookieInfo?.fingerprint) {
       const sess = await this.userSessionDao.queryByUserId({ userId: cookieInfo.id })
       if(sess?.fingerprint !== cookieInfo.fingerprint) {
-        throw new Error('当前账号已在其他设备登录，请重新登录')
+        throw new Error('当前账号已失效，请重新登录')
       }
     }
 

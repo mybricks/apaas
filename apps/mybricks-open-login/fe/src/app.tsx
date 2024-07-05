@@ -36,9 +36,11 @@ const checkCurrentIsLogin = async () => {
             location.href = '/workspace.html'
           }
           resolve(true)
-        } else {
+        } else if (data.code === -2) {
           Message.success(data?.message ?? '当前登录已失效，请重新登录', 5)
           // 当前账户在其他设备登录
+          resolve(false)
+        } else {
           resolve(false)
         }
       })

@@ -304,16 +304,23 @@ export default class LoginController {
           code: 1
         }
       }
+
+      if (!userEmail && !userId) {
+        return {
+          code: -1,
+          msg: '当前用户未登录'
+        }
+      }
     } catch (error) {
       return {
-        code: -1,
+        code: -2,
         msg: error?.message ?? '登录已失效，请重新登录'
       }
     }
     
     return {
       code: -1,
-      msg: '登录已失效，请重新登录'
+      msg: '未知错误'
     }
   }
 }
