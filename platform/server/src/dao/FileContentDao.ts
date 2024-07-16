@@ -221,4 +221,17 @@ export default class FileContentDao extends DOBase {
     // return result;
     return {id: params.id}
   }
+
+  public async deleteInFileBeforeAt(params: {
+    fileId: number
+    timestamp: number
+  }) {
+    const res = await this.exe<any>(
+      'apaas_file_content:deleteInFileBeforeAt',
+      Object.assign(
+        params,
+      )
+    );
+    return res
+  }
 }

@@ -191,5 +191,12 @@
       where
       file_id = #{fileId}
   </select>
-    
+
+  <delete id="deleteInFileBeforeAt">
+      delete
+      from apaas_file_content
+      where
+      file_id = #{fileId}
+      and create_time < #{timestamp}
+  </delete>
 </mapper>
