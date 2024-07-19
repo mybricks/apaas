@@ -8,11 +8,14 @@ const startInitDatabase = require('./utils/database/init')
 
 const { buildAssetsCheck } = require('./utils/build-check')
 
+const { validateFilStoragePath } = require('./utils/config-check')
+
 const envLog = Log('MyBricks: 线上部署环境准备')
 
 ;(async () => {
   await pm2CheckAndAutoInstall({ console: envLog });
   await startInitDatabase({ console: envLog });
+  await validateFilStoragePath({ console: envLog })
   await assetsUpdate({ console: envLog })
   await buildAssetsCheck({ console: envLog })
   envLog.log('🎉 部署环境准备完毕，可以通过 start 脚本启动服务器')

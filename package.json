@@ -11,7 +11,7 @@
     "node": ">=14.21.1"
   },
   "scripts": {
-    "postinstall": "node ./scripts/preinstall",
+    "postinstall": "NODE_ENV=development node ./scripts/preinstall",
     "dev:fe": "node ./scripts/dev-fe",
     "dev:server": "NODE_ENV=development node ./scripts/dev-server",
     "build": "node ./scripts/build",
