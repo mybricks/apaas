@@ -12,8 +12,8 @@ export default class FileContentController {
   }
 
   @Post("/deleteInFile")
-  async deleteInFile(@Body() body: { fileId: number; beforeAt?: number, beforeVersion?: string }) {
-    const { fileId, beforeAt, beforeVersion } = body
+  async deleteInFile(@Body() body: { fileId: number; beforeAt?: number, beforeVersion?: string, beforeNVersion?: number }) {
+    const { fileId, beforeAt, beforeVersion, beforeNVersion } = body
     if (!fileId) {
       return {
         code: -1,
@@ -21,10 +21,10 @@ export default class FileContentController {
       }
     }
 
-    if (!beforeAt && !beforeVersion) {
+    if (!beforeAt && !beforeVersion && !beforeNVersion) {
       return {
         code: -1,
-        message: '参数有误，beforeAt 或者 beforeVersion 是必需参数'
+        message: '参数有误，beforeAt 或 beforeVersion 或 beforeNVersion 是必需参数'
       }
     }
 
@@ -46,6 +46,18 @@ export default class FileContentController {
           message: '删除成功'
         }
       }
+
+      if (typeof beforeNVersion === 'number') {
+        const versions = await this.fileContentDao.getContentVersions({ fileId, limit: beforeNVersion, offset: 0 })
+        const last = versions[versions.length - 1];
+        // @ts-ignore
+        await this.fileContentDao.deleteInFileBeforeAt({ fileId, timestamp: moment(last.createTime).valueOf() });
+        return {
+          code: 1,
+          message: '删除成功'
+        }
+      }
+
     } catch (error) {
       return {
         code: -1,
