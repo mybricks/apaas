@@ -102,6 +102,19 @@ export default class FilePubDao extends DOBase {
   }
 
   @Mapping(FilePublishDO)
+  public async query(query?: {
+    id?: number
+    ids?: number[],
+    fileId?: string | number,
+    type?: string
+    version?: string
+  }): Promise<Array<FilePublishDO>> {
+    return await this.exe<Array<FilePublishDO>>("apaas_file_pub:query", {
+      ...(query ?? {})
+    });
+  }
+
+  @Mapping(FilePublishDO)
   async getLatestPubByFileId(fileId: number, type?: string) {
     // 备注：查询会过滤项目空间下的发布
     return await this.exe<{ id: number; file_id: number; version: string }[]>(

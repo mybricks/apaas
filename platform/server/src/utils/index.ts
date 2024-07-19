@@ -4,6 +4,8 @@ const os = require('os');
 
 export * from './memory-state';
 
+export * from './zip'
+
 import { Logger } from '@mybricks/rocker-commons'
 
 export function uuid(length = 32): string {

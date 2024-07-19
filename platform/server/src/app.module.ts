@@ -20,6 +20,7 @@ import LogModule from './module/log/log.module'
 import ConfigModule from "./module/config/config.module";
 import OpenApiModule from "./module/open-api/open-api.module";
 import GlobalModule from "./module/global/global.module";
+import ProjectModule from "./module/project/project.module";
 
 import LoginModule from './module/login/login.module'
 
@@ -44,6 +45,7 @@ import { loadInstalledAppModules } from './mount-installed-apps'
     OpenApiModule,
     AnalyseModule,
     GlobalModule,
+    ProjectModule,
     // 加载已安装的 APP
     ...(loadInstalledAppModules()),
   ],

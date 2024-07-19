@@ -63,6 +63,31 @@
         </if>
     </update>
 
+    <select id="query">
+        select *
+        from apaas_file_pub
+        where status = 1
+        <if test="id">
+            and id = #{id}
+        </if>
+        <if test="ids">
+            and id in
+            <foreach collection="ids" open="(" close=")" separator="," item="id" index="i">
+                #{id}
+            </foreach>
+        </if>
+        <if test="fileId">
+            and file_id = #{fileId}
+        </if>
+        <if test="version">
+            and version = #{version}
+        </if>
+        <if test="type">
+            and type = #{type}
+        </if>
+        order by update_time desc
+    </select>
+
     <select id='getLatestPubByFileId'>
         select *
         from apaas_file_pub
