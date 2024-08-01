@@ -168,7 +168,9 @@ export default class FileController {
       }
       return {
         code: 1,
-        data: result
+        data: {
+          id: res1.id
+        }
       }
     } catch(e) {
       return {

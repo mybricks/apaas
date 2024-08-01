@@ -5,6 +5,7 @@ import { message } from "antd";
 
 import { Modal, Form, Input, Button } from "@/components";
 import { ModalInjectedProps, User, FileData } from "@/types";
+import { unifiedTime } from "@/utils/time";
 
 import css from "./CopyFileModal.less";
 
@@ -45,9 +46,20 @@ const CopyFileModal: FC<CopyFileModalProps> = ({
 
           if (response.code === 1) {
             message.success("创建副本成功");
+            const _createTime = new Date().getTime();
+            const createTime = unifiedTime(_createTime);
             next({
               ...file,
-              name
+              id: response.data.id,
+              shareType: null,
+              description: null,
+              _createTime,
+              createTime,
+              _updateTime: _createTime,
+              updateTime: createTime,
+              name,
+              creatorId: user.id,
+              creatorName: user.name,
             });
             hideModal();
           } else {
