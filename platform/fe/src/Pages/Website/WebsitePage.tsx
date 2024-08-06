@@ -10,7 +10,7 @@ import React, {
 
 import axios from 'axios'
 import moment from 'dayjs'
-import { Col, Row, Descriptions, Badge, Table } from 'antd'
+import { Col, Row, Descriptions, Badge, Table, Popover } from 'antd'
 
 import { useWorkspaceConetxt, useUserContext } from '@/context'
 import { Icon } from '@/components/icon'
@@ -207,6 +207,7 @@ function CardHelathy() {
         columns={[
           {
             title: '检测项',
+            width: 280,
             dataIndex: 'title',
           },
           {
@@ -239,6 +240,10 @@ function CardHelathy() {
           {
             title: '详情',
             dataIndex: 'error',
+            width: 300,
+            render: (value) => {
+              return <LongTextRender text={value}></LongTextRender>
+            }
           },
           {
             title: '修复建议',
@@ -334,6 +339,16 @@ function StatusText ({ text, status }) {
     <div className={styles.status}>
       {text}
       <Badge style={{ marginLeft: 8 }} status={!!status ? 'success' : 'error'} />
+    </div>
+  )
+}
+
+function LongTextRender ({ text }) {
+  return (
+    <div className={styles.longText}>
+      <Popover title={'错误详情'} content={text}>
+        {text}
+      </Popover>
     </div>
   )
 }
