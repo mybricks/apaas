@@ -19,7 +19,7 @@ import LockService from '../global/lock.service';
 import { configuration } from './../../utils/shared'
 
 /** 临时解压app，安装依赖的地方 */
-const TEMP_FOLDER_PATH = path.join(__dirname, '../../../../../_tempapp_')
+const TEMP_FOLDER_PATH = path.join(env.FILE_LOCAL_STORAGE_FOLDER, '__tempapp__')
 
 @Controller("/paas/api/apps")
 @UseFilters(ErrorExceptionFilter)
