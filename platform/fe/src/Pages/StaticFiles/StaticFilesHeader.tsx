@@ -6,7 +6,7 @@ const StaticFilesHeader: FC = () => {
   return (
     <Navbar.Section
       value={"manage"}
-      options={[{label: "管理", value: "manage"}]}
+      options={[{label: "静态文件", value: "manage"}]}
     />
   )
 }

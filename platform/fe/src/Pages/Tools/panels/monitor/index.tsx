@@ -5,7 +5,7 @@ import dayjs from "dayjs";
 import duration from 'dayjs/plugin/duration';
 dayjs.extend(duration);
 
-import css from './monitor.less'
+import css from './index.less'
 
 const Block = ({ title, children }) => {
   return (

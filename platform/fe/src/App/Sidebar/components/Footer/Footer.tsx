@@ -9,8 +9,9 @@ import { button as AccountMenuButton } from "@/Pages/Account";
 import { button as WebsiteMenuButton } from '@/Pages/Website';
 // import { button as OperationLogMenuButton } from "@/Pages/OperationLog";
 import { button as UserManagementMenuButton } from "@/Pages/UserManagement";
-import { button as StaticFilesMenuButton } from "@/Pages/StaticFiles";
+// import { button as StaticFilesMenuButton } from "@/Pages/StaticFiles";
 import { button as SettingsMenuButton } from "@/Pages/Settings";
+import { button as ToolsMenuButton  } from '@/Pages/Tools'
 
 import css from "./Footer.less";
 
@@ -37,7 +38,8 @@ const Footer = () => {
           {/* <OperationLogMenuButton /> */}
           <WebsiteMenuButton />
           <UserManagementMenuButton />
-          <StaticFilesMenuButton />
+          {/* <StaticFilesMenuButton /> */}
+          <ToolsMenuButton />
           <SettingsMenuButton />
         </div>
       )}

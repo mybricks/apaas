@@ -16,7 +16,7 @@ import { InstalledApp } from '@/types'
 import { useWorkspaceConetxt, useUserContext } from '@/context'
 
 import SchemaSetting, { SettingItem } from './schemaSetting'
-import { DiagnosticsIcon, LogIcon, MonitorIcon, OssIcon } from './icon'
+import { DiagnosticsIcon, LogIcon, MonitorIcon, ToolIcon, OssIcon } from './icon'
 // import AboutForm from './items/aboutForm'
 import OssForm from './items/ossForm'
 import GlobalForm from './items/globalForm'
@@ -28,7 +28,6 @@ interface MenuItem extends InstalledApp {
 
 import styles from './index.less'
 import Term from './term'
-import Monitor from './items/monitor'
 import Diagnostics from './items/diagnostics'
 
 interface TabsProps {
@@ -47,20 +46,13 @@ const SystemConfigItems = [
   // { title: '全局设置', namespace: 'system', icon: <SettingOutlined /> },
   // { title: '资源存储', namespace: 'mybricks-oss-config', icon: <OssIcon />},
   { title: '运行日志', namespace: 'mybricks-log', icon: <LogIcon /> },
-  {
-    title: '系统诊断',
-    namespace: 'mybricks-diagnostics',
-    icon: <DiagnosticsIcon />,
-  },
+  // {
+  //   title: '系统诊断',
+  //   namespace: 'mybricks-diagnostics',
+  //   icon: <DiagnosticsIcon />,
+  // },
   // { title: '更多', namespace: 'about', icon: <EllipsisOutlined /> }
 ]
-if (IS_IN_BRICKS_ENV) {
-  SystemConfigItems.splice(SystemConfigItems.length - 1, 0, {
-    title: '监控与统计',
-    namespace: 'mybricks-monitor',
-    icon: <MonitorIcon />,
-  })
-}
 
 const Tabs = ({ onClick, activeKey, items = [], style }: TabsProps) => {
   if (!Array.isArray(items)) {
@@ -223,9 +215,6 @@ export default () => {
       }
       case activeKey === 'mybricks-log': {
         return <Term />
-      }
-      case activeKey === 'mybricks-monitor': {
-        return <Monitor />
       }
       case activeKey === 'mybricks-diagnostics': {
         return <Diagnostics />

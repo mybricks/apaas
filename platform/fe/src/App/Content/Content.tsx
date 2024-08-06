@@ -10,11 +10,12 @@ import Account from "@/Pages/Account";
 import AppStore from "@/Pages/AppStore";
 // import OperationLog from "@/Pages/OperationLog";
 import UserManagement from "@/Pages/UserManagement";
-import StaticFiles from "@/Pages/StaticFiles";
+// import StaticFiles from "@/Pages/StaticFiles";
 import Settings from "@/Pages/Settings";
 import InstalledApp from "@/Pages/InstalledApp";
 import PageNotFound from "@/Pages/PageNotFound";
 import Website from "@/Pages/Website";
+import Tools from "@/Pages/Tools";
 
 import css from "./Content.less";
 
@@ -31,9 +32,10 @@ const CONTENT_MAP: {[key: string]: {
   [AppStore.id]: AppStore,
   // [OperationLog.id]: OperationLog,
   [UserManagement.id]: UserManagement,
-  [StaticFiles.id]: StaticFiles,
+  // [StaticFiles.id]: StaticFiles,
   [Settings.id]: Settings,
-  [Website.id]: Website
+  [Website.id]: Website,
+  [Tools.id]: Tools
 }
 
 const Content: FC = () => {
