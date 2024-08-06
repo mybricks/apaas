@@ -100,6 +100,10 @@ const scanAppDir = (dirFullPath, appName, callback) => {
   let hasServer = fse.existsSync(serverDirectory)
 
   const serverModuleDirectory = path.join(serverDirectory, 'index.module.ts') // 约定
+
+  const middlewarePath = path.join(serverDirectory, 'middleware', 'index.middleware.ts')
+  const serverMiddlewareDirectory = fse.existsSync(middlewarePath) ? middlewarePath : null;
+
   hasServer = hasServer && fse.existsSync(serverModuleDirectory)
 
   const mapperFolderDirectory = path.join(serverDirectory, 'mapper') // 约定
@@ -112,12 +116,13 @@ const scanAppDir = (dirFullPath, appName, callback) => {
     namespace: packageJson.name,
     serverDirectory,
     serverModuleDirectory,
+    serverMiddlewareDirectory,
     hasServer,
   }, appName)
 
   const hasFe = Object.keys(pageRecord).length > 0;
 
-  if (!hasFe && !hasServer) {
+  if (!hasFe && !hasServer && !serverMiddlewareDirectory) {
     return
   }
 
@@ -130,6 +135,7 @@ const scanAppDir = (dirFullPath, appName, callback) => {
     pages: pageRecord,
     serverDirectory,
     serverModuleDirectory,
+    serverMiddlewareDirectory,
     /** 安装的前置hooks */
     preInstallJsPath,
     mapperFolderDirectory: fse.existsSync(mapperFolderDirectory) ? mapperFolderDirectory : null,

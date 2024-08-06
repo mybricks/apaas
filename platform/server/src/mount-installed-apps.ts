@@ -4,7 +4,9 @@ import { NestExpressApplication } from '@nestjs/platform-express'
 import { NextFunction, Request, Response, Application } from "express";
 import { Logger } from "@mybricks/rocker-commons";
 import { safeEncodeURIComponent, MemoryState } from './utils'
-import { loadApps, loadedApps, configuration } from './utils/shared'
+import { loadApps, loadedApps, configuration, LoadedApp } from './utils/shared'
+
+import UserDao from "./dao/UserDao";
 
 
 /** 兼容离线模式的middleware，读取 html 文件时优先读取 offline.html 文件 */
@@ -167,7 +169,7 @@ const routerRedirectMiddleWare = (namespaceMap) => {
 };
 
 /** 将APP内相对路由转到平台上来 */
-export function installedAppRouterMount(app: NestExpressApplication, loadedApps: any) {
+export function installedAppRouterMount(app: NestExpressApplication, loadedApps: LoadedApp[]) {
 
   const namespaceMap = {}
   loadedApps.forEach(a => {
@@ -177,6 +179,22 @@ export function installedAppRouterMount(app: NestExpressApplication, loadedApps:
   })
 
   app.use(routerRedirectMiddleWare(namespaceMap))
+}
+
+export function installedAppMiddlewareMount(app: NestExpressApplication, loadedApps: LoadedApp[]) {
+  loadedApps.forEach(a => {
+    console.log(a.namespace, a.serverMiddlewareDirectory)
+    if (a.serverMiddlewareDirectory && fs.existsSync(a.serverMiddlewareDirectory)) {
+      try {
+        const middlewareFn = require(a.serverMiddlewareDirectory).default
+        const middleware = middlewareFn({ userDao: new UserDao(), Logger }) 
+        app.use(middleware)
+      } catch (e) {
+        Logger.info(`中间件加载失败, 准备跳过：${e.message}`)
+        Logger.info(`错误详情是: ${e?.stack?.toString()}`)
+      }
+    }
+  })
 }
 
 

@@ -17,7 +17,7 @@ import initDatabase from "./init-database";
 import { onProcessExit } from './on-process-exit'
 import { initLogger } from './utils/logger';
 
-import { loadInstalledAppMeta, installedAppMount, installedAppRouterMount } from './mount-installed-apps'
+import { loadInstalledAppMeta, installedAppMount, installedAppRouterMount, installedAppMiddlewareMount } from './mount-installed-apps'
 
 import env from './utils/env'
 
@@ -50,12 +50,17 @@ async function bootstrap() {
 
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
+  app.use(cookieParser());
+  app.use(xmlparser());
+
   // 根据加载的应用，支持对应的html渲染
   installedAppMount(app, installedAppsMeta);
   
   // 根据加载的应用，自动修改其API接口的路径
   installedAppRouterMount(app, installedAppsMeta)
 
+  // 根据加载的应用，挂在中间件
+  installedAppMiddlewareMount(app, installedAppsMeta)
 
   // 设置平台的静态资源路径
   app.useStaticAssets(env.PLATFORM_ASSETS_FOLDER, {
@@ -100,10 +105,6 @@ async function bootstrap() {
     methods: "GET,PUT,POST,DELETE,UPDATE,PATCH,OPTIONS",
     credentials: true,
   });
-
-
-  app.use(cookieParser());
-  app.use(xmlparser());
 
   app.use(gzipMiddleware)
   
