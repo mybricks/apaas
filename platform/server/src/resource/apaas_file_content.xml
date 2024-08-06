@@ -175,6 +175,9 @@
         apaas_file_content.update_time,
         apaas_user.name as creator_name,
         apaas_user.email as creator_email,
+        <if test="withContent">
+          apaas_file_content.content,
+        </if>
         apaas_file_content.version
       from apaas_file_content, apaas_user
       where
@@ -199,4 +202,23 @@
       file_id = #{fileId}
       and create_time < #{timestamp}
   </delete>
+
+  <select id="hardDelete">
+    delete
+    from apaas_file_content
+    where
+    1 = 1
+    <if test="fileId">
+      and file_id = #{fileId}
+    </if>
+    <if test="id">
+      and id = #{id}
+    </if>
+    <if test="ids">
+      and id in
+      <foreach collection="ids" open="(" close=")" separator="," item="id" index="i">
+        #{id}
+      </foreach>
+    </if>
+  </select>
 </mapper>

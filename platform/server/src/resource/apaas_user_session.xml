@@ -11,6 +11,13 @@
         and status = 1
     </select>
 
+    <select id="queryByFingerprint">
+        select *
+        from apaas_user_session
+        where fingerprint = #{fingerprint}
+        and status = 1
+    </select>
+
     <insert id="insert">
         insert into apaas_user_session
         (
@@ -38,7 +45,5 @@
         update_time = #{updateTime}
         where user_id = #{userId} and status = 1
     </update>
-
-    
 
 </mapper>

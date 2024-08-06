@@ -148,10 +148,16 @@ export default class FileContentDao extends DOBase {
   @Mapping(FileContentDO)
   public async getContentVersions(params: {
     fileId: number;
-	  limit: number;
+	  limit?: number;
 	  offset: number;
+    /** 查询是否需要content */
+    withContent?: boolean;
   }): Promise<FileContentDO[]> {
-	  return await this.exe<FileContentDO[]>('apaas_file_content:getContentVersions', params) as any;
+    const queryParams = { ...params };
+    if (!queryParams.limit) {
+      queryParams.limit = 9999999;
+    }
+	  return await this.exe<FileContentDO[]>('apaas_file_content:getContentVersions', queryParams) as any;
   }
 
   public async getContentVersionsCount(params: {
@@ -228,6 +234,20 @@ export default class FileContentDao extends DOBase {
   }) {
     const res = await this.exe<any>(
       'apaas_file_content:deleteInFileBeforeAt',
+      Object.assign(
+        params,
+      )
+    );
+    return res
+  }
+
+  public async hardDelete(params: {
+    fileId?: number
+    id?: number,
+    ids?: Array<number>
+  }) {
+    const res = await this.exe<any>(
+      'apaas_file_content:hardDelete',
       Object.assign(
         params,
       )
