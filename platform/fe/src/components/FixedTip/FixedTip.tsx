@@ -1,6 +1,7 @@
 import React, { FC } from 'react'
 import { Popover } from 'antd'
-import { WechatOutlined } from '@ant-design/icons'
+import { WechatOutlined, CommentOutlined } from '@ant-design/icons'
+import { Forum } from './../icon'
 
 import css from './FixedTip.less'
 
@@ -13,13 +14,30 @@ const Qrcode: FC = () => {
   )
 }
 
-const FixedTip: FC = () => {
+const BbsEntry: FC = () => {
+  return (
+    <div className={`${css.icon} ${css.iconBbs}`} onClick={() => window.open('//bbs.mybricks.world')}>
+      {Forum}
+    </div>
+  )
+}
+
+const QrcodeEntry: FC = () => {
   return (
     <Popover placement="leftTop" content={<Qrcode />}>
-      <div className={css.fixedTip}>
+      <div className={`${css.icon} ${css.iconQrcode}`}>
         <WechatOutlined onPointerEnterCapture={undefined} onPointerLeaveCapture={undefined} />
       </div>
     </Popover>
+  )
+}
+
+const FixedTip: FC = () => {
+  return (
+    <div className={css.fixedTip}>
+      <BbsEntry />
+      <QrcodeEntry />
+    </div>
   )
 }
 

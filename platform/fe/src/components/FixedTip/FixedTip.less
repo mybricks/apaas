@@ -1,4 +1,4 @@
-.fixedTip {
+.icon {
   box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.08),
   0 3px 6px -4px rgba(0, 0, 0, 0.18),
   0 9px 28px 8px rgba(0, 0, 0, 0.08);
@@ -6,8 +6,7 @@
   padding: 8px;
 
   position: fixed;
-  right: 10px;
-  bottom: 40px;
+ 
   z-index: 999;
   background: #ffffff;
   cursor: pointer;
@@ -17,7 +16,7 @@
   align-items: center;
 
   border-radius: 5px;
-  
+
   .text {
     text-align: center;
     font-size: 12px;
@@ -29,6 +28,43 @@
     .anticon {
       font-size: 28px;
       color: #44b549;
+    }
+  }
+
+  &.iconQrcode {
+    right: 10px;
+    bottom: 40px;
+  }
+
+  &.iconBbs {
+    right: 10px;
+    bottom: 100px;
+
+    font-size: 12px;
+
+    width: 44px;
+    height: 44px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+
+
+    &:hover {
+      svg {
+        display: none;
+      }
+
+      &:after {
+        content: '知识社区';
+        font-weight: 500;
+      }
+    }
+
+    svg {
+      width: 40px;
+      height: 40px;
     }
   }
 }
@@ -48,4 +84,9 @@
     min-height: 180px;
     object-fit: contain;
   }
+}
+
+.fixedTip {
+  display: flex;
+  flex-direction: column;
 }
