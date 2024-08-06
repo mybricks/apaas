@@ -16,6 +16,7 @@ import { Request, Response } from 'express';
 import * as path from 'path';
 import * as fse from 'fs-extra';
 import * as crypto from 'crypto';
+import * as os from 'os'
 import { ErrorExceptionFilter } from "../../filter/exception.filter";
 
 import { createProjectService, createProjectFrontEnd } from './create-project'
@@ -26,9 +27,6 @@ import env from '../../utils/env'
 
 import { DataBaseConfig, CompileTarget } from './types'
 
-// TODO，支持配置
-const PREFIX_URL = '/runtime'
-
 
 @Controller('/paas/api/project')
 @UseFilters(ErrorExceptionFilter)
@@ -38,124 +36,109 @@ export default class ProjectController {
 
   @Post('/service/push')
   async pushServicePoroject(
-    @Body('target') target: CompileTarget,
-    @Body('json') json: any,
-    @Body('database') databaseConfig: DataBaseConfig,
-    @Body('fileId') fileId: string,
-    @Body('version') version: string,
-    @Req() req: any
+    @Body() body: any,
+    @Req() req: Request,
   ) {
+
+    const { target, database: databaseConfig, json, fileId, version }: { target: CompileTarget, database: DataBaseConfig, json: any, fileId: string, version: string } = body ?? {}
+
     let scopeId = '';
     let scopePath = '';
 
-    try {
-      switch (true) {
-        case target === 'debug':
-          scopeId = crypto.createHash('md5').update(`${req.headers['user-agent']}_${req.ip}_${fileId}`, 'utf-8').digest('hex');
-          scopePath = env.APP_PROJECT_DEBUG_PATH;
-          break;
-        case target === 'staging':
-          scopeId = fileId;
-          scopePath = env.APP_PROJECT_STAGING_PATH;
-          break;
-        default:
-          scopeId = fileId;
-          scopePath = env.APP_PROJECT_PROD_PATH;
-          break;
-      }
-      if (typeof scopeId === 'number') {
-        scopeId = String(scopeId)
-      }
-
-      const database = await this.projectService.getDataBaseConnectOption(databaseConfig, target)
-
-      await createProjectService(scopeId, scopePath, {
-        metaInfo: {
-          fileId,
-          version,
-        },
-        database,
-        toJson: json
-      })
-    } catch (error) {
-      return {
-        code: -1,
-        message: error.message ?? '生成项目失败，未知错误'
-      }
+    switch (true) {
+      case target === 'debug':
+        scopeId = this.projectService.getDebugFingerprint(fileId, req, body);
+        scopePath = env.APP_PROJECT_DEBUG_PATH;
+        break;
+      case target === 'staging':
+        scopeId = fileId;
+        scopePath = env.APP_PROJECT_STAGING_PATH;
+        break;
+      default:
+        scopeId = fileId;
+        scopePath = env.APP_PROJECT_PROD_PATH;
+        break;
     }
+    if (typeof scopeId === 'number') {
+      scopeId = String(scopeId)
+    }
+
+    const database = await this.projectService.getDataBaseConnectOption(databaseConfig, target)
+
+    const { projectPath } = await createProjectService(scopeId, scopePath, {
+      metaInfo: {
+        fileId,
+        version,
+      },
+      database,
+      toJson: json
+    })
+
 
     return {
       code: 1,
       data: {
+        projectPath,
         scopeId,
-        requestPathPrefix: `${PREFIX_URL}/service/${scopeId}`
+        requestPathPrefix: `/service/${scopeId}`
       },
     }
   }
 
   @Post('/frontEnd/push')
   async pushFrontEndPoroject(
-    @Body('target') target: CompileTarget,
-    @Body('files') files: any,
-    @Body('fileId') fileId: string,
-    @Body('version') version: string,
-    @Body('appConfig') appConfig: any,
-    @Req() req: Request
+    @Body() body: any,
+    @Req() req: Request,
   ) {
+
+    const { target, files, fileId, version }: { target: CompileTarget, files: any[], fileId: string, version: string } = body ?? {}
+
     let scopeId = '';
     let scopePath = '';
-
     let rtUrl = ''
 
-    try {
-      switch (true) {
-        case target === 'debug':
-          scopeId = crypto.createHash('md5').update(`${req.headers['user-agent']}_${req.ip}_${fileId}`, 'utf-8').digest('hex');
-          scopePath = env.APP_PROJECT_DEBUG_PATH;
-          break;
-        case target === 'staging':
-          scopeId = fileId;
-          scopePath = env.APP_PROJECT_STAGING_PATH;
-          rtUrl = `/preview/${fileId}`
-          break;
-        default:
-          scopeId = fileId;
-          scopePath = env.APP_PROJECT_PROD_PATH;
-          rtUrl = `/app/${fileId}`
-          break;
-      }
-      if (typeof scopeId === 'number') {
-        scopeId = String(scopeId)
-      }
-
-      await createProjectFrontEnd(scopeId, scopePath, {
-        metaInfo: {
-          fileId,
-          version,
-        },
-        files
-      })
-    } catch (error) {
-      return {
-        code: -1,
-        message: error.message ?? '生成项目失败，未知错误'
-      }
+    switch (true) {
+      case target === 'debug':
+        scopeId = this.projectService.getDebugFingerprint(fileId, req, body);
+        scopePath = env.APP_PROJECT_DEBUG_PATH;
+        break;
+      case target === 'staging':
+        scopeId = fileId;
+        scopePath = env.APP_PROJECT_STAGING_PATH;
+        rtUrl = `/preview/${fileId}/index`;
+        break;
+      default:
+        scopeId = fileId;
+        scopePath = env.APP_PROJECT_PROD_PATH;
+        rtUrl = `/app/${fileId}/index`
+        break;
     }
+    if (typeof scopeId === 'number') {
+      scopeId = String(scopeId)
+    }
+
+    const { projectPath } = await createProjectFrontEnd(scopeId, scopePath, {
+      metaInfo: {
+        fileId,
+        version,
+      },
+      files
+    })
 
     return {
       code: 1,
       data: {
-        requestPathPrefix: `${PREFIX_URL}${rtUrl}`
+        projectPath,
+        requestPathPrefix: `${rtUrl}`
       }
     }
   }
 
 
-  @Post('/download')
+  @Get('/download')
   async donwloadProject(
-    @Body('target') target: 'prod' | 'staging',
-    @Body('fileId') fileId: string,
-    @Req() req: Request,
+    @Query('target') target: 'prod' | 'staging',
+    @Query('fileId') fileId: string,
     @Res() response: Response
   ) {
     let scopeId = '';
@@ -184,11 +167,21 @@ export default class ProjectController {
       })
     }
 
-    const { targetPath, clean } = await zipDirectory(targetFolder, `${fileId}_${target}.zip`);
+    const projectPath = await this.projectService.getProjectPath(fileId, target);
+
+    const tmpProjectPath = await this.projectService.gennerateAsNodeJsApp(projectPath, { fileId, target });
+
+    const targetPath = await zipDirectory(tmpProjectPath, `${fileId}_${target}.zip`);
 
     response.once('close', () => {
       // 清理压缩包
-      clean();
+      try {
+        fse.remove(targetPath)
+      } catch (error) {}
+      // 清理生成的临时项目目录
+      try {
+        fse.remove(tmpProjectPath)
+      } catch (error) {}
     })
 
     response.sendFile(targetPath);

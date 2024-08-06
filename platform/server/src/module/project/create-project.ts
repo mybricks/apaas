@@ -47,7 +47,7 @@ export async function createProjectFrontEnd(folderName, folderPath, {
   metaInfo: ProjectMeta,
   files: FrontEndFile[]
 }) {
-  const { frontEndFolderPath, projectMetaFilePath } = await ensureProject(folderPath, folderName, metaInfo);
+  const { frontEndFolderPath, projectMetaFilePath, projectFolderPath } = await ensureProject(folderPath, folderName, metaInfo);
 
   const results = files.map(async file => {
     const targetFolderPath = path.join(frontEndFolderPath, file.folderPath);
@@ -57,6 +57,10 @@ export async function createProjectFrontEnd(folderName, folderPath, {
   })
 
   await Promise.all(results);
+
+  return {
+    projectPath: projectFolderPath,
+  }
 }
 
 export async function createProjectService(folderName, folderPath, {
@@ -70,7 +74,7 @@ export async function createProjectService(folderName, folderPath, {
   toJson: ServiceJson,
   coms?: any[]
 }) {
-  const { backEndFolderPath, projectMetaFilePath } = await ensureProject(folderPath, folderName, metaInfo);
+  const { backEndFolderPath, projectMetaFilePath, projectFolderPath } = await ensureProject(folderPath, folderName, metaInfo);
 
   const targetFolder = path.join(folderPath, folderName);
 
@@ -84,4 +88,8 @@ export async function createProjectService(folderName, folderPath, {
 
   // 写入 组件代码
   await fse.writeFile(componentsMapFilePath, '', 'utf-8');
+
+  return {
+    projectPath: projectFolderPath,
+  }
 }

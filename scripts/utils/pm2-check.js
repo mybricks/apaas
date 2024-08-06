@@ -1,6 +1,4 @@
 const fse = require('fs-extra')
-const path = require('path')
-const inquirer = require('inquirer');
 const { execSync } = require('child_process');
 
 const { getPM2Version } = require('./../shared/pm2')
