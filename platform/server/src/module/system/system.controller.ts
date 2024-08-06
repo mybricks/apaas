@@ -82,19 +82,33 @@ export default class SystemController {
     let result = []
 
     try {
-      result = result.concat(MemoryState.appStatus.items.map(item => {
-        const isPass = !item?.server ? true : !!item?.server?.status;
-        return {
-          title: `应用检查：${item.namespace}`,
-          type: 'app_check',
-          level: isPass ? 'success' : 'error',
-          error: isPass ? null : item?.server?.desc 
-        }
-      }))
-    } catch (error) {}
+      const status = MemoryState.appStatus.getStatus('mybricks-material')
+      if (status?.fe?.status && status?.server?.status) {
+        result.push({
+          title: '物料中心检测',
+          type: 'material_check',
+          level: 'success',
+          error: null,
+        })
+      } else {
+        result.push({
+          title: '物料中心检测',
+          type: 'material_check',
+          level: 'error',
+          error: '物料中心已安装但未正常加载，请检查'
+        })
+      }
+    } catch (error) {
+      result.push({
+        title: '物料中心检测',
+        type: 'material_check',
+        level: 'error',
+        error: '物料中心未安装，请务必先安装物料中心'
+      })
+    }
 
     try {
-      await childProcess.execSync('unzip').toString()
+      childProcess.execSync('unzip').toString()
       result.push({
         title: 'unzip命令检查',
         type: 'unzip_check',
@@ -129,6 +143,18 @@ export default class SystemController {
           error: '部分文件缺失，请联系管理员确认，可通过 npm run prepare:start 补全文件'
         })
       }
+
+      try {
+        result = result.concat(MemoryState.appStatus.items.map(item => {
+          const isPass = !item?.server ? true : !!item?.server?.status;
+          return {
+            title: `应用检查：${item.namespace}`,
+            type: 'app_check',
+            level: isPass ? 'success' : 'error',
+            error: isPass ? null : item?.server?.desc 
+          }
+        }))
+      } catch (error) {}
     } catch (error) {
       result.push({
         title: '静态资源依赖检测',
