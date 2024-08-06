@@ -28,7 +28,7 @@ export default class AnalyseService {
           deleteFiles.push(filePath);
         } else {
           const statInfo = await fse.stat(filePath); 
-          const isBefore24Hour = (Date.now() - statInfo.atimeMs) < 7 * 24 * 60 * 60 * 1000;
+          const isBefore24Hour = (Date.now() - statInfo.atimeMs) >= 7 * 24 * 60 * 60 * 1000;
           if (isBefore24Hour) {
             deleteFiles.push(filePath);
           }

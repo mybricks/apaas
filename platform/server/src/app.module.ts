@@ -7,6 +7,8 @@ import AppController from "./app.controller";
 import HttpProxyService from './services/proxy';
 import HomeService from './services/home'
 
+import { ScheduleModule } from '@nestjs/schedule';
+
 import FlowModule from './module/flow/flow.module'
 import SystemModule from './module/system/system.module'
 import FileModule from './module/file/file.module'
@@ -30,6 +32,7 @@ import { loadInstalledAppModules } from './mount-installed-apps'
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     LoginModule, // 登录模块，登录相关的功能
     FileModule,
     ShareModule, // 分享模块，分享相关功能
