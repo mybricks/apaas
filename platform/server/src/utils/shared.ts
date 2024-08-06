@@ -54,6 +54,8 @@ interface Configuration {
     createBasedOnTemplate?: string[]
     openUserInfoSetting?: boolean
 
+    forbidRepeatLogin?: boolean
+
     jwtSecretOrPrivateKey?: string
 
     openMonitor?: boolean
@@ -73,13 +75,15 @@ interface Configuration {
 
 }
 
-interface LoadedApp {
+export interface LoadedApp {
   namespace: string,
   name: string,
 
   mapperFolderDirectory?: string
 
   assetsDirectory?: string
+
+  serverMiddlewareDirectory?: string
 }
 
 

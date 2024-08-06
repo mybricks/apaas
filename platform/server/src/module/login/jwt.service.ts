@@ -68,8 +68,8 @@ export default class JwtService {
       Logger.error(`[登录态校验] 获取登录态失败，cookie信息为 ${request?.cookies?.['mybricks-login-user']}`)
     }
 
-    // 多次登录
-    if(cookieInfo?.fingerprint) {
+    // 防止多次登录
+    if(cookieInfo?.fingerprint && configuration?.platformConfig?.forbidRepeatLogin) {
       const sess = await this.userSessionDao.queryByUserId({ userId: cookieInfo.id })
       if(sess?.fingerprint !== cookieInfo.fingerprint) {
         throw new Error('当前账号已失效，请重新登录')
