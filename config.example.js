@@ -52,6 +52,14 @@ module.exports = {
     installCommand: 'npm i --registry=https://registry.npmmirror.com --production',
 
     /**
+     * @description [可选项] 指定平台是否包含 用户主动登出 功能
+     */
+    openLogout: true,
+    /**
+     * @description [可选项] 指定平台是否包含 个人信息设置 功能
+     */
+    openUserInfoSetting: true,
+    /**
      * @description [可选项] 务必谨慎操作！离线模式开关，如果部署的服务器无法访问外网的（如myBricks的中心化服务 以及 各类Cdn），请开启此开关，开启后会开启离线模式
      */
     isPureIntranet: false,
