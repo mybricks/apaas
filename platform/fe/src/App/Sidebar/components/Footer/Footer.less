@@ -48,9 +48,17 @@
   width: 216px;
   :global {
     .ant-popover-title {
-      padding: 8px 16px 12px;
-      margin-bottom: 12px;
-      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+      padding: 8px 16px 2px;
+    }
+  }
+
+  &.notNone {
+    :global {
+      .ant-popover-title {
+        padding: 8px 16px 12px;
+        margin-bottom: 12px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+      }
     }
   }
 
