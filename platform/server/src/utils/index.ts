@@ -1,4 +1,5 @@
 import * as moment from "dayjs";
+import * as path from 'path';
 const crypto = require('crypto');
 const os = require('os');
 
@@ -176,6 +177,7 @@ export function pick(obj: any, keys: string[]) {
  * @return {string} 转义后的文件名
  */
 export function escapeFileName(fileName: string): string {
+  const extname = path.extname(fileName)
   // 使用正则表达式保留字母、数字、下划线和中划线，其他字符替换为下划线
-  return fileName.replace(/[^\w\-]/g, '_');
+  return fileName.replace(extname, '').replace(/[^\w\-]/g, '_') + extname;
 }

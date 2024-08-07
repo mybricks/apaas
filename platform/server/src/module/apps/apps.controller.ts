@@ -533,7 +533,7 @@ export default class AppsController {
     } catch(e) {
       Logger.info(`${logPrefix} 安装应用失败！！ 错误信息是 ${e.message}`)
       Logger.info(`${logPrefix} ${e?.stack?.toString()}`)
-      fse.removeSync(TEMP_FOLDER_PATH)
+      await fse.remove(TEMP_FOLDER_PATH)
 
       await response200({ code: -1, message: e.message })
       return
