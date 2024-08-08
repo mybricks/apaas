@@ -4,6 +4,7 @@ const path = require('path');
 
 const { SQL_PATH } = require('./../../env')
 const { MySqlExecutor, loadApps, readUserConfig } = require('./../../shared')
+const { validateDatabase } = require('./helper')
 const userConfig = readUserConfig();
 
 async function _initDatabase({ execSqlAsync, console }) {
@@ -58,18 +59,20 @@ module.exports = async function startInitDatabase ({ console }) {
   console.log(`数据库连接中...`)
   try {
     await mySqlExecutor.connect()
+
+    validateDatabase(userConfig.database)
     
     await _initDatabase({ execSqlAsync: mySqlExecutor.execSqlAsync, console });
     await _initDatabaseTables({ execSqlAsync: mySqlExecutor.execSqlAsync, console });
     await _initDatabaseRecord({ execSqlAsync: mySqlExecutor.execSqlAsync, console });
     await _initAppsDatabase({ execSqlAsync: mySqlExecutor.execSqlAsync, console })
+    console.log(`数据库准备完毕`)
   } catch (error) {
     console.error(error)
     // 脚本文件，不成功直接退出进程
     await mySqlExecutor.closeConnection();
     throw new Error('数据初始化操作失败')
   }
-  console.log(`数据库准备完毕`)
   await mySqlExecutor.closeConnection();
   console.log(`数据库执行环境已退出`)
 }

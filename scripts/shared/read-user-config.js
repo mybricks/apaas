@@ -48,37 +48,5 @@ module.exports = function () {
     throw new Error('[Mybricks平台启动检查] 未找到平台配置文件，请检查配置')
   }
 
-  validatePlatform(userConfig);
-  validateDatabase(userConfig);
-
   return userConfig
 }
-
-function validatePlatform (config) {
-  if (!config?.platformConfig) {
-    throw new Error('[Mybricks平台启动检查] 平台配置不存在，请配置 platformConfig')
-  }
-}
-
-function validateDatabase (config) {
-  if (!config?.database) {
-    throw new Error('[Mybricks平台启动检查] 数据库配置不存在')
-  }
-
-  if (!config?.database?.database) {
-    throw new Error('[Mybricks平台启动检查] 数据库配置 database 未配置')
-  }
-
-  if (!config?.database?.host) {
-    throw new Error('[Mybricks平台启动检查] 数据库配置 host 未配置')
-  }
-
-  if (!config?.database?.user) {
-    throw new Error('[Mybricks平台启动检查] 数据库配置 user 未配置')
-  }
-
-  if (config?.database?.dbType?.toUpperCase() !== 'MYSQL') {
-    throw new Error(`[Mybricks平台启动检查] 数据库需要为MYSQL，当前配置为${config.database.dbType}`)
-  }
-}
-
