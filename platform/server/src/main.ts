@@ -52,6 +52,7 @@ async function bootstrap() {
 
   app.use(cookieParser());
   app.use(xmlparser());
+  app.use(bodyParser.json({ limit: "100mb" }));
 
   // 根据加载的应用，支持对应的html渲染
   installedAppMount(app, installedAppsMeta);
@@ -91,7 +92,6 @@ async function bootstrap() {
   // 支持应用调试时的http代理
   app.use(apiProxyMiddleWare());
 
-  app.use(bodyParser.json({ limit: "100mb" }));
   app.use(runtimeLogger({
     appNamespaceList: installedAppsMeta.map(app => app.namespace),
   }));
