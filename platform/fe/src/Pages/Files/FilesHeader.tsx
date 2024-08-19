@@ -41,7 +41,9 @@ const FilesHeader: FC = () => {
           trigger="click"
         >
           <Button type={"primary"} style={{ fontWeight: 'bold' }}>
-            <label className={css.addIcon}>+</label>新建<span className={css.downIcon}>{ArrowDown}</span>
+            <label className={css.addIcon}>+</label>
+            新建
+            {/* <span className={css.downIcon}>{ArrowDown}</span> */}
           </Button>
         </Popover>
       </div>
