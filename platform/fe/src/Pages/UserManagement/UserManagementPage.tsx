@@ -10,14 +10,14 @@ const Option = Select.Option;
 const ROLE_MAP = {
   '全部': -1,
   '游客': 1,
-  '普通用户': 2,
-  '普通(项目)': 3,
+  '用户': 2,
+  // '普通(项目)': 3,
   '超管': 10
 }
 const ROLE_CODE_HANS_MAP = {
   1: '游客',
-  2: '普通用户',
-  3: '普通(项目)',
+  2: '用户',
+  // 3: '普通(项目)',
   10: '超管'
 }
 
@@ -174,7 +174,7 @@ export default function UserManagementPage() {
               >
                 <Option value={ROLE_MAP.全部}>全部</Option>
                 <Option value={ROLE_MAP.游客}>游客</Option>
-                <Option value={ROLE_MAP.普通用户}>普通用户</Option>
+                <Option value={ROLE_MAP.用户}>用户</Option>
                 <Option value={ROLE_MAP.超管}>超管</Option>
               </Select>
             </Form.Item>
