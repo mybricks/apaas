@@ -59,15 +59,17 @@ const AppList: FC<AppListProps> = props => {
 
 	useEffect(() => {
 		setLoading(true);
-
 		;(async() => {
 			await queryProcess();
-
-			const res1 = await axios(type === 'all' ? '/paas/api/apps/getLatestAllAppFromSource' : '/paas/api/apps/getLatestInstalledAppFromSource')
-			if (res1.data.code === 1) {
-				setAllApps(res1.data.data);
+			if (systemConfig?.isPureIntranet) {
+				setAllApps(type === 'installed' ? installedApps : [])
 			} else {
-				message.error(`获取数据发生错误：${res1.data.message}`);
+				const res1 = await axios(type === 'all' ? '/paas/api/apps/getLatestAllAppFromSource' : '/paas/api/apps/getLatestInstalledAppFromSource')
+				if (res1.data.code === 1) {
+					setAllApps(res1.data.data);
+				} else {
+					message.error(`获取数据发生错误：${res1.data.message}`);
+				}
 			}
 		})().finally(() => {
 			setLoading(false);
@@ -92,8 +94,7 @@ const AppList: FC<AppListProps> = props => {
 				} else {
 					operateType = 'install'
 				}
-				
-				return { ...app, operateType, preVersion, title: (app as any).name }
+				return { ...app, operateType, preVersion, title: (app as any).name ?? app.title }
 			}),
 			...(type === 'installed' ? installedApps.filter(app => !allApps.find(a => a.namespace === app.namespace)).map(app => ({ ...app })) : []),
 		]
@@ -196,7 +197,6 @@ const AppList: FC<AppListProps> = props => {
 				{/* 已安装的 */}
 			</p>
 			{
-				systemConfig?.isPureIntranet ? <div className={styles.warnText}>当前为离线模式，请使用下方的「离线更新」安装应用</div> : 
 				<div className={`${styles.appList}`}>
 					<Spin spinning={loading} className={styles.spin}>
 						{/* <div className={styles.filter}>
@@ -239,11 +239,12 @@ const AppList: FC<AppListProps> = props => {
 								})}
 							</div>
 						) : (
-							<Empty className={styles.empty} imageStyle={{ height: '152px' }} description='暂无组件'/>
+							<Empty className={styles.empty} imageStyle={{ height: '152px' }} description='暂无应用'/>
 						)}
 					</Spin>
 				</div>
 			}
+			{ systemConfig.isPureIntranet ? <div className={styles.warnText}>当前为离线模式，请使用下方的「离线更新」安装应用</div> : null }
 			{
 				!systemConfig?.closeOfflineUpdate ? 
 				(
