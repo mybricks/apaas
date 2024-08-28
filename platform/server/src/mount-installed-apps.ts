@@ -17,11 +17,10 @@ const offlineHtmlSupportMiddleware = (req: Request, res: Response, next: NextFun
   }
 
   if (req.path.includes('.html')) {
-    const app = loadedApps.find(app => req.path.startsWith(`/${app.namespace}`) || req.path.startsWith(safeEncodeURIComponent(`/${app.namespace}`)))
+    const parsedPath = path.parse(req.path);
+    const app = loadedApps.find(app => parsedPath.dir === `/${app.namespace}` || parsedPath.dir === safeEncodeURIComponent(`/${app.namespace}`));
 
     if (app?.assetsDirectory) {
-      const parsedPath = path.parse(req.path);
-
       // 获取文件名
       const fileName = parsedPath.name;
 
