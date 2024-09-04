@@ -79,6 +79,8 @@ export interface LoadedApp {
   namespace: string,
   name: string,
 
+  directory: string
+
   mapperFolderDirectory?: string
 
   assetsDirectory?: string

@@ -1,4 +1,5 @@
-import {Body, Controller, Get, Param, Post, Query, Req, 
+import {
+  Body, Controller, Get, Param, Post, Query, Req, Sse,
   Res,
   UploadedFile,
   UseInterceptors,
@@ -10,11 +11,16 @@ import { Logger } from '@mybricks/rocker-commons';
 import * as axios from "axios";
 import { STATUS_CODE, USER_LOG_TYPE } from '../../constants'
 import ConfigService from '../config/config.service';
+import CommandService from './command.service';
 import env from './../../utils/env'
 import * as fse from 'fs-extra'
 import * as dayjs from 'dayjs'
-import { configuration, getNodeVersion, getPM2Version, loadApps } from './../../utils/shared';
+import { configuration, getNodeVersion, getPM2Version, loadApps, loadedApps } from './../../utils/shared';
 import { ErrorExceptionFilter } from './../../filter/exception.filter';
+import { RequireRolesInterceptor, USER_ROLE } from './../../interceptor/require-role'
+
+import { Observable, from } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 const childProcess = require('child_process');
 const path = require('path')
@@ -25,17 +31,19 @@ export default class SystemController {
 
   configService: ConfigService;
 
+  commandService = new CommandService();
+
   constructor() {
     this.configService = new ConfigService();
   }
 
   async _sendReport(content: string) {
     const res = (await (axios as any).post(
-      `https://my.mybricks.world/central/api/channel/gateway`, 
+      `https://my.mybricks.world/central/api/channel/gateway`,
       {
-      action: "log_report",
-      payload: content
-    }).data)
+        action: "log_report",
+        payload: content
+      }).data)
 
     return res
   }
@@ -151,10 +159,10 @@ export default class SystemController {
             title: `应用检查：${item.namespace}`,
             type: 'app_check',
             level: isPass ? 'success' : 'error',
-            error: isPass ? null : item?.server?.desc 
+            error: isPass ? null : item?.server?.desc
           }
         }))
-      } catch (error) {}
+      } catch (error) { }
     } catch (error) {
       result.push({
         title: '静态资源依赖检测',
@@ -173,7 +181,7 @@ export default class SystemController {
   @Post('/channel')
   async channel(@Body() body: any) {
     const { type, version, isAdministrator, payload, userId } = body;
-    if(configuration?.platformConfig?.isPureIntranet) {
+    if (configuration?.platformConfig?.isPureIntranet) {
       return {
         code: -1,
         msg: '纯内网部署，暂不支持此功能'
@@ -188,12 +196,12 @@ export default class SystemController {
             namespace: 'platform',
             content: {
               // ...info,
-              platformInfo: getOSInfo() 
+              platformInfo: getOSInfo()
             }
           }))
           return {
             code: 1,
-            msg: 'succeed' 
+            msg: 'succeed'
           }
         }
         case 'report': {
@@ -209,7 +217,7 @@ export default class SystemController {
         code: -1,
         msg: '未知指令'
       }
-    } catch(e) {
+    } catch (e) {
       Logger.info(e)
       Logger.info(e?.stack?.toString())
       return {
@@ -223,7 +231,7 @@ export default class SystemController {
   async diagnostics(@Body('action') action, @Body('payload') payload) {
     const domain = 'https://my.mybricks.world';
     try {
-      switch(action) {
+      switch (action) {
         case 'init': {
           return {
             code: 1,
@@ -232,7 +240,7 @@ export default class SystemController {
         }
         case 'envCheck': {
           let msg = '开始检测\n';
-          if(global?.MYBRICKS_PLATFORM_START_ERROR) {
+          if (global?.MYBRICKS_PLATFORM_START_ERROR) {
             msg += global.MYBRICKS_PLATFORM_START_ERROR
           } else {
             msg += '\n[启动报错检测]：未发现异常'
@@ -240,20 +248,20 @@ export default class SystemController {
 
           try {
             await childProcess.execSync('unzip').toString()
-            msg+= `\n[unzip命令检测]：未发现异常`
+            msg += `\n[unzip命令检测]：未发现异常`
           } catch (error) {
-            msg+= `\n[unzip命令检测]：执行unzip命令失败 ${error.message}`
+            msg += `\n[unzip命令检测]：执行unzip命令失败 ${error.message}`
           }
-          
+
           const fetchStartTimestamp = Date.now();
           try {
             msg += `\n[中心化服务探测]：开始检测，请求域名是 ${domain}\n`
             const reqUrl = `${domain}/paas/api/system/diagnostics`
             // @ts-ignore
-            await axios.post(reqUrl, { action: "init"})
-            msg+= `[中心化服务探测]：耗时${Date.now() - fetchStartTimestamp}ms，未发现异常`
+            await axios.post(reqUrl, { action: "init" })
+            msg += `[中心化服务探测]：耗时${Date.now() - fetchStartTimestamp}ms，未发现异常`
           } catch (error) {
-            msg+= `[中心化服务探测]：耗时${Date.now() - fetchStartTimestamp}ms，失败 ${error.message ?? '未知错误'}`
+            msg += `[中心化服务探测]：耗时${Date.now() - fetchStartTimestamp}ms，失败 ${error.message ?? '未知错误'}`
           }
 
           try {
@@ -289,20 +297,42 @@ export default class SystemController {
           } catch (error) {
             msg += `\n[重启服务检测]：${error.message ?? '未知错误'}`
           }
-          
+
           return {
             code: 1,
             msg
           }
         }
       }
-    } catch(e) {
+    } catch (e) {
       Logger.info(`诊断服务出错：${e.message}`)
       Logger.info(`诊断服务出错：${e?.stack?.toString()}`)
       return {
         code: -1,
         msg: `诊断服务出错：${e.message ?? '未知错误'}`
       }
+    }
+  }
+
+  @UseInterceptors(new RequireRolesInterceptor([USER_ROLE.GUEST]))
+  @Sse('/command/execInApp')
+  async commandExec(@Query('namespace') namespace: string, @Query('command') command: string) {
+    try {
+      if (namespace) {
+        const targetApp = loadedApps.find(app => {
+          return app.namespace === namespace
+        })
+        if (!targetApp.directory) {
+          return from([{ type: 'error', data: `目标app不存在，请检查namespace` }])
+        }
+        return this.commandService.spawn(command, { cwd: targetApp.directory }).pipe(
+          map((output) => ({ data: output } as MessageEvent)),
+        );
+      } else {
+        return from([{ type: 'error', data: `目标app不存在，请检查namespace` }])
+      }
+    } catch (error) {
+      return from([{ type: 'error', data: error?.message ?? '未知错误' }])
     }
   }
 }

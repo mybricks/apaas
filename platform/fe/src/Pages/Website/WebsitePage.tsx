@@ -10,12 +10,26 @@ import React, {
 
 import axios from 'axios'
 import moment from 'dayjs'
-import { Col, Row, Descriptions, Badge, Table, Popover } from 'antd'
+import {
+  Col,
+  Row,
+  Descriptions,
+  Badge,
+  Table,
+  Popover,
+  Space,
+  Modal,
+  Input,
+  message
+} from 'antd'
 
 import { useWorkspaceConetxt, useUserContext } from '@/context'
 import { Icon } from '@/components/icon'
 
 import { OperationLog } from './components'
+import { LogsCard } from '@/components'
+
+import { sseAppCommandExec } from '@/utils/sse'
 
 import styles from './WebsitePage.less'
 
@@ -25,7 +39,7 @@ interface OsInfo {
 }
 
 interface OverviewModel {
-  startAt: string,
+  startAt: string
   os: OsInfo
   nodeVersion: string
   pm2Version: string
@@ -36,15 +50,13 @@ interface OverviewModel {
 interface AppsStatus {}
 type AppsStatusList = AppsStatus[]
 
-interface ServerException {
-
-}
+interface ServerException {}
 type ServerExceptionList = ServerException[]
 
 interface WebsiteContext {
   overview: OverviewModel
   appsStatus: AppsStatusList
-	exceptions: ServerExceptionList
+  exceptions: ServerExceptionList
 }
 
 const WebsiteContext = React.createContext<WebsiteContext>({} as WebsiteContext)
@@ -97,7 +109,7 @@ export default () => {
       })
   }, [])
 
-	const [exceptionsState, setExceptionsState] = useState([])
+  const [exceptionsState, setExceptionsState] = useState([])
   const [exceptionsLoading, setExceptionsLoading] = useState(false)
 
   const fetchExceptions = useCallback(() => {
@@ -127,7 +139,7 @@ export default () => {
       value={{
         overview: overviewState,
         appsStatus: appsStatusState,
-				exceptions: exceptionsState
+        exceptions: exceptionsState,
       }}
     >
       <div className={styles.view}>
@@ -149,7 +161,7 @@ export default () => {
             <CardApps />
           </Col>
         </Row>
-				<Row gutter={12} style={{ marginTop: 12 }}>
+        <Row gutter={12} style={{ marginTop: 12 }}>
           <Col flex={'auto'}>
             <CardAppOperations />
           </Col>
@@ -216,26 +228,32 @@ function CardHelathy() {
             width: 100,
             render: (value) => {
               if (value === 'success') {
-                return <>
-                  <span>正常</span>
-                  <Badge style={{ marginLeft: 8 }} status={'success'} />
-                </>
+                return (
+                  <>
+                    <span>正常</span>
+                    <Badge style={{ marginLeft: 8 }} status={'success'} />
+                  </>
+                )
               }
               if (value === 'warn') {
-                return <>
-                  <span>警告</span>
-                  <Badge style={{ marginLeft: 8 }} status={'warning'} />
-                </>
+                return (
+                  <>
+                    <span>警告</span>
+                    <Badge style={{ marginLeft: 8 }} status={'warning'} />
+                  </>
+                )
               }
               if (value === 'error') {
-                return <>
-                  <span>严重异常</span>
-                  <Badge style={{ marginLeft: 8 }} status={'error'} />
-                </>
+                return (
+                  <>
+                    <span>严重异常</span>
+                    <Badge style={{ marginLeft: 8 }} status={'error'} />
+                  </>
+                )
               }
 
               return '未知'
-            }
+            },
           },
           {
             title: '详情',
@@ -243,7 +261,7 @@ function CardHelathy() {
             width: 300,
             render: (value) => {
               return <LongTextRender text={value}></LongTextRender>
-            }
+            },
           },
           {
             title: '修复建议',
@@ -261,48 +279,130 @@ function CardHelathy() {
 
 function CardApps() {
   const { appsStatus } = useContext(WebsiteContext)
+
+  const [logOpen, setLogOpen] = useState(false)
+  const [logs, setLogs] = useState([])
+
+  const appCommandExec = useCallback((namespace, command) => {
+    setLogOpen(true)
+    sseAppCommandExec(
+      {
+        command,
+        namespace,
+      },
+      {
+        onMessage: (msg) => {
+          setLogs((c) => c.concat(msg))
+        },
+        onError: (msg) => {
+          setLogs(c => c.concat(msg))
+        },
+      }
+    )
+  }, [])
+
+  const handleTerminal = useCallback(({ namespace, title }) => {
+    const valueRef = {
+      command: 'npm i --registry=https://registry.npmmirror.com --production'
+    }
+
+    const ref = Modal.confirm({
+      title: '请阅读提示！！！',
+      content: (
+        <>
+          <p>
+            此操作将会在应用<strong>「{title}」</strong>环境执行 <strong>下方命令</strong>，
+            <span style={{ color: 'red' }}>
+              请确保您已知晓当前操作的原理以及可能会造成的后果！！！
+            </span>
+          </p>
+          <Input defaultValue={valueRef.command} onChange={e => valueRef.command = e.target.value} />
+        </>
+      ),
+      okText: '确认，开始操作',
+      width: 600,
+      onOk: () => {
+        if (!valueRef.command) {
+          return message.warning('请先填写命令')
+        }
+        ref.destroy()
+        appCommandExec(namespace, valueRef.command)
+      },
+    })
+  }, [])
+
   return (
     <Card title="应用状态">
+      <Modal
+        title="操作日志"
+        open={logOpen}
+        destroyOnClose
+        onCancel={() => {setLogOpen(false);setLogs([])}}
+        footer={null}
+        width={'calc(100vw - 200px)'}
+      >
+        <LogsCard height={'calc(100vh - 306px)'} value={logs.join('\n')} />
+      </Modal>
       <Table
         columns={[
           {
             title: '名称',
             dataIndex: 'title',
           },
-					{
+          {
             title: '信息',
             dataIndex: 'namespace',
-						render: (_, row) => {
-							return `${row?.namespace}@${row.version}`
-						}
+            render: (_, row) => {
+              return `${row?.namespace}@${row.version}`
+            },
           },
           {
             title: '前端模块',
             dataIndex: 'fe',
-						render: (value) => {
-							return <StatusText text={!!value?.status ? '加载成功' : '加载失败'} status={!!value?.status} />
-						}
+            render: (value) => {
+              return (
+                <StatusText
+                  text={!!value?.status ? '加载成功' : '加载失败'}
+                  status={!!value?.status}
+                />
+              )
+            },
           },
           {
             title: '服务端模块',
             dataIndex: 'server',
-						render: (value) => {
-							return <StatusText text={!!value?.status ? '加载成功' : '加载失败'} status={!!value?.status} />
-						}
+            render: (value) => {
+              return (
+                <StatusText
+                  text={!!value?.status ? '加载成功' : '加载失败'}
+                  status={!!value?.status}
+                />
+              )
+            },
           },
-					{
-						title: '类型',
-						dataIndex: 'isSystem',
-						render: (value) => {
-							return value ? '系统应用' : '功能应用'
-						}
-					}
+          {
+            title: '类型',
+            dataIndex: 'isSystem',
+            render: (value) => {
+              return value ? '系统应用' : '功能应用'
+            },
+          },
+          {
+            title: '操作',
+            dataIndex: 'action',
+            render: (_, record) => (
+              <Space size="middle">
+                <a style={{ fontSize: 12 }} onClick={() => handleTerminal(record)}>命令行</a>
+                <a></a>
+              </Space>
+            ),
+          },
         ]}
         dataSource={appsStatus}
         size="small"
         pagination={false}
         locale={{ emptyText: '暂无数据' }}
-				// summary={() => `当前平台共计安装应用 ${appsStatus.length} 个`}
+        // summary={() => `当前平台共计安装应用 ${appsStatus.length} 个`}
       />
     </Card>
   )
@@ -334,16 +434,19 @@ function Card({ title, meta, children }: CardProps) {
   )
 }
 
-function StatusText ({ text, status }) {
+function StatusText({ text, status }) {
   return (
     <div className={styles.status}>
       {text}
-      <Badge style={{ marginLeft: 8 }} status={!!status ? 'success' : 'error'} />
+      <Badge
+        style={{ marginLeft: 8 }}
+        status={!!status ? 'success' : 'error'}
+      />
     </div>
   )
 }
 
-function LongTextRender ({ text }) {
+function LongTextRender({ text }) {
   return (
     <div className={styles.longText}>
       <Popover title={'错误详情'} content={text}>
