@@ -10,7 +10,7 @@ const Log = require('./utils/log')
 
 const envLog = Log('MyBricks: 启动脚本')
 
-const { PLATFORM_FE_PATH, PLATFORM_SERVER_PATH } = require('./env')
+const { PLATFORM_FE_PATH, PLATFORM_SERVER_PATH, APPS_DEV_FOLDER } = require('./env')
 
 const installCommand = 'npm i --registry=https://registry.npmmirror.com';
 
@@ -35,7 +35,10 @@ function installDepsInDir (dir) {
   // 本地APP安装依赖
   for (let index = 0; index < apps.length; index++) {
     const app = apps[index];
-    if (app.hasFe) { // 目前只有前端源码项目需要安装
+
+    const isInDevPathApp = path.relative(APPS_DEV_FOLDER, app.directory) === app.appName;  
+
+    if (isInDevPathApp) { // 目前只有开发目录下的 app 需要安装
       installDepsInDir(app.directory);
     }
   }

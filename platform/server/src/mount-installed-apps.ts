@@ -181,12 +181,31 @@ export function installedAppRouterMount(app: NestExpressApplication, loadedApps:
 }
 
 export function installedAppMiddlewareMount(app: NestExpressApplication, loadedApps: LoadedApp[]) {
+
+  const userDao = new UserDao();
+  const context = {
+    /**
+     * @deprecated 历史遗留
+     */
+    userDao,
+    UserModel: {
+      query: async ({ email }) => userDao.queryByEmail({ email }),
+      create: async (user) => userDao.create(user)
+    },
+    setUser: (request, { email }) => {
+      if (request?.headers) {
+        // 历史遗留，需要将 email 写入
+        request.headers['username'] = email
+      }
+    },
+    Logger,
+  }
+
   loadedApps.forEach(a => {
-    console.log(a.namespace, a.serverMiddlewareDirectory)
     if (a.serverMiddlewareDirectory && fs.existsSync(a.serverMiddlewareDirectory)) {
       try {
         const middlewareFn = require(a.serverMiddlewareDirectory).default
-        const middleware = middlewareFn({ userDao: new UserDao(), Logger }) 
+        const middleware = middlewareFn(context) 
         app.use(middleware)
       } catch (e) {
         Logger.info(`中间件加载失败, 准备跳过：${e.message}`)
