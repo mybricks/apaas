@@ -41,10 +41,10 @@ async function _initDatabaseRecord({ execSqlAsync, console }) {
 }
 
 async function _initAppsDatabase ({ execSqlAsync, console }) {
-  const localApps = loadApps().filter(t => t.hasFe) // 通过有没有前端源码来判断是不是本地的应用
+  const localApps = loadApps().filter(t => !!t.preInstallJsPath) // 通过有没有前端源码来判断是不是本地的应用
   for(let i = 0; i < localApps.length; i++) {
     const app = localApps[i];
-    if (app.preInstallJsPath && path.extname(app.preInstallJsPath) === '.js') {
+    if (path.extname(app.preInstallJsPath) === '.js') {
       console.log(`正在执行应用 ${app.appName} 的初始化逻辑...`)
       const installFunction = require(app.preInstallJsPath);
       await installFunction({ execSql: execSqlAsync })
