@@ -344,7 +344,8 @@ export function Create({
       return (
         <PageChooseModal
           modalVisible={pageChooseModalVisible}
-          extName={`pc-page`}
+          extNames={[`pc-page`, `pc-page-vue3`]}
+          // extName={"pc-page"}
           onChoose={(param) => {
             const { fileId } = param
             setTargetPageId(fileId)
