@@ -22,7 +22,7 @@ const CommonTemplateChooseModal = props => {
   const { apps: { getApp }} = useWorkspaceConetxt();
   const { extName, onChoose, onCancel, onOk, modalVisible } = props;
   // const [templateList, setTemplateList] = useState([]);
-  const [{ staticTemplateList, dynamicTemplateList }, setTemplateList] = useState<any>({ staticTemplateList: [], dynamicTemplateList: extName === "pc-page" ? [] : null })
+  const [{ staticTemplateList, dynamicTemplateList }, setTemplateList] = useState<any>({ staticTemplateList: [], dynamicTemplateList: ["pc-page", "pc-page-vue3"].includes(extName) ? [] : null })
   const [currentHoverIndex, setCurrentHoverIndex] = useState(-1);
   const app = getApp(extName)
   useEffect(() => {
