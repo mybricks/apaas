@@ -185,11 +185,14 @@ export function Create({
           params.type = 'system'
         }
 
-        if (chooseTemplate) {
+        if (chooseTemplate || targetPageId) {
+          const data = chooseTemplate ? 
+            { ...params, name: fileName, templateId: chooseTemplate.fileId, dumpJSON: chooseTemplate.dumpJSON } : 
+            { ...params, name: fileName, dumpJSON: { pageData: { targetPageId } } }
           axios({
             method: 'post',
             url: '/paas/api/file/createFileBaseTemplate',
-            data: { ...params, name: fileName, templateId: chooseTemplate.fileId, dumpJSON: chooseTemplate.dumpJSON }
+            data
           }).then(async ({ data }) => {
             if (data.code === 1) {
               // const appReg = appCtx.APPSMap[extName]
