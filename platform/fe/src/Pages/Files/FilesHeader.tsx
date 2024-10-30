@@ -11,7 +11,7 @@ import FilesSearchButton from "./components/FilesSearchButton";
 import css from "./FilesHeader.less";
 
 const FilesHeader: FC = () => {
-  const {filePathsInfo: {loading, filePaths}, viewType, setViewType} = useFilesContext();
+  const {filePathsInfo: {loading, filePaths}, viewType, setViewType, filesInfo} = useFilesContext();
   
   return (
     <div className={css.filesHeader}>
@@ -40,7 +40,7 @@ const FilesHeader: FC = () => {
           placement="bottomRight"
           trigger="click"
         >
-          <Button type={"primary"} style={{ fontWeight: 'bold' }}>
+          <Button type={"primary"} style={{ fontWeight: 'bold' }} disabled={![1, 2].includes(filesInfo.roleDescription)}>
             <label className={css.addIcon}>+</label>
             新建
             {/* <span className={css.downIcon}>{ArrowDown}</span> */}
