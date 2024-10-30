@@ -8,6 +8,8 @@ export interface MySqlCreateOption {
 
 export type CompileTarget = 'prod' | 'staging' | 'debug'
 
+export type EnvType = string | 'only-debug' | 'only-preview' | 'prod'
+
 export interface DataBaseConfig { name?: string, version?: string, filePubId: number }
 
 export interface ServiceJson {
@@ -34,4 +36,8 @@ export interface ProjectMeta {
   version: string,
   frontEnd?: ProjectFrontEndMeta,
   backEnd?: ProjectBackEndMeta,
+}
+
+export interface ServiceComlib {
+  content?: string
 }

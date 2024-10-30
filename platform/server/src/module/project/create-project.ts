@@ -1,10 +1,10 @@
 import * as fse from 'fs-extra';
 import * as path from 'path'
 
-import { MySqlCreateOption, ProjectMeta, ServiceJson } from './types'
+import { MySqlCreateOption, ProjectMeta, ServiceJson, ServiceComlib } from './types'
 
 
-export async function ensureProject(folderPath, folderName, metaInfo: ProjectMeta) {
+export async function ensureProject(folderPath, folderName, metaInfo?: ProjectMeta) {
   const projectFolderPath = path.join(folderPath, folderName);
   await fse.ensureDir(projectFolderPath);
   
@@ -41,13 +41,11 @@ interface FrontEndFile {
 }
 
 export async function createProjectFrontEnd(folderName, folderPath, {
-  metaInfo,
   files
 } : {
-  metaInfo: ProjectMeta,
   files: FrontEndFile[]
 }) {
-  const { frontEndFolderPath, projectMetaFilePath, projectFolderPath } = await ensureProject(folderPath, folderName, metaInfo);
+  const { frontEndFolderPath, projectMetaFilePath, projectFolderPath } = await ensureProject(folderPath, folderName);
 
   const results = files.map(async file => {
     const targetFolderPath = path.join(frontEndFolderPath, file.folderPath);
@@ -67,12 +65,12 @@ export async function createProjectService(folderName, folderPath, {
   metaInfo,
   database,
   toJson,
-  coms
+  serviceComlibs,
 }: {
   metaInfo: ProjectMeta,
   database: MySqlCreateOption
   toJson: ServiceJson,
-  coms?: any[]
+  serviceComlibs?: ServiceComlib[]
 }) {
   const { backEndFolderPath, projectMetaFilePath, projectFolderPath } = await ensureProject(folderPath, folderName, metaInfo);
 
@@ -81,13 +79,21 @@ export async function createProjectService(folderName, folderPath, {
   await fse.ensureDir(targetFolder);
 
   const projectToJsonPath = path.resolve(backEndFolderPath, 'project.json');
-  const componentsMapFilePath = path.resolve(backEndFolderPath, 'rtComs.js');
+  const comlibsJsPath = path.resolve(backEndFolderPath, 'comlibs.js');
 
   // 写入 服务端 Json
   await fse.writeJSON(projectToJsonPath, Object.assign(toJson, { database }), 'utf-8');
 
+  // 生成组件代码
+  let comlibContent = ''
+  if (Array.isArray(serviceComlibs)) {
+    comlibContent = serviceComlibs.reduce((acc, cur) => {
+      return acc + (cur?.content ?? '')
+    }, '\n')
+  }
+
   // 写入 组件代码
-  await fse.writeFile(componentsMapFilePath, '', 'utf-8');
+  await fse.writeFile(comlibsJsPath, comlibContent || '', 'utf-8');
 
   return {
     projectPath: projectFolderPath,

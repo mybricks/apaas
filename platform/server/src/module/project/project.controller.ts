@@ -25,8 +25,21 @@ import { zipDirectory } from '../../utils'
 
 import env from '../../utils/env'
 
-import { DataBaseConfig, CompileTarget } from './types'
-
+import { DataBaseConfig, EnvType, ServiceComlib } from './types'
+interface ServicePushConfig {
+  envType: EnvType,
+  database: DataBaseConfig,
+  json: any,
+  fileId: string,
+  version: string,
+  serviceComlibs: ServiceComlib[]
+}
+interface FePushConfig {
+  envType: EnvType,
+  files: any[],
+  fileId: string,
+  version: string
+}
 
 @Controller('/paas/api/project')
 @UseFilters(ErrorExceptionFilter)
@@ -40,36 +53,22 @@ export default class ProjectController {
     @Req() req: Request,
   ) {
 
-    const { target, database: databaseConfig, json, fileId, version }: { target: CompileTarget, database: DataBaseConfig, json: any, fileId: string, version: string } = body ?? {}
+    const { envType = 'only-debug', database: databaseConfig, json, fileId, version, serviceComlibs }: ServicePushConfig = body ?? {}
 
-    let scopeId = '';
-    let scopePath = '';
-
-    switch (true) {
-      case target === 'debug':
-        scopeId = this.projectService.getDebugFingerprint(fileId, req, body);
-        scopePath = env.APP_PROJECT_DEBUG_PATH;
-        break;
-      case target === 'staging':
-        scopeId = fileId;
-        scopePath = env.APP_PROJECT_STAGING_PATH;
-        break;
-      default:
-        scopeId = fileId;
-        scopePath = env.APP_PROJECT_PROD_PATH;
-        break;
-    }
+    let scopeId = envType === 'only-debug' ? this.projectService.getDebugFingerprint(fileId, req, body) : fileId;
+    let scopePath = path.join(env.APP_PROJECT_BASE_PATH, envType);
     if (typeof scopeId === 'number') {
       scopeId = String(scopeId)
     }
 
-    const database = await this.projectService.getDataBaseConnectOption(databaseConfig, target)
+    const database = await this.projectService.getDataBaseConnectOption(databaseConfig, envType)
 
     const { projectPath } = await createProjectService(scopeId, scopePath, {
       metaInfo: {
         fileId,
-        version,
+        version
       },
+      serviceComlibs,
       database,
       toJson: json
     })
@@ -80,111 +79,77 @@ export default class ProjectController {
       data: {
         projectPath,
         scopeId,
-        requestPathPrefix: `/service/${scopeId}`
       },
     }
   }
 
-  @Post('/frontEnd/push')
-  async pushFrontEndPoroject(
-    @Body() body: any,
-    @Req() req: Request,
-  ) {
+  // @Post('/frontEnd/push')
+  // async pushFrontEndPoroject(
+  //   @Body() body: any,
+  //   @Req() req: Request,
+  // ) {
 
-    const { target, files, fileId, version }: { target: CompileTarget, files: any[], fileId: string, version: string } = body ?? {}
+  //   const { envType, files, fileId, version }: FePushConfig = body ?? {}
 
-    let scopeId = '';
-    let scopePath = '';
-    let rtUrl = ''
+  //   let scopeId = envType === 'only-debug' ? this.projectService.getDebugFingerprint(fileId, req, body) : fileId;
+  //   let scopePath = path.join(env.APP_PROJECT_BASE_PATH, envType);
+  //   if (typeof scopeId === 'number') {
+  //     scopeId = String(scopeId)
+  //   }
+  //   let rtUrl = `/${envType}/${fileId}/index`;
 
-    switch (true) {
-      case target === 'debug':
-        scopeId = this.projectService.getDebugFingerprint(fileId, req, body);
-        scopePath = env.APP_PROJECT_DEBUG_PATH;
-        break;
-      case target === 'staging':
-        scopeId = fileId;
-        scopePath = env.APP_PROJECT_STAGING_PATH;
-        rtUrl = `/preview/${fileId}/index`;
-        break;
-      default:
-        scopeId = fileId;
-        scopePath = env.APP_PROJECT_PROD_PATH;
-        rtUrl = `/app/${fileId}/index`
-        break;
-    }
-    if (typeof scopeId === 'number') {
-      scopeId = String(scopeId)
-    }
+  //   const { projectPath } = await createProjectFrontEnd(scopeId, scopePath, {
+  //     files
+  //   })
 
-    const { projectPath } = await createProjectFrontEnd(scopeId, scopePath, {
-      metaInfo: {
-        fileId,
-        version,
-      },
-      files
-    })
-
-    return {
-      code: 1,
-      data: {
-        projectPath,
-        requestPathPrefix: `${rtUrl}`
-      }
-    }
-  }
+  //   return {
+  //     code: 1,
+  //     data: {
+  //       projectPath,
+  //       requestPathPrefix: `${rtUrl}`
+  //     }
+  //   }
+  // }
 
 
-  @Get('/download')
-  async donwloadProject(
-    @Query('target') target: 'prod' | 'staging',
-    @Query('fileId') fileId: string,
-    @Res() response: Response
-  ) {
-    let scopeId = '';
-    let scopePath = '';
+  // @Get('/download')
+  // async donwloadProject(
+  //   @Query('target') target: 'prod' | 'staging',
+  //   @Query('fileId') fileId: string,
+  //   @Query('port') port: number,
+  //   @Res() response: Response,
+  //   @Query('type') zipType?: 'fe' | 'app',
+  // ) {
+  //   const projectPath = await this.projectService.getProjectPath(fileId, target);
 
-    switch (true) {
-      case target === 'staging':
-        scopeId = fileId;
-        scopePath = env.APP_PROJECT_STAGING_PATH;
-        break;
-      default:
-        scopeId = fileId;
-        scopePath = env.APP_PROJECT_PROD_PATH;
-        break;
-    }
-    if (typeof scopeId === 'number') {
-      scopeId = String(scopeId)
-    }
+  //   let tmpProjectPath
+  //   let targetPath
 
-    const targetFolder = path.join(scopePath, scopeId);
+  //   switch(true) {
+  //     case zipType === 'fe': {
+  //       tmpProjectPath = await this.projectService.gennerateAsFrontEndApp(projectPath, { fileId, target });
+  //       targetPath = await zipDirectory(tmpProjectPath, `${fileId}_${target}_front_end.zip`);
+  //       break;
+  //     }
+  //     default: {
+  //       tmpProjectPath = await this.projectService.gennerateAsNodeJsApp(projectPath, { fileId, target, port });
+  //       targetPath = await zipDirectory(tmpProjectPath, `${fileId}_${target}.zip`);
+  //       break;
+  //     }
+  //   }
 
-    if (!await fse.pathExists(targetFolder)) {
-      return response.send({
-        code: -1,
-        message: `目标产物不存在：${fileId} ${target}`,
-      })
-    }
+  //   response.once('close', () => {
+  //     // 清理压缩包
+  //     try {
+  //       fse.remove(targetPath)
+  //     } catch (error) { }
+  //     // 清理生成的临时项目目录
+  //     try {
+  //       fse.remove(tmpProjectPath)
+  //     } catch (error) { }
+  //   })
 
-    const projectPath = await this.projectService.getProjectPath(fileId, target);
-
-    const tmpProjectPath = await this.projectService.gennerateAsNodeJsApp(projectPath, { fileId, target });
-
-    const targetPath = await zipDirectory(tmpProjectPath, `${fileId}_${target}.zip`);
-
-    response.once('close', () => {
-      // 清理压缩包
-      try {
-        fse.remove(targetPath)
-      } catch (error) {}
-      // 清理生成的临时项目目录
-      try {
-        fse.remove(tmpProjectPath)
-      } catch (error) {}
-    })
-
-    response.sendFile(targetPath);
-  }
+  //   response.sendFile(targetPath);
+  // }
 
 }
