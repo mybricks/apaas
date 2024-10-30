@@ -1,5 +1,6 @@
 import { NestFactory } from "@nestjs/core";
 import { NestExpressApplication } from "@nestjs/platform-express";
+import { Response } from 'express'
 import { Logger } from '@mybricks/rocker-commons'
 import * as path from "path";
 import * as cookieParser from "cookie-parser";
@@ -78,8 +79,20 @@ async function bootstrap() {
   app.useStaticAssets(env.FILE_LOCAL_STORAGE_FOLDER, {
     prefix: `/${env.FILE_LOCAL_STORAGE_PREFIX}`,
     index: false,
-    setHeaders: (res, path, stat) => {
+    setHeaders: (res: Response, path, stat) => {
       res.set('Access-Control-Allow-Origin', '*');
+      
+      // app 文件夹全部走协商缓存，是 app 的运行时产物
+      if (res.req.path.indexOf('/app/') === 0) { 
+        res.set('Cache-Control', 'private, max-age=0')
+        if (res.req.path.indexOf('/back_end/') > -1) { // 隐藏服务端产物
+          res.statusCode = 403;
+          res.end('MFS Forbidden');
+        }
+        return;
+      }
+
+      // 普通文件
       if (path?.indexOf('.html') > -1) {
         res.set('Cache-Control', 'private, max-age=0') // html文件走协商缓存，private 为仅客户端可缓存，代理服务器不缓存
       } else {
