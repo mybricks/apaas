@@ -271,6 +271,7 @@ export default class AppsController {
           }
         }
       } catch (error) {
+        downloadErrMsg = error?.message
         Logger.info(logPrefix + "CDN下载资源失败");
       }
 
@@ -300,7 +301,8 @@ export default class AppsController {
 
       if (!appPkgBuffer) {
         await fse.remove(TEMP_FOLDER_PATH)
-        await response200({ code: 0, message: `下载应用失败 ${downloadErrMsg ?? '未知错误'}`})
+        Logger.info(`${logPrefix} 下载应用失败，${downloadErrMsg ?? '未知错误'}，耗时${Date.now() - downloadStartTime}ms，已删除临时文件`)
+        await response200({ code: 0, message: `下载应用失败，${downloadErrMsg ?? '未知错误'}`})
         return
       }
 
