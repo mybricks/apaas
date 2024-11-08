@@ -29,15 +29,6 @@ const FILE_UPGRADE_LOCK_FILE = path.join(FILE_LOCAL_STORAGE_FOLDER, '_lock_.lock
 /** 前后端一体化项目基础目录 */
 const APP_PROJECT_BASE_PATH = path.join(FILE_LOCAL_STORAGE_FOLDER, '__app_projects__');
 
-/** 一体化项目生产环境目录 */
-const APP_PROJECT_PROD_PATH = path.join(APP_PROJECT_BASE_PATH, 'prod');
-
-/** 一体化项目预发环境目录 */
-const APP_PROJECT_STAGING_PATH = path.join(APP_PROJECT_BASE_PATH, 'staging');
-
-/** 服体化项目调试环境目录 */
-const APP_PROJECT_DEBUG_PATH = path.join(APP_PROJECT_BASE_PATH, 'debug');
-
 
 export default {
   isDev() {
@@ -65,7 +56,5 @@ export default {
 
   FILE_UPGRADE_LOCK_FILE,
 
-  APP_PROJECT_PROD_PATH,
-  APP_PROJECT_STAGING_PATH,
-  APP_PROJECT_DEBUG_PATH,
+  APP_PROJECT_BASE_PATH,
 };

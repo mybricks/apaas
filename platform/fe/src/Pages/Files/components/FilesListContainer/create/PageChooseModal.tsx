@@ -8,57 +8,24 @@ import css from "./index.less";
 
 const PageChooseModal = props => {
   const { apps: { getApp } } = useWorkspaceConetxt();
-  const { extName, onChoose, onCancel, onOk, modalVisible, extNames } = props;
+  const { extName, onChoose, onCancel, onOk, modalVisible } = props;
   // const [templateList, setTemplateList] = useState([]);
-  // const [pageList, setPageList] = useState([])
+  const [pageList, setPageList] = useState([])
   const [currentHoverIndex, setCurrentHoverIndex] = useState(-1);
-  // const app = getApp(extName)
-  const [apps, setApps] = useState([])
+  const app = getApp(extName)
 
   useEffect(() => {
-    Promise.all(extNames.map((extName) => {
-      return new Promise((resolve, reject) => {
-        axios.post('/paas/api/share/getAll', {
-          extName: extName,
-          page: 0,
-          pageSize: 1000,
-          onlyPublished: 1,
-        })
-          .then(({ data }) => {
-            if (data.code === 1) {
-              resolve({
-                app: getApp(extName),
-                list: data.data?.list ?? []
-              })
-            } else {
-              console.error("获取模版列表失败: ", data);
-              resolve({
-                app: null
-              })
-            }
-          })
-          .catch((error) => {
-            console.error("获取模版列表失败: ", error);
-            resolve({
-              app: null
-            })
-          })
-      })
-    })).then((res) => {
-      setApps(res.filter((item) => item.app && item.list.length))
+    axios.post('/paas/api/share/getAll', {
+      extName: extName,
+      page: 0,
+      pageSize: 1000,
+      onlyPublished: 1,
     })
-
-    // axios.post('/paas/api/share/getAll', {
-    //   extName: extName,
-    //   page: 0,
-    //   pageSize: 1000,
-    //   onlyPublished: 1,
-    // })
-    //   .then(({ data }) => {
-    //     if (data.code === 1) {
-    //       setPageList(data.data?.list ?? [])
-    //     }
-    //   })
+      .then(({ data }) => {
+        if (data.code === 1) {
+          setPageList(data.data?.list ?? [])
+        }
+      })
 
   }, []);
 
@@ -79,46 +46,6 @@ const PageChooseModal = props => {
         {/* display: 'flex', flexFlow: 'wrap' */}
         <div style={{ maxHeight: 716, overflow: 'auto' }}>
           {
-            apps?.map(({ app, list }) => {
-              return (
-                <>
-                  <div>
-                    <label
-                      style={{
-                        cursor: "pointer",
-                        fontSize: 14,
-                        color: "#333",
-                        marginBottom: 1,
-                        fontWeight: "bold",
-                        lineHeight: "32px"
-                      }}
-                    >{app.title}</label>
-                    <p
-                      style={{
-                        color: "#AAA",
-                        fontSize: 13,
-                        lineHeight: "13px"
-                      }}
-                    >{app.description}</p>
-                  </div>
-                  {
-                    list?.map(template => {
-                      return (
-                        <TemplateItem
-                          template={template}
-                          appReg={app}
-                          currentHoverIndex={currentHoverIndex}
-                          setCurrentHoverIndex={setCurrentHoverIndex}
-                          onChoose={onChoose}
-                        />
-                      )
-                    })
-                  }
-                </>
-              )
-            })
-          }
-          {/* {
             pageList?.map(template => {
               return (
                 <TemplateItem
@@ -130,7 +57,7 @@ const PageChooseModal = props => {
                 />
               )
             })
-          } */}
+          }
         </div>
       </Modal>
     </>
