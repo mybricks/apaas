@@ -647,7 +647,7 @@ export default class WorkspaceService {
 
   @Post("/workspace/file/revert")
   async revertFile(@Body() body) {
-    const { fileContentId, filePubId, userId: originUserId } = body;
+    const { fileContentId, filePubId, userId: originUserId, isMpa } = body;
     if (!filePubId && !fileContentId) {
       return { code: 0, message: "filePubId 或 fileContentId 不能为空" };
     }
@@ -664,7 +664,16 @@ export default class WorkspaceService {
         return { code: 0, message: "保存记录不存在" };
       }
 
-      const latestFileContent = await this.fileContentDao.queryLatestByFileId<{ version: string }>(fileContent.fileId);
+      const latestFileContent = isMpa ? await this.fileContentDao.queryLatestSave({ fileId: fileContent.fileId }) : await this.fileContentDao.queryLatestByFileId<{ version: string }>(fileContent.fileId);
+
+      if (isMpa) {
+        // mpa回滚不修改pages信息
+        const currentContent = JSON.parse(fileContent.content)
+        const latestContent = JSON.parse(latestFileContent.content)
+        currentContent.dumpJson.pages = latestContent.dumpJson.pages;
+        fileContent.content = JSON.stringify(currentContent)
+      }
+
       await this.fileContentDao.create({
         fileId: fileContent.fileId,
         content: fileContent.content,
