@@ -2,11 +2,13 @@ import { Response } from 'express';
 import { Body, Controller, Get, Post, Query, Res } from "@nestjs/common";
 const path = require('path');
 import {Logger} from '@mybricks/rocker-commons'
+import * as moment from 'dayjs'
 
 
 import FileDao from "../../dao/FileDao";
 import FilePubDao from '../../dao/filePub.dao';
 import UserDao from '../../dao/UserDao';
+import UserLogDao from '../../dao/UserLogDao';
 import FileCooperationDao from "../../dao/FileCooperationDao";
 import UserGroupDao from "../../dao/UserGroupDao";
 import UserGroupRelationDao from '../../dao/UserGroupRelationDao'
@@ -26,6 +28,7 @@ export default class FileController {
   filePubDao: FilePubDao;
   fileCooperationDao: FileCooperationDao;
   userDao: UserDao;
+  userLogDao: UserLogDao;
   userGroupDao: UserGroupDao;
   userGroupRelationDao: UserGroupRelationDao;
 
@@ -41,6 +44,7 @@ export default class FileController {
     this.fileContentDao = new FileContentDao();
     this.fileCooperationDao = new FileCooperationDao();
     this.userDao = new UserDao();
+    this.userLogDao = new UserLogDao();
     this.userGroupDao = new UserGroupDao();
     this.userGroupRelationDao = new UserGroupRelationDao();
     this.fileService = new FileService()
@@ -282,9 +286,75 @@ export default class FileController {
     };
   }
 
+  /** 文件id对应可编辑用户信息 */
+  private async getEditUsersByFileIds({fileIds, timeInterval, userId}) {
+    if (!fileIds) {
+      return null
+    }
+
+    if (!isNumber(timeInterval)) {
+      /** 默认3分钟没更新心跳时间为超时 */
+      timeInterval = 60 * 1000 * 3
+    }
+
+    const res = {};
+
+    await Promise.all(fileIds.map(async (fileId) => {
+      const [editUser, fileContent] = await Promise.all([
+        await this.fileCooperationDao.queryEditUser({ fileId }),
+        await this.fileContentDao.getLatestContentId({ fileId })
+      ])
+
+      if (!editUser) {
+        res[fileId] = {
+          fileContentId: fileContent.id
+        }
+      } else {
+        const currentTime = moment().valueOf()
+        const updateTime = moment(editUser.updateTime).valueOf()
+
+        if (userId === editUser.userId) {
+          // 如果是当前用户，更新时间
+          await this.fileCooperationDao.update({ userId, fileId, status: 1 })
+          const user = await this.userDao.queryById({ id: editUser.userId })
+          res[fileId] = {
+            id: user.id,
+            name: user.name,
+            userId: user.email,
+            email: user.email,
+            avatar: user.avatar,
+            fileContentId: fileContent.id
+          }
+        } else {
+          // 不是当前用户
+          if (currentTime - updateTime > timeInterval) {
+            // 删除超时
+            await this.fileCooperationDao.update({ userId: editUser.userId, fileId, status: -1 })
+            res[fileId] = {
+              fileContentId: fileContent.id
+            }
+          } else {
+            // 未超时，获取用户信息
+            const user = await this.userDao.queryById({ id: editUser.userId })
+            res[fileId] = {
+              id: user.id,
+              name: user.name,
+              userId: user.email,
+              email: user.email,
+              avatar: user.avatar,
+              fileContentId: fileContent.id
+            }
+          }
+        }
+      }
+    }))
+
+    return res;
+  }
+
   @Get("/getCooperationUsers")
   async getCooperationUsers(@Query() query) {
-    const { email, userId: originUserId, timeInterval } = query;
+    const { email, userId: originUserId, timeInterval, extraFileIds } = query;
     const userId = await this.userService.getCurrentUserId(originUserId || email);
     const fileId = Number(query.fileId);
 
@@ -296,7 +366,7 @@ export default class FileController {
       }
     }
 
-    const [file, versions] = await Promise.all([
+    const [file, versions, del, extraFiles] = await Promise.all([
       await this.fileDao.queryById(fileId),
       await this.fileContentDao.getContentVersions({
         fileId,
@@ -304,7 +374,8 @@ export default class FileController {
         offset: 0,
       }),
       /** 删除超时用户，status设置为-1 */
-      await this.fileCooperationDao.delete({ fileId, timeInterval })
+      await this.fileCooperationDao.delete({ fileId, timeInterval }),
+      await this.getEditUsersByFileIds({fileIds: extraFileIds, timeInterval, userId})
     ])
 
     /** 查userId是否在当前fileId协作过 */
@@ -370,6 +441,18 @@ export default class FileController {
       const lastVersion = versions[0]
       file.version = lastVersion.version
       file.updatorName = lastVersion.creatorName || lastVersion.creatorEmail || lastVersion.creatorId || file.updatorName
+
+
+      const log = await this.userLogDao.queryByRelationToken({ relationToken: lastVersion.id })
+
+      if (log) {
+        const logContent = JSON.parse(log.logContent);
+
+        if (logContent[0]?.saveType === "app") {
+          // ts-ignore
+          file.saveType = "app"
+        }
+      }
     }
 
     return {
@@ -390,7 +473,47 @@ export default class FileController {
           }
         }),
         roleDescription,
-        file
+        file,
+        extraFiles
+      }
+    }
+  }
+
+  @Post("/updateFileCooperationUser")
+  async updateFileCooperationUser(@Body() body) {
+    const { userId, fileId, status } = body;
+
+    try {
+      if (status === 1) {
+        // 上锁，先检查是否已有上锁用户
+        const editUser = await this.fileCooperationDao.queryEditUser({ fileId })
+        if (editUser) {
+          return {
+            code: -1,
+            message: "当前文件已被上锁"
+          }
+        }
+      }
+
+      const user = await this.fileCooperationDao.query({ userId, fileId })
+
+      if (!user) {
+        // 创建
+        await this.fileCooperationDao.create({ userId, fileId, status })
+      } else {
+        // 更新
+        await this.fileCooperationDao.update({ userId, fileId, status })
+      }
+
+      
+
+      return {
+        code: 1
+      }
+    } catch (e) {
+      return {
+        code: -1,
+        message: e?.message || e
       }
     }
   }

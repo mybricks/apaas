@@ -96,4 +96,10 @@
             #{relationToken}
         </trim>
     </insert>
+
+    <select id="queryByRelationToken">
+        select *
+        from apaas_user_log
+        where relation_token = #{relationToken}
+    </select>
 </mapper>

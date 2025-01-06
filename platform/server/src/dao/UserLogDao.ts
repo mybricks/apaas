@@ -114,4 +114,10 @@ export default class UserLogDao extends DOBase {
   async queryPageSaveOperateList(params: { fileIds: number[], type }) {
     return await this.exe<any[]>('apaas_user_log:queryPageSaveLogsByRelateId', params);
   }
+
+  @Mapping(UserLogDO)
+  async queryByRelationToken(params: { relationToken: number }) {
+    const res = await this.exe('apaas_user_log:queryByRelationToken', params);
+    return res ? res[0] : null;
+  }
 }

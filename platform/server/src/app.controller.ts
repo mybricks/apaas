@@ -355,7 +355,7 @@ export default class WorkspaceService {
   @Post("/workspace/saveScenesToMutiFiles")
   async saveScenes2MutiFiles(@Body() body) {
     try {
-      let { userId: originUserId, updatePages } = body;
+      let { userId: originUserId, updatePages, parentId } = body;
       const userId = await this.userService.getCurrentUserId(originUserId);
 
       if (!userId) {
@@ -409,6 +409,43 @@ export default class WorkspaceService {
           }
         })
       }))
+
+      const updatePagesResult = updatePages.map(t => {
+        return {
+          id: t.id,
+          ...(updateMap?.[t.id] ?? {})
+        }
+      })
+
+      if (parentId) {
+        const fileContent = await this.fileContentDao.getLatestContentId({ fileId: parentId });
+
+        let content = null
+        if(fileContent?.id) {
+          const temp = await this.fileContentDao.queryById({ id: fileContent.id })
+          content = temp ? temp[0] : null
+        }
+
+        if (content) {
+          const nextContent = JSON.parse(content.content);
+          const { dumpJson } = nextContent;
+          const { pages } = dumpJson;
+
+          pages.forEach((page) => {
+            const findUpdatePage = updatePagesResult.find((update) => {
+              return update.id === page.id
+            })
+            if (findUpdatePage) {
+              page.fileContentId = findUpdatePage.fileContentId
+            }
+          })
+
+          await this.fileContentDao.updateContent({
+            id: fileContent?.id,
+            content: JSON.stringify(nextContent)
+          })
+        }
+      }
 
       return {
         code: 1,
