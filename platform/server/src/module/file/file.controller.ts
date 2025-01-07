@@ -493,6 +493,39 @@ export default class FileController {
             message: "当前文件已被上锁"
           }
         }
+
+        let file = await this.fileDao.queryById(fileId);
+
+        if (file.extName === "mp-page-json") {
+          // 子页面，找真实的file
+          file = await this.fileDao.queryById(file.parentId)
+        }
+
+        if (file?.creatorId != userId) {
+          // 非创建人，计算权限
+          const [fileDescription, groupDescription] = await Promise.all([
+            new Promise(async (resolve) => {
+              const userFileFelation = await this.userFileRelationDao.query({userId, fileId})
+              resolve(userFileFelation?.roleDescription)
+            }),
+            new Promise(async (resolve) => {
+              if (!file?.groupId) {
+                resolve(undefined)
+              } else {
+                const userGroupRelation = await this.userGroupRelationDao.queryByUserIdAndUserGroupId({ userId, userGroupId: file?.groupId, status: 1 })
+                resolve(userGroupRelation?.roleDescription)
+              }
+            })
+          ])
+
+          if (![1, 2, '1', '2'].includes((fileDescription || groupDescription || 3) as number)) {
+            // 有编辑权限
+            return {
+              code: -1,
+              message: "没有当前文件编辑权限"
+            }
+          }
+        }
       }
 
       const user = await this.fileCooperationDao.query({ userId, fileId })
