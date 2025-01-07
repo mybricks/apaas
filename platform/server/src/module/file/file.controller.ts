@@ -443,16 +443,18 @@ export default class FileController {
       file.updatorName = lastVersion.creatorName || lastVersion.creatorEmail || lastVersion.creatorId || file.updatorName
 
 
-      const log = await this.userLogDao.queryByRelationToken({ relationToken: lastVersion.id })
+      try {
+        const log = await this.userLogDao.queryByRelationToken({ relationToken: lastVersion.id })
 
-      if (log) {
-        const logContent = JSON.parse(log.logContent);
+        if (log) {
+          const logContent = JSON.parse(log.logContent);
 
-        if (logContent[0]?.saveType === "app") {
-          // ts-ignore
-          file.saveType = "app"
+          if (logContent[0]?.saveType === "app") {
+            // ts-ignore
+            file.saveType = "app"
+          }
         }
-      }
+      } catch (e) {}
     }
 
     return {
