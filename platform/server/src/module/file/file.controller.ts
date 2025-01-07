@@ -454,7 +454,9 @@ export default class FileController {
             file.saveType = "app"
           }
         }
-      } catch (e) {}
+      } catch (e) {
+        Logger.info(`[getCooperationUsers]: 读日志失败 ${e?.message}`)
+      }
     }
 
     return {
