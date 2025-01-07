@@ -305,6 +305,10 @@ export default class FileController {
         await this.fileContentDao.getLatestContentId({ fileId })
       ])
 
+      if (!fileContent) {
+        return
+      }
+
       if (!editUser) {
         res[fileId] = {
           fileContentId: fileContent.id
@@ -355,6 +359,7 @@ export default class FileController {
   @Get("/getCooperationUsers")
   async getCooperationUsers(@Query() query) {
     const { email, userId: originUserId, timeInterval, extraFileIds } = query;
+    const autoLock = query.autoLock ? Number(query.autoLock) : 1
     const userId = await this.userService.getCurrentUserId(originUserId || email);
     const fileId = Number(query.fileId);
 
@@ -410,7 +415,7 @@ export default class FileController {
     let finalStatus: -1 | 0 | 1 = 0
 
     /** 没有用户在线，并且有编辑权限，自动上锁, 设置status为1 */
-    if (!hasUser && [1, 2, '1', '2'].includes(roleDescription as number)) {
+    if (!hasUser && autoLock && [1, 2, '1', '2'].includes(roleDescription as number)) {
       finalStatus = 1
     }
 
