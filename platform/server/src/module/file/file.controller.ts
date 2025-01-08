@@ -356,6 +356,81 @@ export default class FileController {
     return res;
   }
 
+  async getEditUsersByFileId({fileId, timeInterval, userId}) {
+    const latestContent = await this.fileContentDao.getLatestContentId({ fileId });
+    const res = {};
+
+    if(latestContent?.id) {
+      const [temp] = await this.fileContentDao.queryById({ id: latestContent.id })
+      if (temp) {
+        const { dumpJson } = JSON.parse(temp.content)
+        const { pages, meta } = dumpJson;
+        const { pageAry } = meta;
+
+        if (!isNumber(timeInterval)) {
+          /** 默认3分钟没更新心跳时间为超时 */
+          timeInterval = 60 * 1000 * 3
+        }
+
+        await Promise.all(pageAry.map(async ({ id, type }) => {
+          if (!type) {
+            // 画布
+            const page = pages.find((page) => id === page.id)
+            if (!page) {
+              return
+            }
+            const editUser = await this.fileCooperationDao.queryEditUser({ fileId: fileId + page.fileId })
+
+            if (!editUser) {
+              res[page.fileId] = {
+                fileContentId: page.fileContentId
+              }
+            } else {
+              const currentTime = moment().valueOf()
+              const updateTime = moment(editUser.updateTime).valueOf()
+
+              if (userId === editUser.userId) {
+                // 如果是当前用户，更新时间
+                await this.fileCooperationDao.update({ userId, fileId: fileId + page.fileId, status: 1 })
+                const user = await this.userDao.queryById({ id: editUser.userId })
+                res[page.fileId] = {
+                  id: user.id,
+                  name: user.name,
+                  userId: user.email,
+                  email: user.email,
+                  avatar: user.avatar,
+                  fileContentId: page.fileContentId
+                }
+              } else {
+                // 不是当前用户
+                if (currentTime - updateTime > timeInterval) {
+                  // 删除超时
+                  await this.fileCooperationDao.update({ userId: editUser.userId, fileId: fileId + page.fileId, status: -1 })
+                  res[page.fileId] = {
+                    fileContentId: page.fileContentId
+                  }
+                } else {
+                  // 未超时，获取用户信息
+                  const user = await this.userDao.queryById({ id: editUser.userId })
+                  res[page.fileId] = {
+                    id: user.id,
+                    name: user.name,
+                    userId: user.email,
+                    email: user.email,
+                    avatar: user.avatar,
+                    fileContentId: page.fileContentId
+                  }
+                }
+              }
+            }
+          }
+        }))
+      }
+    }
+
+    return res;
+  }
+
   @Get("/getCooperationUsers")
   async getCooperationUsers(@Query() query) {
     const { email, userId: originUserId, timeInterval, extraFileIds } = query;
@@ -380,7 +455,8 @@ export default class FileController {
       }),
       /** 删除超时用户，status设置为-1 */
       await this.fileCooperationDao.delete({ fileId, timeInterval }),
-      await this.getEditUsersByFileIds({fileIds: extraFileIds, timeInterval, userId})
+      // await this.getEditUsersByFileIds({fileIds: extraFileIds, timeInterval, userId})
+      extraFileIds ? await this.getEditUsersByFileId({fileId, timeInterval, userId}) : null
     ])
 
     /** 查userId是否在当前fileId协作过 */
@@ -490,11 +566,12 @@ export default class FileController {
 
   @Post("/updateFileCooperationUser")
   async updateFileCooperationUser(@Body() body) {
-    const { userId, fileId, status } = body;
+    const { userId, fileId, status, parentFileId } = body;
 
     try {
       if (status === 1) {
         // 上锁，先检查是否已有上锁用户
+
         const editUser = await this.fileCooperationDao.queryEditUser({ fileId })
         if (editUser) {
           return {
@@ -503,12 +580,7 @@ export default class FileController {
           }
         }
 
-        let file = await this.fileDao.queryById(fileId);
-
-        if (file.extName === "mp-page-json") {
-          // 子页面，找真实的file
-          file = await this.fileDao.queryById(file.parentId)
-        }
+        let file = await this.fileDao.queryById(parentFileId ? parentFileId : fileId);
 
         if (file?.creatorId != userId) {
           // 非创建人，计算权限
