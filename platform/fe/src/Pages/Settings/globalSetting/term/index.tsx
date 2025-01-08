@@ -1,22 +1,8 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
-import CodeMirror from '@uiw/react-codemirror'
 import axios from 'axios'
-import { solarizedLight } from '@uiw/codemirror-theme-solarized'
-import { json } from '@codemirror/lang-json'
-import { hyperLink, hyperLinkExtension } from '@uiw/codemirror-extensions-hyper-link'
+import { Code } from '@/components'
 import { Button, Form, Input, InputNumber, Switch, message } from 'antd'
 import css from './index.less'
-
-const extensions = [
-  json(),
-  hyperLink,
-  hyperLinkExtension({
-    regexp: /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gi
-  })
-]
-const basicSetup = {
-  crosshairCursor: false
-}
 
 export default function () {
   const [log, setLog] = useState('')
@@ -51,9 +37,7 @@ export default function () {
 
   const scrollToBottom = useCallback(() => {
     setTimeout(() => {
-      codeMirrorRef.current.view.scrollDOM.scrollTo({
-        top: codeMirrorRef.current.view.scrollDOM.scrollHeight
-      })
+      codeMirrorRef.current.view.scrollDOM.scrollIntoView({ block: 'end' })
     }, 50)
   }, [codeMirrorRef])
 
@@ -214,18 +198,23 @@ export default function () {
         isError ?
           <div className={css.error}>请求异常，请<p className={css.refresh} onClick={() => refresh()}>刷新</p>重试</div> :
           <div>
-            <CodeMirror
+            <Code
+              ref={codeMirrorRef}
+              value={log}
+              height={isFullScreen ? fullScreenHeight : 'calc(100vh - 206px)'}
+            />
+            {/* <CodeMirror
               ref={codeMirrorRef}
               height={isFullScreen ? fullScreenHeight : 'calc(100vh - 206px)'}
               basicSetup={basicSetup}
               readOnly
               value={log}
-              theme={solarizedLight}
+              // theme={solarizedLight}
               autoFocus
               extensions={extensions}
               onCreateEditor={scrollToBottom}
               onUpdate={handleUpdate}
-            />
+            /> */}
             {isShowShortcatKeyTip && (
               <div className={`${css.shortcatKeyTip} ${isFullScreen ? css.fullScreen : ''}`}>command/Ctrl + F 开启面板搜索</div>
             )}
