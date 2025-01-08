@@ -22,7 +22,7 @@
     "@nestjs/common": "^8.0.0",
     "@nestjs/core": "^8.0.0",
     "@nestjs/platform-express": "^8.0.0",
-    "@nestjs/schedule": "^4.0.2",
+    "@nestjs/schedule": "4.0.2",
     "@swc/core": "^1.5.5",
     "adm-zip": "^0.5.14",
     "ali-oss": "^6.18.0",
