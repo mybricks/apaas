@@ -21,6 +21,7 @@ import { InstalledApp } from "@/types";
 import { FilePaths } from "../../.."
 import { useFilesContext } from "../../../FilesProvider"
 import { mergrFileData } from "@/utils/file";
+import { IS_IN_BRICKS_ENV } from '@/const'
 
 const folderExtnames = ["folder"]
 
@@ -492,7 +493,7 @@ function CreateFileModal({ app, onOk, onCancel }) {
               options={[
                 { value: 'UI', label: 'UI组件' },
                 { value: 'JS', label: '逻辑组件' },
-                { value: 'NOCOBASE_COM', label: 'NocoBase 区块' }
+                ...(IS_IN_BRICKS_ENV ? [{ value: 'NOCOBASE_COM', label: 'NocoBase 区块' }] : [])
               ]}
             />
           </Form.Item>
