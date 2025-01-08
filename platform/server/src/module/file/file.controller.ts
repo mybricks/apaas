@@ -536,7 +536,7 @@ export default class FileController {
           }
         }
       } catch (e) {
-        Logger.info(`[getCooperationUsers]: 读日志失败 ${e?.message}`)
+        // Logger.info(`[getCooperationUsers]: 读日志失败 ${e?.message}`)
       }
     }
 
