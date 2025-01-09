@@ -373,7 +373,7 @@ export default class FileController {
         }
 
         await Promise.all(pageAry.map(async ({ id, type }) => {
-          if (!type) {
+          if (!type || type === "module") {
             // 画布
             const page = pages.find((page) => id === page.id)
             if (!page) {
