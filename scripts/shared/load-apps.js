@@ -40,6 +40,11 @@ const scanAppDir = (dirFullPath, appName, callback) => {
 
   const packageJson = fse.readJsonSync(packageJsonPath, 'utf-8');
 
+  // 黑名单，代码已迁移至平台，物料中心不再作为一个应用
+  if (packageJson.name === 'mybricks-material') {
+    return
+  }
+
   // 规范一：按pages文件夹的规范来找
   const pagesFolderPath = path.join(dirFullPath, 'pages'); // 约定
   if (fse.existsSync(pagesFolderPath)) {

@@ -4,6 +4,7 @@
 
 
 const readUserConfig = require('./read-user-config');
+const readPlatformPackageJson = require('./read-package-json')
 const loadApps = require('./load-apps');
 const MySqlExecutor = require('./mysql-executor');
 const { verifyAccessToken } = require('./access-token');
@@ -12,6 +13,7 @@ const { getPM2Version, getNodeVersion } = require('./pm2')
 module.exports = {
   MySqlExecutor,
   readUserConfig,
+  readPlatformPackageJson,
   loadApps,
   accessToken: {
     verifyAccessToken

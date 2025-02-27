@@ -20,8 +20,8 @@
     "checkJs": false,
     "baseUrl": "./",
     "paths": {
-      "@": ["./src"],
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@workspace/*": ["./src/routes/workspace/*"]
     },
     "allowSyntheticDefaultImports": true
   },

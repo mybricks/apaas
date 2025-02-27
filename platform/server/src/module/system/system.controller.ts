@@ -15,7 +15,7 @@ import CommandService from './command.service';
 import env from './../../utils/env'
 import * as fse from 'fs-extra'
 import * as dayjs from 'dayjs'
-import { configuration, getNodeVersion, getPM2Version, loadApps, loadedApps } from './../../utils/shared';
+import { configuration, readPlatformPackageJson, getNodeVersion, getPM2Version, loadApps, loadedApps } from './../../utils/shared';
 import { ErrorExceptionFilter } from './../../filter/exception.filter';
 import { RequireRolesInterceptor, USER_ROLE } from './../../interceptor/require-role'
 
@@ -58,7 +58,8 @@ export default class SystemController {
         nodeVersion: getNodeVersion(),
         pm2Version: getPM2Version(),
         pm2Name: configuration.platformConfig?.appName,
-        isPureIntranet: !!configuration.platformConfig?.isPureIntranet
+        isPureIntranet: !!configuration.platformConfig?.isPureIntranet,
+        version: readPlatformPackageJson().version,
       }
     }
   }
@@ -88,32 +89,6 @@ export default class SystemController {
   @Get('/monitor/diagnostics')
   async getMonitorDiagnostics() {
     let result = []
-
-    try {
-      const status = MemoryState.appStatus.getStatus('mybricks-material')
-      if (status?.fe?.status && status?.server?.status) {
-        result.push({
-          title: '物料中心检测',
-          type: 'material_check',
-          level: 'success',
-          error: null,
-        })
-      } else {
-        result.push({
-          title: '物料中心检测',
-          type: 'material_check',
-          level: 'error',
-          error: '物料中心已安装但未正常加载，请检查'
-        })
-      }
-    } catch (error) {
-      result.push({
-        title: '物料中心检测',
-        type: 'material_check',
-        level: 'error',
-        error: '物料中心未安装，请务必先安装物料中心'
-      })
-    }
 
     try {
       childProcess.execSync('unzip').toString()

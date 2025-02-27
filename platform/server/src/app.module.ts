@@ -23,6 +23,7 @@ import ConfigModule from "./module/config/config.module";
 import OpenApiModule from "./module/open-api/open-api.module";
 import GlobalModule from "./module/global/global.module";
 import ProjectModule from "./module/project/project.module";
+import MaterialModule from "./module/material/material.module";
 
 import LoginModule from './module/login/login.module'
 
@@ -41,6 +42,7 @@ import { loadInstalledAppModules } from './mount-installed-apps'
     UserGroupModule, // 协作组模块
     AppsModule, // 应用管理模块，仅保留 获取已安装的应用 / 离线安装应用功能
     FlowModule, // 静态文件管理模块，运行时静态文件的管理，包含 各类静态资源 和 制品库 的增删查改 功能
+    MaterialModule,
     OssModule,
     ConfigModule,
     SystemModule, // 系统模块，仅保留了上报埋点 / 重启应用 / 诊断服务 等功能

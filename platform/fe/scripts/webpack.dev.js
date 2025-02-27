@@ -11,7 +11,8 @@ const { app_entries, app_static, app_proxies, app_plugins, devRootTraget } = app
 
 module.exports = merge(common, {
   entry: {
-    workspace: path.resolve(__dirname, `../src/index.tsx`),
+    workspace: path.resolve(__dirname, `../src/routes/workspace/index.tsx`),
+    'material-selector': path.resolve(__dirname, `../src/routes/material-selector/index.tsx`),
     ...app_entries,
   },
   output: {
@@ -63,6 +64,11 @@ module.exports = merge(common, {
       template: path.resolve(__dirname, `../public/workspace.html`),
       filename: "workspace.html",
       chunks: ['workspace'],
+    }),
+    new HtmlWebpackPlugin({
+      template: path.resolve(__dirname, `../public/workspace.html`),
+      filename: "material-selector.html",
+      chunks: ['material-selector'],
     }),
     ...app_plugins,
   ]

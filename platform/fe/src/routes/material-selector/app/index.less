@@ -1,0 +1,85 @@
+@import url('./../theme.less');
+
+.materialSelector {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.header {
+  padding: 16px 24px;
+  color: rgba(0,0,0,.85);
+  background: #fff;
+  border-bottom: 1px solid #f0f0f0;
+  border-radius: 2px 2px 0 0;
+  height: 55px;
+  position: relative;
+
+  .title {
+    margin: 0;
+    color: #000000d9;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 22px;
+    word-wrap: break-word;
+  }
+
+  .close {
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: 100%;
+    width: 54px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(0, 0, 0, .45);
+    cursor: pointer;
+
+    svg {
+      width: 16px;
+      height: 16px;
+    }
+  }
+}
+
+.container {
+  padding: 20px 20px 0px 20px;
+  font-size: 14px;
+  line-height: 1.5715;
+  word-wrap: break-word;
+  flex: 1;
+  box-sizing: border-box;
+  overflow: auto;
+  position: relative;
+
+  .scrollbar();
+}
+
+
+.footer {
+  .tip {
+    flex: 1;
+    font-size: 14px;
+    margin-left: 10px;
+  }
+
+  height: 53px;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  border-top: 1px solid rgba(0,0,0,.06);
+}
+
+.selectedBox {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.okBtn {
+  margin-left: 8px!important;
+}

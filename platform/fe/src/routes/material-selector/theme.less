@@ -1,0 +1,29 @@
+@color-primary: var(--mybricks-color-primary, #FA6400);
+
+@color-error: #F55753;
+@color-disabled: #ff8e52;
+
+.scrollbar() {
+  &::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    border-radius: 7px;
+    background: #BBB;
+    border: 0 solid transparent;
+    background-clip: padding-box;
+  }
+
+  &::-webkit-scrollbar-button {
+    display: none;
+  }
+
+  &::-webkit-scrollbar-corner {
+    display: none;
+  }
+}
+
+

@@ -1,0 +1,121 @@
+.materialInfo {
+  background: #FFFFFF;
+  overflow: auto;
+  width: 100%;
+  height: 100%;
+
+  .content {
+    position: relative;
+    margin: 10px auto;
+    min-width: 750px;
+    // max-width: 90%;
+    padding: 0px 15px;
+  }
+
+  .back {
+    position: absolute;
+    left: 24px;
+    top: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    transform: rotateZ(180deg);
+  }
+
+  .card {
+    margin-top: 24px;
+    border: 1px solid #e6e8ec;
+    border-radius: 5px;
+    box-sizing: border-box;
+    min-height: 200px;
+    display: flex;
+    align-items: center;
+    padding: 24px;
+
+    .snap {
+      margin-top: 40px;
+      width: 160px;
+      height: 160px;
+      background-color: #FAFAFA;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      flex-shrink: 0;
+
+      .img {
+        width: 100%;
+        height: 100%;
+        background-size: 100%;
+        background-repeat: no-repeat;
+      }
+
+      .imgContent {
+        border-radius: 5px;
+        width: 170px;
+        height: 170px;
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+      }
+    }
+
+    .title {
+      position: relative;
+      font-weight: 600;
+      font-size: 22px;
+      color: #303132;
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+
+    .cardContent {
+      flex: 1;
+      height: 160px;
+      margin: 40px 0 0 40px;
+    }
+
+    .infoLine {
+      margin-top: 12px;
+      display: flex;
+
+      div {
+        font-size: 15px;
+        flex: 1;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        display: flex;
+        align-items: center;
+      }
+
+      .value {
+        font-size: 14px;
+      }
+    }
+  }
+
+  .tabCard {
+    margin-top: 24px;
+    border-radius: 5px;
+    min-height: 60px;
+  }
+}
+
+.materialVersion {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  .filter {
+    margin-bottom: 12px;
+    width: 300px;
+  }
+
+  .table {
+    flex: 1;
+    overflow: auto;
+  }
+}

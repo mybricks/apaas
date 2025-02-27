@@ -62,7 +62,22 @@ export default class AppService {
   }
 
   async getAllInstalledList({ filterSystemApp }: {filterSystemApp: boolean}): Promise<T_InstalledApp[]> {
-    return filterSystemApp ? loadApps().filter(t => t.type !== 'system') : loadApps();
+    const apps = loadApps()
+      .concat({ // 由于物料中心迁移到平台，但是SDK中依然使用了installApp，所以这里不得不hack地添加一个
+        title: '物料中心',
+        description: 'mybricks 物料中心',
+        namespace: 'mybricks-material',
+        appName: 'mybricks-material',
+        type: 'material',
+        version: '0.2.46',
+        exports: [
+          {
+            "name": "materialSelectorPage",
+            "path": "/material-selector.html"
+          }
+        ],
+      });
+    return filterSystemApp ? apps.filter(t => t.type !== 'system') : apps;
   }
 
   async getInstalledApp({ namespace } : { namespace: string }) {

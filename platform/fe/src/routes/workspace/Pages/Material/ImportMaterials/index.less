@@ -1,0 +1,49 @@
+
+@import url("@/theme.less");
+
+.designMaterials {
+  // display: flex;
+  // flex-direction: column;
+
+  padding-bottom: 12px;
+
+  .tabs {
+    margin-bottom: 20px;
+  }
+
+  .iconUpload {
+    .localEntry {
+      margin-top: 5px;
+      cursor: pointer;
+      font-size: 13px;
+      color: rgba(0, 0, 0, 0.85);
+      font-style: italic;
+
+      &:hover {
+        color: @color-primary;
+        text-decoration: underline;
+      }
+    }
+
+    .iconPreview {
+      margin-top: 15px;
+      .title {
+        font-size: 14px;
+        font-weight: 500;
+      }
+      .list {
+        display: flex;
+        flex-wrap: wrap;
+        padding-bottom: 15px;
+      }
+      .icon {
+        // width: 36px;
+        // height: 36px;
+        font-size: 38px;
+      }
+    }
+  }
+  
+}
+
+

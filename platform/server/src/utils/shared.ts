@@ -4,7 +4,8 @@ const {
   MySqlExecutor: _MySqlExecutor,
   accessToken: _accessToken,
   getPM2Version: _getPM2Version,
-  getNodeVersion: _getNodeVersion
+  getNodeVersion: _getNodeVersion,
+  readPlatformPackageJson: _readPlatformPackageJson,
 } = require('./../../../../scripts/shared/index.js')
 
 
@@ -113,3 +114,5 @@ export const accessToken = _accessToken;
 export const getPM2Version: () => string = _getPM2Version;
 
 export const getNodeVersion: () => string = _getNodeVersion;
+
+export const readPlatformPackageJson: () => any = _readPlatformPackageJson;

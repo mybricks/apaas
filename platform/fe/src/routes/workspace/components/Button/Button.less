@@ -1,0 +1,142 @@
+@import "@/theme.less";
+
+.button {
+  font-size: 14px;
+  font-weight: 400;
+  text-align: left;
+  white-space: nowrap;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 10px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  color: #ffffff;
+  backface-visibility: hidden;
+  user-select: none;
+  //box-shadow: 0 1px 2px 0 #0000001a;
+  cursor: pointer;
+  appearance: none;
+
+  //transition: all 0.3s ease-in-out;
+
+  &:hover {
+    color: #ffffff;
+  }
+
+  &:active {
+    color: #ffffffb3;
+  }
+
+  &[disabled] {
+    cursor: not-allowed;
+    pointer-events: none;
+    box-shadow: none;
+  }
+}
+
+.size24 {
+  font-size: 12px;
+  padding: 4px 8px;
+  height: 24px;
+
+  & + button,
+  & + a {
+    margin-left: '12px';
+  }
+}
+
+.size32 {
+  font-size: 14px;
+  padding: 5px 12px;
+  height: 30px;
+}
+
+.size40 {
+  font-size: 14px;
+  padding: 10px 12px;
+  height: 40px;
+}
+
+.size48 {
+  font-size: 16px;
+  padding: 12px 14px;
+  height: 48px;
+}
+
+.primary {
+  color: #ffffff;
+  background-color: @color-primary;
+
+  &[disabled] {
+    color: #ffffffb3;
+    background-color: @color-disabled;
+  }
+
+  &:hover, &:active {
+    background-color: @color-disabled;
+  }
+
+  &:hover {
+    color: #ffffffb3;
+  }
+
+  &:active {
+    color: #ffffffb3;
+  }
+}
+
+.secondary {
+  border-color: #DDD;
+  font-size: 13px;
+  background-clip: padding-box;
+  color: #555;
+  //color: hsla(19, 89%, 55%, 1);
+  background-color: hsla(0, 0%, 100%, 1);
+
+  &[disabled] {
+    opacity: 0.6;
+  }
+
+  &:hover {
+    // color: hsla(19, 89%, 55%, 1);
+    // background-color: hsla(0, 0%, 90%, 1);
+    // background-clip: border-box;
+    color: @color-primary;
+    border-color: @color-primary;
+    background-clip: border-box;
+  }
+
+  &:active {
+    // color: hsla(19, 89%, 55%, 1);
+    // background-color: hsla(0, 0%, 90%, 1);
+    // background-clip: border-box;
+    color: @color-primary;
+    border-color: @color-primary;
+    background-clip: border-box;
+  }
+}
+
+.contentWrapper {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  line-height: 1.5714285714285714;
+}
+
+.loading {
+  overflow: hidden;
+
+  &[disabled] {
+    color: transparent;
+    opacity: 1;
+  }
+}
+
+.loadingWrapper {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}

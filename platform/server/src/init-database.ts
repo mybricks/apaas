@@ -32,6 +32,9 @@ export default function initDatabase(mapperPaths: string[]) {
 function initMybatisSqls (mapperPaths) {
   fse.ensureDirSync(MYBATIS_SQL_FOLDER);
 
+  // 清空防止历史遗留
+  fse.emptyDirSync(MYBATIS_SQL_FOLDER);
+
   // 拷贝平台xml
   fse.copySync(path.resolve(__dirname, './resource'), MYBATIS_SQL_FOLDER, { overwrite: true });
 

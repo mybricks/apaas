@@ -4,6 +4,7 @@ module.exports = {
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './../src'),
+      '@workspace': path.resolve(__dirname, './../src/routes/workspace'),
     },
     extensions: ['.js', '.jsx', '.ts', '.tsx'],
   },

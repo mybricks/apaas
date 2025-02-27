@@ -1,0 +1,114 @@
+@import url('@/theme.less');
+
+.appItemContainer {
+  display: flex;
+  margin-bottom: 24px;
+
+  &:last-child {
+    margin-bottom: 0px;
+  }
+
+  .appInfo {
+    width: 50px;
+    display: flex;
+    align-items: center;
+
+    img {
+      width: 50px;
+      height: 50px;
+    }
+  }
+
+  .appConfig {
+    flex: 1;
+    margin-left: 16px;
+
+    .comlibConfig {
+      display: flex;
+
+      :global {
+        .ant-ribbon-wrapper {
+          &:not(:first-child) {
+            margin-left: 12px;
+          }
+        }
+        .ant-card-actions {
+          position: absolute;
+          width: 100%;
+          bottom: 0;
+        }
+      }
+
+      .comlibBadge {
+        background-color: red;
+      }
+
+      .comlibCard {
+        width: 180px;
+        height: 285px;
+        cursor: default;
+
+        :global {
+          .ant-card-body {
+            padding: 8px 4px 4px 4px;
+
+            .ant-card-meta-title {
+              margin-bottom: 0px;
+            }
+          }
+
+          .ant-card-actions {
+            > li {
+              margin: 4px 0px;
+              > span {
+                cursor: default;
+                > .anticon {
+                  // 样式规则
+                  font-size: 14px;
+                  line-height: 14px;
+                  cursor: pointer;
+                  // css如何给父节点设置样式
+                }
+              }
+            }
+          }
+        }
+
+        .iconDisabled {
+          cursor: not-allowed !important;
+          color: #8c8c8c !important;
+          opacity: 0.5;
+        }
+
+        img {
+          width: 180px;
+          height: 180px;
+          padding: 10px 0px;
+          object-fit: contain;
+          background-color: #fafafa;
+        }
+
+        .cardVersion {
+          font-size: 12px;
+        }
+        
+        &:not(:first-child) {
+          margin-left: 12px;
+        }
+      }
+
+      .addComlib {
+        background: #fafafa;
+        outline: 1px dashed #d9d9d9;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+
+        &:hover {
+          outline-color: @color-primary;
+        }
+      }
+    }
+  }
+}
