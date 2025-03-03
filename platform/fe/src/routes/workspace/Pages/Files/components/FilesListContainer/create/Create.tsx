@@ -500,6 +500,17 @@ function CreateFileModal({ app, onOk, onCancel }) {
             />
           </Form.Item>
         ) : null}
+        {['mpsite'].includes(app?.extName) ? (
+          <Form.Item label='类型' name="type" initialValue="weapp">
+            <Select
+              options={[
+                { value: 'weapp', label: '微信小程序' },
+                { value: 'alipay', label: '支付宝小程序' },
+                { value: 'h5', label: 'H5' },
+              ]}
+            />
+          </Form.Item>
+        ) : null}
         {/* {['cloud-com', 'mp-cloudcom'].includes(app?.extName) ? (
 		      <Form.Item label='类型' name="type" initialValue="other">
 			      <Radio.Group
