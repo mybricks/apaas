@@ -82,7 +82,7 @@ const ViewAsTable: FC<ViewAsTableProps> = ({
         }
       }
     ]
-  }, []);
+  }, [roleDescription]);
 
   const dataSource = useCallback(() => {
     return files.concat()
