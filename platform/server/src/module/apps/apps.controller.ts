@@ -491,7 +491,6 @@ export default class AppsController {
       const zipFilePath = path.join(TEMP_FOLDER_PATH, `./${escapeFileName(file.originalname)}`)
       Logger.info(`${logPrefix} 开始持久化压缩包`)
       fs.writeFileSync(zipFilePath, file.buffer);
-      childProcess.execSync(`which unzip`).toString()
       Logger.info(`${logPrefix} 开始解压文件`)
       childProcess.execSync(`unzip -o ${zipFilePath} -d ${TEMP_FOLDER_PATH}`, {
         stdio: 'inherit' // 不inherit输出会导致 error: [Circular *1]
