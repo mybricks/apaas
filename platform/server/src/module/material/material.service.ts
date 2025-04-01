@@ -639,6 +639,8 @@ export default class MaterialService {
   					].includes(key)
   				) {
   					data[key] = safeDecodeURIComponent(content[key]);
+  				} else if (key === 'schema') {
+  					data[key] = safeParse(safeDecodeURIComponent(content[key]));
   				} else if (key !== 'esRuntime') {
   					data[key] =
               typeof content[key] === 'string'
