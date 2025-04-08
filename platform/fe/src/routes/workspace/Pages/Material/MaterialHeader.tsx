@@ -74,7 +74,7 @@ const MaterialHeader: FC = () => {
               },
               {
                 key: '3',
-                label: <a target="_blank">添加图标素材</a>,
+                label: <a target="_blank">添加素材</a>,
                 icon: <FileImageOutlined />,
                 onClick: openDesignMaterials,
               },
