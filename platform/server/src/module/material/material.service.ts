@@ -2330,7 +2330,7 @@ export default class MaterialService {
   												reject(errMessage);
   											} else {
 													const target = files.find(zipFileEntry => {
-														return zipFileEntry.entryName === value.replace(/^\.\//, '')
+														return zipFileEntry.entryName.replace(/^\.\//, '') === value.replace(/^\.\//, '')
 													})
 													const fileContent = target.getData().toString("utf8");
 													const { version } = materialPub;
@@ -2384,7 +2384,7 @@ export default class MaterialService {
   															}
   														} else {
 																const target = files.find(zipFileEntry => {
-																	return zipFileEntry.entryName === value.replace(/^\.\//, '')
+																	return zipFileEntry.entryName.replace(/^\.\//, '') === value.replace(/^\.\//, '')
 																})
 																const fileContent = target.getData().toString("utf8");
 																(async() => {
@@ -2605,7 +2605,7 @@ export default class MaterialService {
   												reject(errMessage);
   											} else {
 													const target = files.find(zipFileEntry => {
-														return zipFileEntry.entryName === value.replace(/^\.\//, '')
+														return zipFileEntry.entryName.replace(/^\.\//, '') === value.replace(/^\.\//, '')
 													})
 													const fileContent = target.getData().toString("utf8");
 
@@ -2662,7 +2662,7 @@ export default class MaterialService {
   														} else {
   															Logger.info(`[导入物料] file: ${value.replace(/^\.\//, '')}`);
 																const target = files.find(zipFileEntry => {
-																	return zipFileEntry.entryName === value.replace(/^\.\//, '')
+																	return zipFileEntry.entryName.replace(/^\.\//, '') === value.replace(/^\.\//, '')
 																})
 																const fileContent = target.getData().toString("utf8");
 
@@ -2818,6 +2818,7 @@ export default class MaterialService {
   								);
   							}
   						} catch (err) {
+								Logger.error('[导入物料] 读取声明中的文件失败', err);
   							state = 'error';
   						}
 
