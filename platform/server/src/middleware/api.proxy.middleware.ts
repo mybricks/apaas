@@ -25,10 +25,21 @@ export function apiProxy(option: Option = {}) {
       req.headers.origin = origin;
       req.headers.host = host;
 
+      const configs = {};
+      const contentType = req.headers['content-type'] || '';
+
+      if (/^multipart\/form-data/i.test(contentType)) {
+        configs.parseReqBody = false;
+      }
+
       return proxy(url, {
         limit: '100mb',
         timeout: TIMEOUT_TIME,
-        parseReqBody: false,
+        ...configs,
+        // parseReqBody: false,
+        // proxyReqBodyDecorator: (req) => {
+        //   return req;
+        // },
         proxyReqPathResolver: req => {
           const queryStr = (req.originalUrl.split('?')[1] ?? '') || (req.url.split('?')[1] ?? '');
           return req.url.split('?')[0] + (queryStr ? `?${queryStr}` : '');
