@@ -28,6 +28,7 @@ export function apiProxy(option: Option = {}) {
       return proxy(url, {
         limit: '100mb',
         timeout: TIMEOUT_TIME,
+        parseReqBody: false,
         proxyReqPathResolver: req => {
           const queryStr = (req.originalUrl.split('?')[1] ?? '') || (req.url.split('?')[1] ?? '');
           return req.url.split('?')[0] + (queryStr ? `?${queryStr}` : '');
