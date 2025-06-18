@@ -3186,31 +3186,40 @@ export default class MaterialService {
   			await Promise.all(
   				frameworks.map(async (framework) => {
   					const frameworkContentInfo = content[framework];
-  					const { editJs, rtJs, coms } = frameworkContentInfo;
-  					const [editUrl, rtUrl, rtComUrl] = await Promise.all(
+  					const { editJs, rtJs, coms, hmCode } = frameworkContentInfo;
+  					const [editUrl, rtUrl, rtComUrl, hmCodeUrl] = await Promise.all(
   						[
   							{ code: editJs, fileName: 'edit.js' },
   							{ code: rtJs, fileName: 'rt.js' },
   							{ code: coms, fileName: 'rtCom.js' },
+								{ code: hmCode, fileName: "hmCode.zip"}
   						].map(({ code, fileName }) => {
   							return new Promise((resolve, reject) => {
-  								API.Upload.staticServer({
-  									// TODO: 不能暴力替换，抽空改下
-  									content: code.replace(
-  										`version:"${version}"`,
-  										`version:"${materialVersion}"`,
-  									),
-  									folderPath: `/material/${materialId}/${materialVersion}/${framework}`,
-  									fileName,
-  									noHash: true,
-  								})
-  									.then((res: { url: string }) => {
-  										let url = res.url;
-  										resolve(url.slice(url.indexOf('/mfs')));
-  									})
-  									.catch((err) => {
-  										reject(err?.message | err?.mgs | err);
-  									});
+  								if (!code) {
+										resolve("")
+									} else {
+										API.Upload.staticServer({
+											// TODO: 不能暴力替换，抽空改下
+											content: typeof code === "string" ? code.replace(
+												`version:"${version}"`,
+												`version:"${materialVersion}"`,
+											) : code,
+											// content: code.replace(
+											// 	`version:"${version}"`,
+											// 	`version:"${materialVersion}"`,
+											// ),
+											folderPath: `/material/${materialId}/${materialVersion}/${framework}`,
+											fileName,
+											noHash: true,
+										})
+											.then((res: { url: string }) => {
+												let url = res.url;
+												resolve(url.slice(url.indexOf('/mfs')));
+											})
+											.catch((err) => {
+												reject(err?.message | err?.mgs | err);
+											});
+									}
   							});
   						}),
   					);
@@ -3218,10 +3227,12 @@ export default class MaterialService {
   						coms: rtComUrl,
   						editJs: editUrl,
   						rtJs: rtUrl,
+							hmCode: hmCodeUrl
   					};
   					frameworkContentInfo.editJs = editUrl;
   					frameworkContentInfo.rtJs = rtUrl;
   					frameworkContentInfo.coms = rtComUrl;
+						frameworkContentInfo.hmCode = hmCodeUrl;
   				}),
   			);
   			/** pub 记录 */
@@ -3291,31 +3302,40 @@ export default class MaterialService {
   			await Promise.all(
   				frameworks.map(async (framework) => {
   					const frameworkContentInfo = content[framework];
-  					const { editJs, rtJs, coms } = frameworkContentInfo;
-  					const [editUrl, rtUrl, rtComUrl] = await Promise.all(
+  					const { editJs, rtJs, coms, hmCode } = frameworkContentInfo;
+  					const [editUrl, rtUrl, rtComUrl, hmCodeUrl] = await Promise.all(
   						[
   							{ code: editJs, fileName: 'edit.js' },
   							{ code: rtJs, fileName: 'rt.js' },
   							{ code: coms, fileName: 'rtCom.js' },
+								{ code: hmCode, fileName: "hmCode.zip"}
   						].map(({ code, fileName }) => {
   							return new Promise((resolve, reject) => {
-  								API.Upload.staticServer({
-  									// TODO: 不能暴力替换，抽空改下
-  									content: code.replace(
-  										`version:"${version}"`,
-  										`version:"${materialVersion}"`,
-  									),
-  									folderPath: `/material/${materialId}/${materialVersion}/${framework}`,
-  									fileName,
-  									noHash: true,
-  								})
-  									.then((res: { url: string }) => {
-  										let url = res.url;
-  										resolve(url.slice(url.indexOf('/mfs')));
-  									})
-  									.catch((err) => {
-  										reject(err?.message | err?.mgs | err);
-  									});
+  								if (!code) {
+										resolve("")
+									} else {
+										API.Upload.staticServer({
+											// TODO: 不能暴力替换，抽空改下
+											content: typeof code === "string" ? code.replace(
+												`version:"${version}"`,
+												`version:"${materialVersion}"`,
+											) : code,
+											// content: code.replace(
+											// 	`version:"${version}"`,
+											// 	`version:"${materialVersion}"`,
+											// ),
+											folderPath: `/material/${materialId}/${materialVersion}/${framework}`,
+											fileName,
+											noHash: true,
+										})
+											.then((res: { url: string }) => {
+												let url = res.url;
+												resolve(url.slice(url.indexOf('/mfs')));
+											})
+											.catch((err) => {
+												reject(err?.message | err?.mgs | err);
+											});
+									}
   							});
   						}),
   					);
@@ -3323,10 +3343,12 @@ export default class MaterialService {
   						coms: rtComUrl,
   						editJs: editUrl,
   						rtJs: rtUrl,
+							hmCode: hmCodeUrl
   					};
   					frameworkContentInfo.editJs = editUrl;
   					frameworkContentInfo.rtJs = rtUrl;
   					frameworkContentInfo.coms = rtComUrl;
+						frameworkContentInfo.hmCode = hmCodeUrl;
   				}),
   			);
   			/** pub 记录 */
