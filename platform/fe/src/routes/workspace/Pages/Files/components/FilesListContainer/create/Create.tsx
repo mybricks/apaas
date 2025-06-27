@@ -142,9 +142,6 @@ export function Create({
             <label>{title}</label>
             <p>{description}</p>
           </div>
-          <div className={css.snap}>
-
-          </div>
         </div>
       );
     })
@@ -241,6 +238,8 @@ export function Create({
             } else {
               reject(`创建文件错误：${data.message}`)
             }
+          }).finally(() => {
+            chooseTemplate = null
           })
         } else {
           axios({

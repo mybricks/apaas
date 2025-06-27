@@ -1,4 +1,4 @@
-import React, {FC} from "react";
+import React, {FC, useState, useEffect, useRef, useLayoutEffect} from "react";
 
 import {Navbar, LoadingPlaceholder, Button, Popover} from "@workspace/components";
 import {ArrowDown, ViewAsGrid, ViewAsList} from "@workspace/components/icon";
@@ -10,9 +10,39 @@ import FilesSearchButton from "./components/FilesSearchButton";
 
 import css from "./FilesHeader.less";
 
+const CreateWrapper = ({ onClose }) => {
+  const contentRef = useRef(null);
+
+  useLayoutEffect(() => {
+    const handleClickOutside = (event) => {
+      // 获取点击的元素
+      const target = event.target;
+      if (!contentRef.current?.contains?.(target)) {
+        onClose?.()
+      }
+    };
+    // 添加点击事件监听
+    document.getElementById('root').addEventListener('click', handleClickOutside);
+    // 清理函数
+    return () => {
+      document.getElementById('root').removeEventListener('click', handleClickOutside);
+    };
+  }, [onClose]);
+
+  return (
+    <div
+      ref={contentRef}
+      onClick={(e) => { e.stopPropagation() }}
+    >
+      <Create/>
+    </div>
+  )
+}
+
 const FilesHeader: FC = () => {
   const {filePathsInfo: {loading, filePaths}, viewType, setViewType, filesInfo} = useFilesContext();
-  
+  const [popOpen, setPopOpen] = useState(false)
+
   return (
     <div className={css.filesHeader}>
       {/*{loading ? <LoadingPlaceholder /> : <FilePathNavigation paths={filePaths}/>}*/}
@@ -36,11 +66,11 @@ const FilesHeader: FC = () => {
         <FilesSearchButton/>
         <Popover
           arrow={false}
-          content={<Create/>}
+          content={<CreateWrapper onClose={() => setPopOpen(false)} />}
           placement="bottomRight"
-          trigger="click"
+          open={popOpen}
         >
-          <Button type={"primary"} style={{ fontWeight: 'bold' }} disabled={![1, 2].includes(filesInfo.roleDescription)}>
+          <Button type={"primary"} style={{ fontWeight: 'bold' }} disabled={![1, 2].includes(filesInfo.roleDescription)} onClick={() => setPopOpen(true)}>
             <label className={css.addIcon}>+</label>
             新建
             {/* <span className={css.downIcon}>{ArrowDown}</span> */}

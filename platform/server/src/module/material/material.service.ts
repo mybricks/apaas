@@ -2545,6 +2545,7 @@ export default class MaterialService {
   								);
   							}
   						} catch (err) {
+								Logger.error('[导入物料] 读取文件失败', err);
   							state = 'error';
   						}
 
