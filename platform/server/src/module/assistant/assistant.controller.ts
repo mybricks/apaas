@@ -61,10 +61,23 @@ export default class AssistantController {
           message: 'Unauthorized token'
         });
       } else {
-        response.status(500).json({
-          code: -1,
-          message: error.message || 'AI服务异常'
-        });
+        const statusCode = error.response?.status || 500;
+        if (error.response?.headers) {
+          Object.entries(error.response.headers).forEach(([key, value]) => {
+            if (value !== undefined) {
+              response.setHeader(key, value.toString());
+            }
+          });
+        }
+        response.status(statusCode);
+        if (error.response?.data?.pipe) {
+          error.response.data.pipe(response);
+        } else {
+          response.json(error.response?.data || {
+            code: -1,
+            message: error.message || 'AI服务异常'
+          });
+        }
       }
     }
   }
