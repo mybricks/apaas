@@ -36,7 +36,7 @@ export default class AssistantService {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${aiToken}`,
-        ...headers
+        'm-request-role': headers['m-request-role']
       },
       responseType: 'stream'
     });

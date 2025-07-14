@@ -1,6 +1,7 @@
 import { Controller, Get, Post, Body, Headers, Res, Options, UseInterceptors } from '@nestjs/common';
 import AssistantService, { AIServiceNotAvailableError } from './assistant.service';
 import { Response } from 'express';
+import { Logger } from '@mybricks/rocker-commons';
 import { RequireRolesInterceptor, USER_ROLE } from './../../interceptor/require-role'
 
 @Controller('api/assistant')
@@ -28,7 +29,7 @@ export default class AssistantController {
 
       return {
         code: 1,
-        message: 'AI服务已就绪'
+        message: '服务已就绪'
       }
     } catch (error) {
       return {
@@ -53,6 +54,7 @@ export default class AssistantController {
       
       stream.data.pipe(response);
     } catch (error) {
+      Logger.error(error?.stack?.toString())
       if (error instanceof AIServiceNotAvailableError) {
         response.status(401).json({
           code: -1,
@@ -61,7 +63,6 @@ export default class AssistantController {
       } else {
         response.status(500).json({
           code: -1,
-          data: null,
           message: error.message || 'AI服务异常'
         });
       }
