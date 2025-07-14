@@ -74,6 +74,9 @@ interface Configuration {
     tokenSecretOrPrivateKey?: string
   }
 
+  ai?: {
+    accessToken?: string
+  }
 }
 
 export interface LoadedApp {

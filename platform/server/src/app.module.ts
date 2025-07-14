@@ -24,6 +24,7 @@ import OpenApiModule from "./module/open-api/open-api.module";
 import GlobalModule from "./module/global/global.module";
 import ProjectModule from "./module/project/project.module";
 import MaterialModule from "./module/material/material.module";
+import AssistantModule from './module/assistant/assistant.module';
 
 import LoginModule from './module/login/login.module'
 
@@ -51,6 +52,7 @@ import { loadInstalledAppModules } from './mount-installed-apps'
     AnalyseModule,
     GlobalModule,
     ProjectModule,
+    AssistantModule,
     // 加载已安装的 APP
     ...(loadInstalledAppModules()),
   ],
