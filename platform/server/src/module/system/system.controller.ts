@@ -289,7 +289,7 @@ export default class SystemController {
     }
   }
 
-  @UseInterceptors(new RequireRolesInterceptor([USER_ROLE.GUEST]))
+  @UseInterceptors(new RequireRolesInterceptor([USER_ROLE.ADMIN]))
   @Sse('/command/execInApp')
   async commandExec(@Query('namespace') namespace: string, @Query('command') command: string) {
     try {

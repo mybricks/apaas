@@ -39,7 +39,7 @@ export default class AssistantController {
     }
   }
 
-  @UseInterceptors(new RequireRolesInterceptor([USER_ROLE.NORMAL, USER_ROLE.ADMIN]))
+  @UseInterceptors(new RequireRolesInterceptor([USER_ROLE.NORMAL, USER_ROLE.NORMAL_PROJECT, USER_ROLE.ADMIN]))
   @Post('/stream')
   async stream(
     @Body() body: any,

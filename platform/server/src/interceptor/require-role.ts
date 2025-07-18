@@ -24,8 +24,16 @@ export class RequireRolesInterceptor implements NestInterceptor {
   async intercept(context: ExecutionContext, next: CallHandler): Promise<Observable<any>> {
     const request = context.switchToHttp().getRequest();
 
-    const { userId } = await jwtService.verifyUserIsLogin({ request });
-    const userInfo = await userService.queryById({ id: userId });
+    const { userId, userEmail } = await jwtService.verifyUserIsLogin({
+      request,
+      headerUsername:  request.headers?.['username'] // TODO，历史遗留
+    });
+    let userInfo: any
+    if (userId) {
+      userInfo = await userService.queryById({ id: userId });
+    } else if (userEmail) {
+      userInfo = await userService.queryByEmail({ email: userEmail });
+    }
 
     if (!this.requiredRoles.some(role => role === userInfo?.role as any)) {
       throw new ForbiddenException('您无权限进行此操作');
