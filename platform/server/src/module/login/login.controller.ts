@@ -9,6 +9,7 @@ import {
   Request,
   Res,
   Req,
+  UseInterceptors,
 } from '@nestjs/common';
 import { Response } from 'express'
 import FileDao from '../../dao/FileDao';
@@ -18,6 +19,7 @@ import UserService from './../user/user.service';
 import JwtService from './jwt.service';
 import { Logger } from '@mybricks/rocker-commons';
 import { getAxiosInstance } from '@mybricks/sdk-for-app/api/util';
+import { SetForAICookieWhenCode1Interceptor } from './../../interceptor/set-cookie'
 import { USER_ROLE } from '../../constants'
 import UserSessionDao from './../../dao/UserSessionDao';
 
@@ -220,11 +222,12 @@ export default class LoginController {
    * 已登录用户
    */
   @Post('/signed')
-  async signed(@Body() body, @Headers('username') us: string, @Request() request) {
+  @UseInterceptors(SetForAICookieWhenCode1Interceptor)
+  async signed(@Body() body, @Request() request) {
     try {
       const { fileId } = body;
 
-      const { userEmail, userId } = await this.jwtService.verifyUserIsLogin({ request, headerUsername: us })
+      const { userEmail, userId } = await this.jwtService.verifyUserIsLogin({ request })
 
       if (!userEmail && !userId) {
         // 都没带的情况下，才是游客，直接判断
@@ -296,9 +299,9 @@ export default class LoginController {
   }
 
   @Post('/queryCurrentSession')
-  async queryCurrentSession(@Headers('username') us: string, @Request() request) {
+  async queryCurrentSession(@Request() request) {
     try {
-      const { userEmail, userId } = await this.jwtService.verifyUserIsLogin({ request, headerUsername: us })
+      const { userEmail, userId } = await this.jwtService.verifyUserIsLogin({ request })
       if (userEmail || userId) {
         return {
           code: 1

@@ -26,7 +26,6 @@ export class RequireRolesInterceptor implements NestInterceptor {
 
     const { userId, userEmail } = await jwtService.verifyUserIsLogin({
       request,
-      headerUsername:  request.headers?.['username'] // TODO，历史遗留
     });
     let userInfo: any
     if (userId) {

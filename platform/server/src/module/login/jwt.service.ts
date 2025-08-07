@@ -46,18 +46,16 @@ export default class JwtService {
 
 
   public async verifyUserIsLogin ({
-    headerUsername,
     request,
   }: {
-    headerUsername?: string;
     request: Request;
   }) {
     let userEmail;
     let userId;
 
 
-    if(headerUsername) {
-      userEmail = headerUsername;
+    if(request.headers?.['username']) {
+      userEmail = request.headers?.['username'];
     }
 
     let cookieInfo = null
