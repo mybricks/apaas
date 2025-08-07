@@ -116,9 +116,14 @@ export function Create({
     })
   }, [])
 
+  const PRIORITY_NAMESPACES = ['mybricks-app-harmony-module', 'mybricks-app-harmony-application'];
   /** 搭建应用列表 */
   const AppList: JSX.Element[] = useMemo(() => {
-    return designApps.filter(t => !DISABLED_CREATE_APPS.includes(t.namespace)).map(app => {
+    return designApps.sort((a, b) => {
+      const indexA = PRIORITY_NAMESPACES.indexOf(a.namespace);
+      const indexB = PRIORITY_NAMESPACES.indexOf(b.namespace);
+      return (indexA === -1 ? Infinity : indexA) - (indexB === -1 ? Infinity : indexB);
+    }).filter(t => !DISABLED_CREATE_APPS.includes(t.namespace)).map(app => {
       const {
         icon,
         title,
