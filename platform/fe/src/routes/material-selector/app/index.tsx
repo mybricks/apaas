@@ -66,12 +66,15 @@ export default () => {
         }
         parsedPayload.limit && setLimit(parsedPayload.limit)
 
+        const { title: parsedPayloadTitle, combo: parsedPayloadCombo, defaultSelected, type, curUpgradeMaterial, config, autoCloseOnSuccess, limit, scene, tags, ...other } = parsedPayload
+
         setQueryParams({
           type: parsedPayload.type ?? materialType,
           scene: parsedPayload.scene,
           tags: Array.isArray(parsedPayload.tags)
             ? parsedPayload.tags.join(',')
             : undefined,
+          ...other,
         })
 
         setTimeout(() => {

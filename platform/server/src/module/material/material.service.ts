@@ -670,7 +670,14 @@ export default class MaterialService {
     type: ExtName[];
     status?: EffectStatus[];
     scopeStatus?: MaterialScopeStatus[];
+		materialIds?: string[];
   }) {
+		if (params.materialIds) {
+			const list = await this.materialDao.getMaterialListByMaterialId(params.materialIds);
+			return {
+				list, total: list.length
+			}
+		}
   	const currentParams = {
   		...params,
   		offset: (params.page - 1) * params.pageSize,

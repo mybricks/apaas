@@ -265,6 +265,7 @@ export default class MaterialController {
     @Query('scene') scene: string,
     @Query('userId') userId: string,
     @Query('tags') tags: string,
+		@Query('materialIds') materialIds: string,
   ) {
   	return {
   		code: 1,
@@ -290,6 +291,7 @@ export default class MaterialController {
   					MaterialScopeStatus.FROMFAREND,
   				],
   			userId,
+				materialIds: materialIds? (materialIds.split(",")) : undefined
   		}),
   	};
   }
