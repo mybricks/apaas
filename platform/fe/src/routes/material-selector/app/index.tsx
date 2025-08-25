@@ -214,7 +214,7 @@ export default () => {
               ))}
           </div>
           <div className={css.footer}>
-            <div className={css.tip}>请选择需要的组件</div>
+            <div className={css.tip}></div>
             <Button onClick={onClose}>取消</Button>
             <Button
               type="primary"
