@@ -36,6 +36,7 @@ export default ({ onQuery, defaultValues, blackList = [] }) => {
                 { value: 'component', label: '组件' },
                 { value: 'picture', label: '素材' },
                 { value: 'theme', label: '主题包' },
+                { value: 'pc-page-template', label: 'PC页面模版' },
               ]}
               onChange={onSearch}
             />
