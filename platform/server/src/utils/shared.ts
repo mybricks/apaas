@@ -76,6 +76,8 @@ interface Configuration {
 
   ai?: {
     accessToken?: string
+    /** 请求域名 */
+    baseUrl?: string
   }
 }
 

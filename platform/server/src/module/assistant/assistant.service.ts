@@ -16,6 +16,8 @@ export default class AssistantService {
     return configuration?.ai?.accessToken;
   }
 
+  private baseUrl: string = configuration?.ai?.baseUrl ?? 'https://ai.mybricks.world';
+
   async checkAICenterHealth(): Promise<boolean> {
     try {
       const response = await axios.get('https://ai.mybricks.world/health');
@@ -32,7 +34,7 @@ export default class AssistantService {
       throw new AIServiceNotAvailableError();
     }
 
-    return await axios.post('https://ai.mybricks.world/stream-with-tools', body, {
+    return await axios.post(`${this.baseUrl}/stream-with-tools`, body, {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${aiToken}`,
