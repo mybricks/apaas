@@ -20,7 +20,7 @@ export default class AssistantService {
 
   async checkAICenterHealth(): Promise<boolean> {
     try {
-      const response = await axios.get('https://ai.mybricks.world/health');
+      const response = await axios.get('https://ai.mybricks.world/health', { timeout: 5000 });
       return response.status === 200;
     } catch (error) {
       Logger.error(error?.stack?.toString())
@@ -38,7 +38,8 @@ export default class AssistantService {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${aiToken}`,
-        'm-request-role': headers['m-request-role']
+        'm-request-role': headers['m-request-role'],
+        'Cookie': headers['cookie']
       },
       responseType: 'stream'
     });
