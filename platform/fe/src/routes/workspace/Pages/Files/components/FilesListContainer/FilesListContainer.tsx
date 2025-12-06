@@ -13,6 +13,7 @@ import ConfirmShareModal from "../ConfirmShareModal";
 import ConfirmTouristVisitModal from "../ConfirmTouristVisitModal";
 import CopyFileModal from "../CopyFileModal";
 import MoveFileModal from "../MoveFileModal";
+import CreateBranchModal from "../CreateBranchModal";
 
 import css from "./FilesListContainer.less";
 
@@ -131,6 +132,15 @@ const FilesListContainer: FC<FilesListContainerProps> = ({
       },
       copy: ({ file }: HandleParams) => {
         showModal(CopyFileModal, {
+          user,
+          file,
+          next: (file) => {
+            refresh({ file, type: "create" });
+          }
+        })
+      },
+      createBranch: ({ file }: HandleParams) => {
+        showModal(CreateBranchModal, {
           user,
           file,
           next: (file) => {

@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="apaas_file_branch">
+
+    <!-- 创建分支关系 -->
+    <insert id="create">
+        insert into apaas_file_branch
+        (
+        id,
+        main_file_id,
+        branch_file_id,
+        branch_name,
+        description,
+        creator_id,
+        <if test="creatorName != null">
+            creator_name,
+        </if>
+        create_time,
+        update_time,
+        status
+        )
+        values
+        (
+        #{id},
+        #{mainFileId},
+        #{branchFileId},
+        #{branchName},
+        #{description},
+        #{creatorId},
+        <if test="creatorName != null">
+            #{creatorName},
+        </if>
+        #{create_time},
+        #{update_time},
+        #{status}
+        )
+    </insert>
+
+    <!-- 根据主文件ID获取所有分支 -->
+    <select id="queryByMainFileId">
+        select 
+            id, main_file_id, branch_file_id, branch_name, description, content,
+            creator_id, creator_name, create_time, update_time, status
+        from apaas_file_branch
+        where main_file_id = #{mainFileId}
+        and status = #{status}
+        order by create_time desc
+    </select>
+
+    <!-- 根据分支文件ID获取主文件关系 -->
+    <select id="queryByBranchFileId">
+        select 
+            id, main_file_id, branch_file_id, branch_name, description, content,
+            creator_id, creator_name, create_time, update_time, status
+        from apaas_file_branch
+        where branch_file_id = #{branchFileId}
+        and status = #{status}
+        limit 1
+    </select>
+
+    <!-- 根据ID获取分支关系详情 -->
+    <select id="queryById">
+        select 
+            id, main_file_id, branch_file_id, branch_name, description, content,
+            creator_id, creator_name, create_time, update_time, status
+        from apaas_file_branch
+        where id = #{id}
+        and status = #{status}
+    </select>
+
+    <!-- 检查分支关系是否存在 -->
+    <select id="check">
+        select id from apaas_file_branch
+        where main_file_id = #{mainFileId}
+        and branch_file_id = #{branchFileId}
+        and status = #{status}
+        limit 1
+    </select>
+
+    <!-- 获取分支关系详情（包含主文件和分支文件信息） -->
+    <select id="queryWithFileInfo">
+        select 
+            afb.id, afb.main_file_id, afb.branch_file_id, afb.branch_name, 
+            afb.description, afb.content, afb.creator_id, afb.creator_name, 
+            afb.create_time, afb.update_time, afb.status
+        from apaas_file_branch afb
+        where afb.branch_file_id = #{branchFileId}
+        and afb.status = #{status}
+        limit 1
+    </select>
+
+    <!-- 删除分支关系（逻辑删除） -->
+    <update id="delete">
+        update apaas_file_branch
+        set 
+            status = -1,
+            update_time = #{update_time}
+        where branch_file_id = #{branchFileId}
+    </update>
+
+    <!-- 更新分支信息 -->
+    <update id="update">
+        update apaas_file_branch
+        set
+        <if test="branchName != null">
+            branch_name = #{branchName},
+        </if>
+        <if test="description != null">
+            description = #{description},
+        </if>
+        <if test="content != null">
+            content = #{content},
+        </if>
+        update_time = #{update_time}
+        where id = #{id}
+    </update>
+
+</mapper>
