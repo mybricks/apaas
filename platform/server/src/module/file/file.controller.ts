@@ -261,16 +261,13 @@ export default class FileController {
     }
   }
 
-  @Get("getBranchFileIds")
-  async getBranchFileIds(@Query() query) {
+  @Get("getBranchInfo")
+  async getBranchInfo(@Query() query) {
     try {
       const res = await this.fileBranchDao.queryBranchesByMainFileId(query.id)
-      res[0].branchFileId
       return {
         code: 1,
-        data: res.map((branch) => {
-          return branch.branchFileId
-        })
+        data: res
       }
     } catch (e) {
       return {
