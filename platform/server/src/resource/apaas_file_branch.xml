@@ -41,7 +41,7 @@
     <!-- 根据主文件ID获取所有分支 -->
     <select id="queryByMainFileId">
         select 
-            id, main_file_id, branch_file_id, branch_name, description, content,
+            id, main_file_id, branch_file_id, branch_name, description,
             creator_id, creator_name, create_time, update_time, status
         from apaas_file_branch
         where main_file_id = #{mainFileId}
@@ -52,7 +52,7 @@
     <!-- 根据分支文件ID获取主文件关系 -->
     <select id="queryByBranchFileId">
         select 
-            id, main_file_id, branch_file_id, branch_name, description, content,
+            id, main_file_id, branch_file_id, branch_name, description,
             creator_id, creator_name, create_time, update_time, status
         from apaas_file_branch
         where branch_file_id = #{branchFileId}
@@ -63,7 +63,7 @@
     <!-- 根据ID获取分支关系详情 -->
     <select id="queryById">
         select 
-            id, main_file_id, branch_file_id, branch_name, description, content,
+            id, main_file_id, branch_file_id, branch_name, description,
             creator_id, creator_name, create_time, update_time, status
         from apaas_file_branch
         where id = #{id}

@@ -261,10 +261,26 @@ export default class FileController {
     }
   }
 
-  @Get("getBranchInfo")
-  async getBranchInfo(@Query() query) {
+  @Get("getBranchInfoByMainFileId")
+  async getBranchInfoByMainFileId(@Query() query) {
     try {
       const res = await this.fileBranchDao.queryBranchesByMainFileId(query.id)
+      return {
+        code: 1,
+        data: res
+      }
+    } catch (e) {
+      return {
+        code: -1,
+        msg: e.message || '获取出错'
+      }
+    }
+  }
+
+  @Get("getBranchInfoById")
+  async getBranchInfoById(@Query() query) {
+    try {
+      const res = await this.fileBranchDao.queryBranchById(query.id)
       return {
         code: 1,
         data: res
