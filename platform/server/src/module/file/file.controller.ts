@@ -192,14 +192,16 @@ export default class FileController {
     const { name, userId, fileId, fileContentId, branchName } = body;
     console.log("[body]", body)
 
-    if(!name || !fileId || !userId || !fileContentId) {
+    if(!name || !fileId || !userId) {
       return { code: -1, msg: '参数不合法' };
     }
     
     try {
       const [[fileInfo], [fileContent]] = await Promise.all([
         this.fileDao.pureQuery({ id: fileId }),
-        this.fileContentDao.queryById({ id: fileContentId })
+        fileContentId ? 
+          this.fileContentDao.queryById({ id: fileContentId }) : 
+          this.fileContentDao.queryLatestSave({ fileId: fileId }).then(res => [res])
       ])
       const createFileParam = {
         parentId: fileInfo.parentId, 
@@ -250,7 +252,8 @@ export default class FileController {
       return {
         code: 1,
         data: {
-          id: res.mainFileId
+          id: res?.mainFileId,
+          branchName: res?.branchName,
         }
       }
     } catch (e) {
