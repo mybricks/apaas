@@ -70,8 +70,8 @@ const CreateBranchModal: FC<CreateBranchModalProps> = ({
         initialValues={{ name: "", type: null, fileContentId: null }}
         validate={values => {
           let errors = {} as RenameFileValues;
-          if (!values.name.trim()) {
-            errors.name = "分支名不允许为空";
+          if (!/^[a-z0-9\-]+$/.test(values.name)) {
+            errors.name = "分支名只允许小写字母、数字和中划线(-)";
           }
           if (typeMap) {
             if (!values.type) {
@@ -145,7 +145,7 @@ const CreateBranchModal: FC<CreateBranchModalProps> = ({
                 <Form.Field label="分支名" className={css.formField}>
                   <Input
                     name="name"
-                    placeholder="请输入分支名"
+                    placeholder="请输入分支名，只允许小写字母、数字和中划线(-)"
                     value={values.name}
                     onChange={handleChange}
                     error={!isValid}
