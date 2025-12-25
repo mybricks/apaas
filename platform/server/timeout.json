@@ -12,6 +12,9 @@
     "/api/compile/wx/publish:POST": {
       "ignore": true
     },
+    "/api/material/components/combo:GET": {
+      "ignore": true
+    },
     "/paas/api/system/refactorUser:GET": {
       "ignore": true
     },
