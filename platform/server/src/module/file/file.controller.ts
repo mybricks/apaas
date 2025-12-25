@@ -14,6 +14,7 @@ import UserGroupDao from "../../dao/UserGroupDao";
 import UserGroupRelationDao from '../../dao/UserGroupRelationDao'
 import FileContentDao from "../../dao/FileContentDao";
 import UserFileRelationDao from "../../dao/UserFileRelationDao";
+import FileBranchDao from "../../dao/FileBranchDao";
 
 import FileService from "./file.service";
 import UserService from '../user/user.service';
@@ -35,6 +36,7 @@ export default class FileController {
   fileService: FileService
   userService: UserService
   userFileRelationDao: UserFileRelationDao
+  fileBranchDao: FileBranchDao
 
 
 
@@ -50,6 +52,7 @@ export default class FileController {
     this.fileService = new FileService()
     this.userService = new UserService()
     this.userFileRelationDao = new UserFileRelationDao()
+    this.fileBranchDao = new FileBranchDao()
   }
 
   @Get("/get")
@@ -180,6 +183,115 @@ export default class FileController {
       return {
         code: -1,
         msg: e.message || '创建出错'
+      }
+    }
+  }
+
+  @Post("/createBranch")
+  async createBranch(@Body() body) {
+    const { name, userId, fileId, fileContentId, branchName } = body;
+    console.log("[body]", body)
+
+    if(!name || !fileId || !userId) {
+      return { code: -1, msg: '参数不合法' };
+    }
+    
+    try {
+      const [[fileInfo], [fileContent]] = await Promise.all([
+        this.fileDao.pureQuery({ id: fileId }),
+        fileContentId ? 
+          this.fileContentDao.queryById({ id: fileContentId }) : 
+          this.fileContentDao.queryLatestSave({ fileId: fileId }).then(res => [res])
+      ])
+      const createFileParam = {
+        parentId: fileInfo.parentId, 
+        groupId: fileInfo.groupId,
+        name, 
+        type: fileInfo.type,
+        extName: fileInfo.extName, 
+        icon: fileInfo.icon, 
+        creatorId: userId,
+      }
+      const res1 = await this.fileDao.createFile(createFileParam)
+      let result = null
+      if(fileContent?.content) {
+        const createFileContentParams = {
+          fileId: res1.id,
+          creatorId: userId,
+          version: '1.0.0',
+          content: fileContent.content
+        }
+        result = await this.fileContentDao.create(createFileContentParams)
+      }
+
+      await this.fileBranchDao.createBranch({
+        mainFileId: fileId,
+        branchName,
+        branchFileId: res1.id,
+        creatorId: userId,
+      })
+      
+      return {
+        code: 1,
+        data: {
+          id: res1.id
+        }
+      }
+    } catch(e) {
+      return {
+        code: -1,
+        msg: e.message || '创建出错'
+      }
+    }
+  }
+
+  @Get("getMainFileId")
+  async getMainFileId(@Query() query) {
+    try {
+      const res = await this.fileBranchDao.queryMainFileByBranchFileId(query.id);
+      return {
+        code: 1,
+        data: {
+          id: res?.mainFileId,
+          branchName: res?.branchName,
+        }
+      }
+    } catch (e) {
+      return {
+        code: -1,
+        msg: e.message || '获取出错'
+      }
+    }
+  }
+
+  @Get("getBranchInfo")
+  async getBranchInfo(@Query() query) {
+    try {
+      const res = await this.fileBranchDao.queryBranchesByMainFileId(query.id)
+      return {
+        code: 1,
+        data: res
+      }
+    } catch (e) {
+      return {
+        code: -1,
+        msg: e.message || '获取出错'
+      }
+    }
+  }
+
+  @Get("getBranchInfoById")
+  async getBranchInfoById(@Query() query) {
+    try {
+      const res = await this.fileBranchDao.queryBranchById(query.id)
+      return {
+        code: 1,
+        data: res
+      }
+    } catch (e) {
+      return {
+        code: -1,
+        msg: e.message || '获取出错'
       }
     }
   }
