@@ -101,7 +101,8 @@ import {
   ShareAltOutlined,
   ExportOutlined,
   ExclamationCircleFilled,
-  UserOutlined
+  UserOutlined,
+  BranchesOutlined
 } from '@ant-design/icons'
 
 export function RenderOperate({project, operate, size = 28, iconSize = 18, appMeta}: any) {
@@ -177,6 +178,16 @@ export function RenderOperate({project, operate, size = 28, iconSize = 18, appMe
           {/* @ts-ignore */}
           <CopyOutlined width={16} height={16}/>
           <div className={css.label}>创建副本</div>
+        </div>
+      )
+    } : null,
+    ["pc-page", "pc-cdm"].includes(extName) ? {
+      key: 'createBranch',
+      label: (
+        <div className={css.operateItem} onClick={() => operate.createBranch({ file: project })}>
+          {/* @ts-ignore */}
+          <BranchesOutlined width={16} height={16}/>
+          <div className={css.label}>创建分支</div>
         </div>
       )
     } : null,

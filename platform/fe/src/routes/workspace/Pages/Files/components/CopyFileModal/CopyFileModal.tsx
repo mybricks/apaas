@@ -26,7 +26,7 @@ const CopyFileModal: FC<CopyFileModalProps> = ({
   hideModal
 }) => {
   return (
-    <Modal title="重命名">
+    <Modal title="创建副本">
       <Formik<RenameFileValues>
         initialValues={{ name: `${file.name}(副本)` }}
         validate={values => {

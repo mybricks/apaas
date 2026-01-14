@@ -256,7 +256,7 @@ function GroupOperate(props) {
             <div className={css.btnGroup}>
               {showSettingButton ? <button className={css.primaryButton} onClick={openSetting}>设置</button> : null}
             </div>
-            {/* <GroupSetting visible={showSetting} onClose={() => setShowSetting(false)} /> */}
+            <GroupSetting visible={showSetting} onClose={() => setShowSetting(false)} ctx={ctx} user={user}/>
           </>
         )
       }
