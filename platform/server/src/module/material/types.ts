@@ -72,6 +72,8 @@ export interface CreateMaterialComponent {
   isBeta?: boolean;
   /** 组件的类型 */
   rtType?: boolean;
+  /** 元数据 */
+  meta?: string;
 }
 
 /** 发布组件库时参数 */

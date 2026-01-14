@@ -179,6 +179,7 @@ export default class MaterialService {
   				icon: willInsertComponent.icon ?? '',
   				previewImg: willInsertComponent.previewImg ?? '',
   				description: willInsertComponent.description ?? '',
+  				meta: willInsertComponent.meta ?? '',
   				scopeStatus: MaterialScopeStatus.PUBLIC,
   				sceneId: curScene?.id,
   			},
@@ -457,6 +458,7 @@ export default class MaterialService {
   					version: willUpdateComponent.version,
   					description: willUpdateComponent.description,
   					previewImg: willUpdateComponent.previewImg,
+  					meta: willUpdateComponent.meta ?? '',
   					sceneId: curScene?.id,
   				},
   			);
@@ -478,6 +480,7 @@ export default class MaterialService {
   						version: willUpdateComponent.version,
   						description: willUpdateComponent.description,
   						previewImg: willUpdateComponent.previewImg,
+  						meta: willUpdateComponent.meta ?? '',
   						sceneId: curScene?.id,
   					},
   				);
