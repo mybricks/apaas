@@ -42,6 +42,9 @@
     "/mybricks-app-pcspa/api/pcpage/toCode:POST": {
       "ignore": true
     },
+    "/mybricks-app-harmony-module/api/harmony-module/harmony/compile:POST": {
+      "ignore": true
+    },
     "(/.*)?/api/system/domain/run:GET": {
       "ignore": true
     },
