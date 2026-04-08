@@ -24,6 +24,9 @@
     "/paas/api/apps/update:POST": {
       "ignore": true
     },
+    "paas/api/apps/offlineUpdate:POST": {
+      "ignore": true
+    },
     "/paas/api/oss/uploadFile:POST": {
       "ignore": true
     },
