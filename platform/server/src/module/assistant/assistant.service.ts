@@ -46,4 +46,21 @@ export default class AssistantService {
       responseType: 'stream'
     });
   }
+
+  async sseToAICenter(body: any, headers: any) {
+    const aiToken = configuration?.ai?.accessToken;
+    if (!aiToken) {
+      throw new AIServiceNotAvailableError();
+    }
+
+    return await axios.post(`${this.baseUrl}/sse`, body, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${aiToken}`,
+        'm-request-role': headers['m-request-role'],
+        'Cookie': headers['cookie']
+      },
+      responseType: 'stream'
+    });
+  }
 } 

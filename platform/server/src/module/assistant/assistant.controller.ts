@@ -81,4 +81,46 @@ export default class AssistantController {
       }
     }
   }
+
+  @Post('/sse')
+  async sse(
+    @Body() body: any,
+    @Headers() headers: any,
+    @Res() response: Response
+  ) {
+    try {
+      const stream = await this.assistantService.sseToAICenter(body, headers);
+
+      response.setHeader('X-Request-Id', stream.headers['X-Request-Id'] ?? stream.headers['x-request-id']);
+      response.setHeader('X-Powered-App', stream.headers['X-Powered-App'] ?? stream.headers['X-Powered-App'] ?? 'platform');
+      
+      stream.data.pipe(response);
+    } catch (error) {
+      Logger.error(error?.stack?.toString())
+      if (error instanceof AIServiceNotAvailableError) {
+        response.status(401).json({
+          code: -1,
+          message: 'Unauthorized token'
+        });
+      } else {
+        const statusCode = error.response?.status || 500;
+        if (error.response?.headers) {
+          Object.entries(error.response.headers).forEach(([key, value]) => {
+            if (value !== undefined) {
+              response.setHeader(key, value.toString());
+            }
+          });
+        }
+        response.status(statusCode);
+        if (error.response?.data?.pipe) {
+          error.response.data.pipe(response);
+        } else {
+          response.json(error.response?.data || {
+            code: -1,
+            message: error.message || 'AI服务异常'
+          });
+        }
+      }
+    }
+  }
 } 
