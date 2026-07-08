@@ -16,6 +16,10 @@ export default class AssistantService {
     return configuration?.ai?.accessToken;
   }
 
+  async getAIBaseUrl() {
+    return configuration?.ai?.baseUrl;
+  }
+
   private baseUrl: string = configuration?.ai?.baseUrl ?? 'https://ai.mybricks.world';
 
   async checkAICenterHealth(): Promise<boolean> {

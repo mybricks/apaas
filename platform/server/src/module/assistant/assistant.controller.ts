@@ -19,6 +19,15 @@ export default class AssistantController {
         }
       }
 
+      const baseUrl = await this.assistantService.getAIBaseUrl();
+
+      if (baseUrl) {
+        return {
+          code: 1,
+          message: '服务已就绪'
+        }
+      }
+
       const pingCenter = await this.assistantService.checkAICenterHealth();
       if (!pingCenter) {
         return {
